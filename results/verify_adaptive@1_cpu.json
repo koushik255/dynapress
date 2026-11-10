@@ -1,0 +1,11 @@
+{
+  "mode": "adaptive@1",
+  "device": "cpu",
+  "payload_bytes": 4990,
+  "original_bytes": 12568,
+  "exact": true,
+  "wrong_words": 0,
+  "total_words": 2056,
+  "examples": [],
+  "seconds": 379.2
+}

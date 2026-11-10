@@ -1,0 +1,27 @@
+# Hand-written sentences where several plausible words share the same short prefix.
+# At 25-50% retention the prefix alone cannot decide the word; context has to.
+She will present the present to the president after the presentation.
+We need to contact the contractor before we sign the contract.
+The conductor conducted the concert in a concrete hall.
+The patient waited patiently for news about his patent.
+The state stated that the statement contained a strange statistic.
+He recorded the record before the reception started.
+The general generated a general feeling of generosity.
+They converted the old convent into a convenient conference center.
+The professor professed that his profession was profitable.
+The engineer started the engine and then enjoyed the engagement party.
+Their personal personnel persuaded the person to stay.
+The produce manager produced a report on product production.
+Please consider the conditions before you confirm the conference.
+The comedian commented on the common community committee.
+After the storm, the store stored stories about the stormy night.
+The minister visited the ministry with a minor delegation.
+The desert dessert was deserted by the desperate tourists.
+I can't continue the contest without more context.
+The doctor doubted the document that the dog had chewed.
+The planet's plain plains were planted by the plant manager.
+My brother brought brown bread and a broken bottle.
+The children chose cheese, cherries, and chocolate for their snack.
+The traveler traveled through the tunnel by train.
+The writer wrote a riveting review of the revised version.
+The police policy was politely explained to the politician.

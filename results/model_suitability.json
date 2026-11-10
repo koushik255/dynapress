@@ -1,0 +1,114 @@
+[
+  {
+    "model": "google/byt5-small",
+    "parameters": 299637760,
+    "retention": 0.5,
+    "word_accuracy": 0.314,
+    "seconds": 14.41
+  },
+  {
+    "model": "google/byt5-small",
+    "parameters": 299637760,
+    "retention": 0.75,
+    "word_accuracy": 0.6281,
+    "seconds": 8.91
+  },
+  {
+    "model": "HuggingFaceTB/SmolLM2-135M",
+    "parameters": 134515008,
+    "retention": 0.5,
+    "word_accuracy": 0.9752,
+    "seconds": 16.08
+  },
+  {
+    "model": "HuggingFaceTB/SmolLM2-135M",
+    "parameters": 134515008,
+    "retention": 0.75,
+    "word_accuracy": 0.9421,
+    "seconds": 17.35
+  },
+  {
+    "model": "HuggingFaceTB/SmolLM2-360M",
+    "parameters": 361821120,
+    "retention": 0.5,
+    "word_accuracy": 0.9835,
+    "seconds": 26.6
+  },
+  {
+    "model": "HuggingFaceTB/SmolLM2-360M",
+    "parameters": 361821120,
+    "retention": 0.75,
+    "word_accuracy": 0.9917,
+    "seconds": 29.16
+  },
+  {
+    "model": "Qwen/Qwen2.5-0.5B",
+    "parameters": 494032768,
+    "retention": 0.5,
+    "word_accuracy": 0.9339,
+    "seconds": 23.08
+  },
+  {
+    "model": "Qwen/Qwen2.5-0.5B",
+    "parameters": 494032768,
+    "retention": 0.75,
+    "word_accuracy": 0.9917,
+    "seconds": 25.73
+  },
+  {
+    "model": "Qwen/Qwen3-0.6B-Base",
+    "parameters": 596049920,
+    "retention": 0.5,
+    "word_accuracy": 0.9917,
+    "seconds": 53.9
+  },
+  {
+    "model": "Qwen/Qwen3-0.6B-Base",
+    "parameters": 596049920,
+    "retention": 0.75,
+    "word_accuracy": 0.9917,
+    "seconds": 63.5
+  },
+  {
+    "model": "Qwen/Qwen2.5-1.5B",
+    "parameters": 1543714304,
+    "retention": 0.5,
+    "word_accuracy": 0.9917,
+    "seconds": 51.41
+  },
+  {
+    "model": "Qwen/Qwen2.5-1.5B",
+    "parameters": 1543714304,
+    "retention": 0.75,
+    "word_accuracy": 0.9917,
+    "seconds": 56.69
+  },
+  {
+    "model": "HuggingFaceTB/SmolLM2-360M",
+    "parameters": 361821120,
+    "retention": 0.25,
+    "word_accuracy": 0.7769,
+    "seconds": 25.08
+  },
+  {
+    "model": "Qwen/Qwen2.5-0.5B",
+    "parameters": 494032768,
+    "retention": 0.25,
+    "word_accuracy": 0.719,
+    "seconds": 21.87
+  },
+  {
+    "model": "Qwen/Qwen3-0.6B-Base",
+    "parameters": 596049920,
+    "retention": 0.25,
+    "word_accuracy": 0.686,
+    "seconds": 53.32
+  },
+  {
+    "model": "Qwen/Qwen2.5-1.5B",
+    "parameters": 1543714304,
+    "retention": 0.25,
+    "word_accuracy": 0.7273,
+    "seconds": 50.84
+  }
+]

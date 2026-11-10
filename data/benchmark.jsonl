@@ -1,0 +1,125 @@
+{"category": "conversational", "text": "Yes. I'm sure. You have the wrong number. I have used this number for more than 20 years."}
+{"category": "conversational", "text": "Now we have to make a choice about what we will see and what we won't."}
+{"category": "conversational", "text": "Good evening, madam. Can I help you?"}
+{"category": "conversational", "text": "Actually, fruits and veggies are really good for you."}
+{"category": "conversational", "text": "Does the cafeteria sell a lot of different food?"}
+{"category": "conversational", "text": "You're made a good choice. This china tea set is unusual."}
+{"category": "conversational", "text": "The sales lady said that even if I eat right, I wouldn't get enough vitamins."}
+{"category": "conversational", "text": "But I am her brother, not her servant."}
+{"category": "conversational", "text": "What is that? It looks like something from a swamp!"}
+{"category": "conversational", "text": "When was the last time you had a check-up?"}
+{"category": "conversational", "text": "Do you think I should lie in bed?"}
+{"category": "conversational", "text": "Excuse me, could you please show me the way to the human resource department?"}
+{"category": "conversational", "text": "Yes, the towel was named after its designer Gustave Eiffel."}
+{"category": "conversational", "text": "It is just too dark in here with so few windows."}
+{"category": "conversational", "text": "I know what you mean. I ought to wear right clothes at the right time."}
+{"category": "conversational", "text": "Alright. There are several models you may want to look at.This Kreng portable cassette player is very good."}
+{"category": "conversational", "text": "Because you can see the stars perfectly."}
+{"category": "conversational", "text": "You can pick it up in half an hour. By the way, how are you going to pay, cash or credit?"}
+{"category": "conversational", "text": "All the sightseeing in china is very attractive and crescive.travelling to China is very worth one.thank you so much for your guides, and I'll miss you."}
+{"category": "conversational", "text": "Is that so? I'm glad you enjoyed it."}
+{"category": "conversational", "text": "Well, unfortunately I have got something to do this weekend. But let me see..."}
+{"category": "conversational", "text": "We should have it put together by the end of next week."}
+{"category": "conversational", "text": "Oops, cancel that. Change the second call to 7 thirty will you, please?"}
+{"category": "conversational", "text": "Walk that way for about four blocks. The hotel's about two blocks north of there."}
+{"category": "conversational", "text": "Oh, good. Irene, can you tell me why you plan to quit being a sales manager to work here as my assistant? Don't you like your present job?"}
+{"category": "technical", "text": "Get the encoded token span corresponding to a word in a sequence of the batch."}
+{"category": "technical", "text": "DETR can be naturally extended to perform panoptic segmentation (which unifies semantic segmentation and instance segmentation)."}
+{"category": "technical", "text": "In JAX it is the only compiler, whereas in TensorFlow it is optional (but mandatory on TPU!)."}
+{"category": "technical", "text": "Event called at the end of the initialization of the Trainer."}
+{"category": "technical", "text": "Activation checkpointing and gradient checkpointing are two distinct terms that refer to the same methodology."}
+{"category": "technical", "text": "This code has exactly the same effect as the code above, but by avoiding a conditional, we ensure it will compile with XLA without problems!"}
+{"category": "technical", "text": "Then we introduce a dimension-consistent pure transformer (without MobileNet blocks) as a design paradigm."}
+{"category": "technical", "text": "It is used to instantiate an DeiT model according to the specified arguments, defining the model architecture."}
+{"category": "technical", "text": "CLIP does not make use of token type ids, therefore a list of zeros is returned."}
+{"category": "technical", "text": "This model is a TensorFlow tf.keras.layers.Layer."}
+{"category": "technical", "text": "The most common optimizer used to train transformer models is Adam or AdamW (Adam with weight decay)."}
+{"category": "technical", "text": "Cast the floating-point parmas to jax.numpy.float16."}
+{"category": "technical", "text": "When called, returns the token that would take this constraint one step closer to being fulfilled."}
+{"category": "technical", "text": "Creates a tf.keras.initializers.TruncatedNormal with the given range."}
+{"category": "technical", "text": "This is because the model is now present on the GPU in both 16-bit and 32-bit precision (1.5x the original model on the GPU)."}
+{"category": "technical", "text": "Updates the underlying post processor with the current bos_token and eos_token."}
+{"category": "technical", "text": "Base class for outputs of multiple choice Longformer models."}
+{"category": "technical", "text": "Luckily you can accomplish that easily by activating a special module that will do the detection automatically."}
+{"category": "technical", "text": "This whole process would have been much easier if we only could set something like allow-failure for the experimental step, and let it fail without impacting the overall status of PRs."}
+{"category": "technical", "text": "ByT5 does not make use of token type ids, therefore a list of zeros is returned."}
+{"category": "technical", "text": "Perform segmentation (detect masks & classes) in the image(s) passed as inputs."}
+{"category": "technical", "text": "The source encoder is trained by updating the source encoder, positional embeddings, and input embeddings with the cross-entropy loss from the model output."}
+{"category": "technical", "text": "The BigBirdPegasusModel forward method, overrides the __call__ special method."}
+{"category": "technical", "text": "LogitsProcessor that enforces constrained generation and is useful for prefix-conditioned constrained generation."}
+{"category": "technical", "text": "It is used to instantiate an ConvBERT model according to the specified arguments, defining the model architecture."}
+{"category": "scientific", "text": "We find that the GO gradient often works well in practice based on only one Monte Carlo sample (although one can of course use more samples if desired)."}
+{"category": "scientific", "text": "Importantly, our method makes no assumptions about the specific negotiation protocol, and is instead completely experience driven."}
+{"category": "scientific", "text": "The behavioral dynamics of multi-agent systems have a rich and orderly structure, which can be leveraged to understand these systems, and to improve how artificial agents learn to operate in them."}
+{"category": "scientific", "text": "This ensures by design that the latent variable captures information about the observations, whilst retaining the ability to generate well."}
+{"category": "scientific", "text": "We further split the test data in red and non-red cars and did a similar evaluation."}
+{"category": "scientific", "text": "Although variational autoencoders (VAEs) represent a widely influential deep generative model, many aspects of the underlying energy function remain poorly understood."}
+{"category": "scientific", "text": "The use of AR in an industrial context could help for the training of new operators."}
+{"category": "scientific", "text": "Deep learning achieves remarkable generalization capability with overwhelming number of model parameters."}
+{"category": "scientific", "text": "A comparative experiment between our proposed model and a model without association showed that our proposed model is generating useful sentences by associating visual information related to sentences."}
+{"category": "scientific", "text": "Next, we present an architecture that can be seen as a discretization of a diffusion reaction PDE, and use it with three different convolution operators."}
+{"category": "scientific", "text": "For wide networks, this leads to immense computational cost in the training of and prediction with CNNs."}
+{"category": "scientific", "text": "We propose the dense RNN, which has the fully connections from each hidden state to multiple preceding hidden states of all layers directly."}
+{"category": "scientific", "text": "The key difficulty is in identifying these adversarial situations -- since failures are rare there is little signal to drive optimization."}
+{"category": "scientific", "text": "We first describe a large-scale online experiment (ClickMe) used to supplement ImageNet with nearly half a million human-derived \"top-down\" attention maps."}
+{"category": "scientific", "text": "Our method learns to assign graph operations to groups and to allocate those groups to available devices."}
+{"category": "scientific", "text": "Here, we demonstrate the benefit of using stronger supervisory signals by teaching DCNs to attend to image regions that humans deem important for object recognition."}
+{"category": "scientific", "text": "Carefully crafted input images (adversarial examples) can force a well-trained neural network to provide arbitrary outputs."}
+{"category": "scientific", "text": "Deep neural networks are able to solve tasks across a variety of domains and modalities of data."}
+{"category": "scientific", "text": "Using data from electrical stimulation experiments, we demonstrate that this metric may improve the performance of a prosthesis."}
+{"category": "scientific", "text": "The resulting architectures do not follow human intuition yet perform well on their targeted tasks, suggesting the space of usable RNN architectures is far larger than previously assumed."}
+{"category": "scientific", "text": "Here we defined a spatial representation of sequencing information adapted for convolutional architecture that enables variant detection at VAFs, in a manner independent of the depth of sequencing."}
+{"category": "scientific", "text": "Deep neural networks (DNN) have shown promising performance in computer vision."}
+{"category": "scientific", "text": "To address these problems, we present an unsupervised method that samples neighborhood information attended by co-occurring structures and optimizes a trainable global bias as a representation expectation for each node in the given graph."}
+{"category": "scientific", "text": "In inductive transfer learning, fine-tuning pre-trained convolutional networks substantially outperforms training from scratch."}
+{"category": "scientific", "text": "From this discovery, we further present an efficient learning strategy to mimic features stage by stage."}
+{"category": "names_numbers", "text": "According to a survey done by Poder360, Bolsonaro granted 102 exclusive interviews to media outlets, even though he claimed to dislike the press."}
+{"category": "names_numbers", "text": "In 1985, Gazi Ashraf Hossain Lipu was named as the new captain."}
+{"category": "names_numbers", "text": "The band researched and performed the music of pianist/composer Herbie Nichols, releasing three albums: Love Is Proximity (Soul Note, 1996), Dr."}
+{"category": "names_numbers", "text": "Between January 2000 and March 2001, Dykstra billed over $7,000 while serving as Baird's executive assistant."}
+{"category": "names_numbers", "text": "Just north of East 8500 South the road still continues north along the east side of the tracks until it reaches East 8000 South, but is now designated as North 150 East."}
+{"category": "names_numbers", "text": "Cohen is the author of Lightfall (Skira Rizzoli, 2016), The Return of Nature (2015), Contested Symmetries (2001), and numerous theoretical essays on architecture."}
+{"category": "names_numbers", "text": "Shaker Ahmed Kamal (born 15 June 1977) is a former Bangladeshi cricketer who played in one One Day International in 1999."}
+{"category": "names_numbers", "text": "If one performs a web search for \"ISBN 0465048994\", one will be provided with a list of locations for the book Why Information Grows on the topic of information storage."}
+{"category": "names_numbers", "text": "In Mozambique, TV Miramar, which is part of Record International, has 10 stations and has several local programs, which were successful."}
+{"category": "names_numbers", "text": "After a near miss in the Apertura 2009, Isidro returned to the top for the third time in four seasons by winning the championship of Clausura 2010."}
+{"category": "names_numbers", "text": "In 2017, Adachi launched an Immigration Unit to represent undocumented immigrants locked in detention facilities and facing deportation."}
+{"category": "names_numbers", "text": "Herder also started the Advertisers Gazette in 1883, which experienced limited success."}
+{"category": "names_numbers", "text": "Rowe's final minor hit was \"Hello\", written by Johnny Young and released in May 1970; he subsequently released an album with the same name."}
+{"category": "names_numbers", "text": "The last member of Lokot/RONA personnel to be prosecuted was Antonina Makarova, who was responsible for at least 168 executions, but likely about 1500 executions."}
+{"category": "names_numbers", "text": "After a tour as chief navigator on the cruiser Iwate, he joined the Imperial Japanese Navy General Staff and was promoted to commander in 1929."}
+{"category": "names_numbers", "text": "Farndon played with Cold River Lady until the middle of 1976, and then toured with Australian folk-rock band The Bushwackers in 1978."}
+{"category": "names_numbers", "text": "He went on to serve as the state Attorney General from 1893 to 1897."}
+{"category": "names_numbers", "text": "Dedicated pages from both publications augmented Guardian articles until a redesign in 1993, under new editor Patrick Ensor, led to their articles appearing across the Weekly."}
+{"category": "names_numbers", "text": "However, the network's liquidation sale ended one day early on June 21, and WJJA switched to Jewelry Television in the meantime."}
+{"category": "names_numbers", "text": "Their album Expect the Impossible was released in February 2008."}
+{"category": "names_numbers", "text": "The club played a match against the Barbarians in April 2008 to mark the club's 150th anniversary."}
+{"category": "names_numbers", "text": "The station was purchased by Arcey Broadcasting, which changed the call letters to WRCW on June 14, 1982."}
+{"category": "names_numbers", "text": "In addition to practicing law, Bushfield served as State's Attorney of Hand County from 1906 to 1910, and was also Miller's City Attorney for several years."}
+{"category": "names_numbers", "text": "After attending torpedo school and naval artillery school, he served on the patrol boat Manshu, followed by the cruiser Chitose and was promoted to lieutenant in 1918."}
+{"category": "names_numbers", "text": "Mount Korek is one of the top 10 destinations to visit in the Kurdistan region of Iraq, there is a 4 kilometer long Doppelmayr Teleferic (cable car) from its Bekhal Bottom station to Mount Korek."}
+{"category": "ambiguous", "text": "She will present the present to the president after the presentation."}
+{"category": "ambiguous", "text": "We need to contact the contractor before we sign the contract."}
+{"category": "ambiguous", "text": "The conductor conducted the concert in a concrete hall."}
+{"category": "ambiguous", "text": "The patient waited patiently for news about his patent."}
+{"category": "ambiguous", "text": "The state stated that the statement contained a strange statistic."}
+{"category": "ambiguous", "text": "He recorded the record before the reception started."}
+{"category": "ambiguous", "text": "The general generated a general feeling of generosity."}
+{"category": "ambiguous", "text": "They converted the old convent into a convenient conference center."}
+{"category": "ambiguous", "text": "The professor professed that his profession was profitable."}
+{"category": "ambiguous", "text": "The engineer started the engine and then enjoyed the engagement party."}
+{"category": "ambiguous", "text": "Their personal personnel persuaded the person to stay."}
+{"category": "ambiguous", "text": "The produce manager produced a report on product production."}
+{"category": "ambiguous", "text": "Please consider the conditions before you confirm the conference."}
+{"category": "ambiguous", "text": "The comedian commented on the common community committee."}
+{"category": "ambiguous", "text": "After the storm, the store stored stories about the stormy night."}
+{"category": "ambiguous", "text": "The minister visited the ministry with a minor delegation."}
+{"category": "ambiguous", "text": "The desert dessert was deserted by the desperate tourists."}
+{"category": "ambiguous", "text": "I can't continue the contest without more context."}
+{"category": "ambiguous", "text": "The doctor doubted the document that the dog had chewed."}
+{"category": "ambiguous", "text": "The planet's plain plains were planted by the plant manager."}
+{"category": "ambiguous", "text": "My brother brought brown bread and a broken bottle."}
+{"category": "ambiguous", "text": "The children chose cheese, cherries, and chocolate for their snack."}
+{"category": "ambiguous", "text": "The traveler traveled through the tunnel by train."}
+{"category": "ambiguous", "text": "The writer wrote a riveting review of the revised version."}
+{"category": "ambiguous", "text": "The police policy was politely explained to the politician."}
