@@ -20,8 +20,9 @@ from pathlib import Path
 import zstandard
 
 from .adaptive import compress_adaptive_many
-from .compressor import WORD_RE, Compressed, compress
+from .compressor import WORD_RE, Compressed, compress, compress_with_lengths, split_text
 from .decoder import Context, Decoder
+from .l2r import LeftToRightDecoder, compress_left_to_right
 from .models import LanguageModel
 
 # ---------------------------------------------------------------- metrics
@@ -196,6 +197,67 @@ def run_adaptive(
                 **_score(s, v.text),
             }
         )
+    return rows
+
+
+def run_left_to_right(
+    lm: LanguageModel,
+    samples: list[Sample],
+    lookback: int = 1,
+    start_retention: float = 0.25,
+    beam_size: int = 4,
+    batch_size: int = 16,
+) -> list[dict]:
+    """Left-to-right adaptive compression of the samples as one document (joined by newlines).
+
+    With ``lookback`` > 0 a sentence is restored with earlier sentences in its prompt, so the
+    per-sample payloads in the rows only decode as parts of the merged document
+    (``merge_payloads``). That merged payload is the one compressed and verified here.
+    """
+    decoder = LeftToRightDecoder(lm, lookback, beam_size=beam_size, batch_size=batch_size)
+    result = compress_left_to_right("\n".join(s.text for s in samples), decoder, start_retention)
+    # Verify independently: a fresh decode of the final payload bytes.
+    verified = decoder.decode(Compressed.from_bytes(result.payload))
+    pct = Compressed.from_bytes(result.payload).retention_pct
+    total_words = max(1, len(result.lengths))
+    rows, parts, pos = [], [], 0
+    for s in samples:
+        separators, words = split_text(s.text)
+        span = slice(pos, pos + len(words))
+        pos += len(words)
+        c = compress_with_lengths(s.text, result.lengths[span], pct)
+        parts.append(c)
+        decoded = separators[0] + "".join(w + sep for w, sep in zip(verified.words[span], separators[1:]))
+        share = len(words) / total_words  # attribute document cost proportionally
+        rows.append(
+            {
+                "mode": "adaptive-l2r@1",
+                "retention": start_retention,
+                "context": f"l2r-{lookback}",
+                "category": s.category,
+                "original": s.text,
+                "decoded": decoded,
+                "original_bytes": len(s.text.encode()),
+                "raw_prefix_bytes": sum(len(p.encode()) for p in c.prefixes),
+                "payload_bytes": len(c.to_bytes()),
+                "payload_zstd_bytes": len(c.to_bytes(use_zstd=True)),
+                "gzip_bytes": gzip_size(s.text.encode()),
+                "zstd_bytes": zstd_size(s.text.encode()),
+                "compress_seconds": result.seconds * share,
+                "search_seconds": result.search_seconds * share,
+                "decode_seconds": verified.seconds * share,
+                "forward_calls": verified.stats.forward_calls * share,
+                "sequences": verified.stats.sequences * share,
+                "failures": verified.failures * share,
+                "rounds": max(result.tries[span], default=0),  # searches spent on the sample's hardest word
+                "repairs": sum(span.start <= i < span.stop for i in result.repairs),
+                "verify_decodes": result.verify_decodes,
+                "verified_matches_search": int(verified.text == result.decoded_text),
+                "payload_hex": c.to_bytes().hex(),
+                **_score(s, decoded),
+            }
+        )
+    assert merge_payloads(parts).to_bytes() == result.payload, "per-sample payloads must merge into the verified document"
     return rows
 
 

@@ -203,6 +203,11 @@ def compress_with_lengths(text: str, prefix_lengths: list[int], retention_pct: i
     return Compressed(separators, prefixes, retention_pct, adaptive=True, verbatim_numbers=False, complete=complete)
 
 
+def start_lengths(words: list[str], retention_pct: int) -> list[int]:
+    """Where an adaptive search starts: numbers in full, long words no shorter than MAX_SUFFIX allows."""
+    return [len(w) if has_digit(w) else max(kept_chars(len(w), retention_pct), len(w) - MAX_SUFFIX) for w in words]
+
+
 def _varint(n: int) -> bytes:
     out = bytearray()
     while True:

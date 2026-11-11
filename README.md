@@ -159,6 +159,34 @@ uv run --with modal modal run scripts/modal_app.py --out results
 uv run --with modal modal run scripts/modal_app.py --limit-per-category 1 --contexts "0 full" --retentions 0.5 --adaptive-targets ""
 ```
 
+### Dev loop
+
+For quick iteration on the method, `scripts/dev.py` scores the current code
+(uncommitted changes included) on a separate dev set and logs every run:
+
+```bash
+uv run --with modal python scripts/dev.py --label "what I changed"   # about 1 minute on Modal
+uv run python scripts/dev.py --local --limit 5 --no-adaptive         # CPU smoke check
+uv run python scripts/dev.py --history                               # all logged runs
+```
+
+* **Dev set:** `data/dev_book.txt`, 50 consecutive sentences (805 words) from
+  an obscure public-domain novel (*White Magic*, 1910, Project Gutenberg
+  #65432), built by `scripts/build_dev_set.py`. The 125 benchmark sentences
+  stay the held-out test: run them only to confirm a win found on the dev set.
+* **Two configurations, full-sentence context:** fixed 50% (word accuracy, the
+  quick signal) and adaptive at target 100% (lossless bytes against zstd, the
+  real score).
+* **Run log:** `results/dev/runs.jsonl` gets one line per run (label, commit,
+  scores, bytes, seconds). `results/dev/runs/<id>.json` keeps that run's
+  per-sentence rows and the uncommitted diff of tracked code.
+* **Comparison:** each run prints its change against the previous run on the
+  same sentences, and the words that flipped between right and wrong. A rerun
+  without code changes on the same GPU type flipped no words.
+
+Baseline (SmolLM2-360M, beam 4, NVIDIA A10): 73.8% word accuracy at fixed 50%;
+adaptive 2,021 bytes against 2,286 for zstd -19 (88.4%).
+
 ## How it works
 
 ### 1. Compression (`compressor.py`)
@@ -285,6 +313,7 @@ neural_compression/
   decoder.py      prompts + templates for context strategies A/B/C
   adaptive.py     decoder-in-the-loop adaptive prefix lengths
   benchmark.py    metrics (word/sentence accuracy, CER, WER), runs, CSV/JSON export
+  devlog.py       dev-loop run log: entries, comparison with the previous run
   plots.py        matplotlib charts
   cli.py          python -m neural_compression {compress,decompress,benchmark,plot}
 scripts/
@@ -292,9 +321,13 @@ scripts/
   model_suitability.py   zero-shot model comparison
   modal_app.py           benchmark on Modal GPUs, one container per configuration
   verify_corpus.py       decode the merged adaptive corpus payload on any device
+  build_dev_set.py       builds data/dev_book.txt from Project Gutenberg
+  dev.py                 dev loop: score the dev set, log the run, compare with the last one
 results/                 CSV/JSON/PNG from the run reported above
+  dev/                   dev-loop run log (runs.jsonl) and per-run rows
 data/
   benchmark.jsonl  125 sentences, 5 categories (committed)
+  dev_book.txt     50 sentences from one novel, the dev set (committed)
   ambiguous.txt    hand-written shared-prefix sentences
 tests/
 ```

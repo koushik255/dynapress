@@ -24,7 +24,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 
-from .compressor import MAX_SUFFIX, Compressed, compress_with_lengths, has_digit, kept_chars, retention_to_pct, split_text
+from .compressor import Compressed, compress_with_lengths, retention_to_pct, split_text, start_lengths
 from .decoder import Decoder
 
 
@@ -50,8 +50,7 @@ def compress_adaptive_many(
     """Adaptively compress several texts, batching decoder calls across texts."""
     pct = retention_to_pct(start_retention)
     words = [split_text(t)[1] for t in texts]
-    # Numbers start in full; long words start no shorter than the decoder's MAX_SUFFIX allows.
-    lengths = [[len(w) if has_digit(w) else max(kept_chars(len(w), pct), len(w) - MAX_SUFFIX) for w in ws] for ws in words]
+    lengths = [start_lengths(ws, pct) for ws in words]
     results: list[AdaptiveResult | None] = [None] * len(texts)
     history: list[list[tuple[int, float]]] = [[] for _ in texts]
     seconds = [0.0] * len(texts)

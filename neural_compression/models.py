@@ -308,9 +308,16 @@ def _search_batch(lm, requests, shared_prefix, beam_size, scan_top, max_groups):
     return [b[1] if b else None for b in best]
 
 
-def _forced_candidates(lm: LanguageModel, text: str) -> torch.Tensor:
-    """Tokens that can start ``text``: its own prefixes, or longer tokens beginning with all of it."""
+def _forced_candidates(lm: LanguageModel, text: str, template_ends: bool) -> torch.Tensor:
+    """Tokens that can start ``text``: its own prefixes, or longer tokens beginning with all of it.
+
+    If the template ends with ``text``, a longer token always overruns it. Leaving those out
+    matters: when ``text`` is a single space they are every token that starts with a space,
+    and they are exactly the tokens the model ranks highest after a word.
+    """
     ids = [i for j in range(1, len(text) + 1) for i in lm.ids_by_string.get(text[:j], ())]
+    if template_ends:
+        return torch.tensor(ids, dtype=torch.long)
     lo = bisect.bisect_right(lm.sorted_strings, text)  # strictly longer than ``text``
     hi = bisect.bisect_left(lm.sorted_strings, text + "\U0010ffff")
     longer = lm.sorted_ids[lo:hi]
@@ -322,12 +329,12 @@ def _candidates(lm: LanguageModel, template: Template, state: tuple[int, int]) -
     seg, pos = state
     part = template[seg]
     if isinstance(part, str):
-        return _forced_candidates(lm, part[pos:])
+        return _forced_candidates(lm, part[pos:], seg + 1 == len(template))
     groups = []
     if pos < part.max_chars:  # keep filling the gap: tokens starting with few enough word chars
         groups.append(lm.word_ids[lm.word_lead <= part.max_chars - pos])
     if pos >= part.min_chars:  # or close it: the next segment is always fixed text
-        groups.append(_forced_candidates(lm, template[seg + 1]))
+        groups.append(_forced_candidates(lm, template[seg + 1], seg + 2 == len(template)))
     return torch.cat(groups) if groups else torch.empty(0, dtype=torch.long)
 
 

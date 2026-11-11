@@ -42,7 +42,7 @@ def run_config(spec: dict, samples: list[dict]) -> dict:
     import torch
     import transformers
 
-    from neural_compression.benchmark import Sample, run_adaptive, run_fixed
+    from neural_compression.benchmark import Sample, run_adaptive, run_fixed, run_left_to_right
     from neural_compression.decoder import parse_context
     from neural_compression.models import load_model
 
@@ -50,13 +50,13 @@ def run_config(spec: dict, samples: list[dict]) -> dict:
     lm = load_model(spec["model"], seed=spec["seed"])
     cache.commit()  # persist downloaded weights for the other containers / next run
     data = [Sample(**s) for s in samples]
-    context = parse_context(spec["context"])
+    common = {"beam_size": spec["beam"], "batch_size": spec["batch_size"]}
     if spec["kind"] == "fixed":
-        rows = run_fixed(lm, data, spec["retention"], context, beam_size=spec["beam"], batch_size=spec["batch_size"])
+        rows = run_fixed(lm, data, spec["retention"], parse_context(spec["context"]), **common)
+    elif spec["kind"] == "l2r":
+        rows = run_left_to_right(lm, data, spec["lookback"], spec["retention"], **common)
     else:
-        rows = run_adaptive(
-            lm, data, context, spec["retention"], spec["target"], beam_size=spec["beam"], batch_size=spec["batch_size"]
-        )
+        rows = run_adaptive(lm, data, parse_context(spec["context"]), spec["retention"], spec["target"], **common)
     meta = {
         **lm.describe(),
         "device": f"{lm.device} ({torch.cuda.get_device_name() if torch.cuda.is_available() else 'cpu'})",
