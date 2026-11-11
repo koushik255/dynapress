@@ -280,6 +280,148 @@ the same container so decode times share hardware and code. If the full plan doe
 fit, calibration first skips the control evaluation, then trains fewer epochs (the
 3-epoch learning-rate schedule is kept), and stops only if one epoch does not fit.
 
+### Single-pass student decoder
+
+`neural_compression/student.py` is a separate decoder for the same payloads. It
+restores every truncated word of a sentence in **one forward pass** of a small
+bidirectional encoder, instead of writing suffixes token by token with beam
+search. It plugs into the unchanged adaptive loop (`compress_adaptive_many`
+accepts any object with `decode_many`). The LM decoder is not modified.
+
+How it decodes one sentence unit:
+
+1. Each word becomes one input vector, built only from the payload: hashed
+   position-aware characters of the stored prefix, its case pattern, the
+   separators around it, the gap length range from the header/bitmap, and a
+   *candidate bag*: the unigram-prior-weighted mean embedding of every
+   vocabulary word that starts with the prefix and fits the length range.
+2. An 8-layer pre-LN transformer encoder (d=512) contextualises the words.
+3. For each truncated word, every vocabulary candidate (a sorted lower-case word
+   list, found by bisection) gets `proj(h)·E[w] + bias[w]`. One extra **OOV**
+   score means "not in my vocabulary". The argmax wins, and ties go to the
+   earlier vocabulary entry.
+4. If OOV wins, or nothing fits, a character 5-gram model spells a suffix of
+   an allowed length. The suffix copies the prefix's case pattern (all caps
+   after an all-caps prefix of two or more letters).
+   This fallback uses a small sequential beam search; only the neural encoder
+   is single-pass.
+
+Determinism: each sentence unit is encoded on its own (batch of one, no padding).
+Its features use only the unit's own text: the first and last separators are cut
+at whitespace. So a sentence decodes the same alone or inside a merged document
+(`tests/test_student.py` checks this), and the adaptive loop's final decode is
+the receiver's decode.
+
+**Training is distillation from SmolLM2-360M through text.** The teacher
+(pinned base model) sampled 9.0M nominal token slots on an A10 in 36 minutes
+(147 batches × 384 continuations × up to 160 tokens; actual non-padding tokens
+were not counted), at temperature 1 and top-p 0.95, continuing passages of one
+or two training-book sentences. This
+gave 327,774 complete sentences (5.5M words), cut with the decoder's own unit
+boundaries. Any sentence that also occurs in the validation books was removed.
+They are mixed with the 20,610 eligible sentences of the six training books
+(`finetune prepare --per-book 100000`, drawn 3× as often). Every time a sentence
+is drawn, it gets a fresh random fixed-ratio or adaptive-style payload from the
+real compressor functions. The loss is cross-entropy over exactly the
+candidate set the decoder searches, plus OOV. The vocabulary (27,213 words,
+count ≥ 2) and its unigram prior come from the same text, so most of the
+student's word knowledge comes from what the teacher wrote. Per-slot soft labels from the teacher
+were not used: the teacher decodes a whole sentence jointly over subword tokens,
+and the adaptive score only rewards matching the ground truth.
+
+**Rare words and names** are the known weak spot. A word that is not in the
+vocabulary can only be restored by the character n-gram, which rarely spells a
+name right. In adaptive mode such a word costs a longer prefix, usually the
+whole word after six rounds, but it never breaks exactness. See the byte
+breakdown below.
+
+```bash
+uv run --with modal modal run scripts/modal_student.py::generate      # teacher text, time-capped
+uv run --with modal modal run --detach scripts/modal_student.py::train --teacher /cache/student/<gen-run>/teacher.jsonl.gz
+uv run python -m neural_compression.student_train evaluate --model <run>/model --out <dir>   # pilot's 50 validation sentences
+```
+
+**Results** on the pilot's 50 validation sentences (941 words; 25 per validation
+book, validation SHA-256 `ae91209213adbc5bc08e79e07c533f13ecbaefbdbb52c4d1e08b600487320f94`).
+No test text was used for training, selection, or evaluation. Earlier corpus
+preparation generated and hashed the test file; recovery did not download it. The
+checkpoint was picked by fixed-50% accuracy on the next 100 sentences per
+validation book (step 20,000 of 36,520).
+
+| decoder | params | word acc. @ fixed 50% | adaptive-100% payload | **after zstd** | decode ms/word, A10 (adaptive / fixed) |
+|---|---|---|---|---|---|
+| SmolLM2-360M base | 362M | 81.2% | 3,827 B | 2,168 B | 12.1 / 10.1 |
+| SmolLM2-360M + LoRA | 362M | 86.7% | 3,658 B | 2,062 B | 12.7 / 10.0 |
+| **student, books + teacher text** | 45.8M | **87.4%** | **3,430 B** | **1,937 B** | **0.63 / 0.45** |
+| student, books only (same encoder dimensions and GPU, 30 min) | 37.1M | 76.8% | 3,811 B | 2,175 B | 1.11 / 0.52 |
+| (zstd -19 of the 50 originals) | | | | 2,481 B | |
+
+* **Exact and deterministic:** every adaptive payload decodes back to its
+  sentence, the merged 50-sentence corpus payload decodes back to the corpus,
+  and the adaptive compressor produced **byte-identical payloads** on an A10 GPU,
+  a 4-core Modal CPU, and a 2-thread orb CPU. These are observed checks on this
+  corpus, not a guarantee across arbitrary hardware or floating-point libraries.
+* **Speed:** about 20× faster than the original 360M pilot on the same GPU class
+  (separate runs, not a paired timing experiment). On CPU it
+  takes 0.73 / 1.07 ms/word on 4 cores and 1.35 / 1.89 ms/word on 2 cores
+  (fixed / adaptive). A fresh recovery-orb run measured 1.45 / 2.18 ms/word
+  for the teacher student and 1.63 / 2.43 for books only, with two Torch threads.
+  Adaptive compression of all 50 sentences, about 5 decoder
+  rounds, takes 3.5 s on the A10. Adaptive decodes are slower than fixed ones
+  because the n-gram fallback runs more often there. Each sentence is encoded
+  alone (no batching).
+* **Size:** 45.8M parameters (27,213-word tied embedding table 14M, encoder 25M,
+  hashed character/separator tables 6M). Storage is 91,925,897 B including config
+  and vocabulary (91,633,327 B fp16 weights), versus about 724 MB (bf16) for the
+  shared 360M model. Inference loads weights as fp32. Shared model storage is
+  excluded from payload scores; sending this model for a tiny corpus would
+  overwhelm the byte savings. The weights are
+  not in git; they are on the `neural-compression-hf-cache` volume under
+  `/student/train-20261111-215809/model`.
+* **Where the adaptive bytes go.** All decoders share the 1,243 separator bytes
+  and the 1,294 characters of the 25% starting prefixes; 45 one-letter words
+  are always complete. Characters added beyond the start: base 1,167, LoRA 998,
+  student 770. The student stores fewer in-vocabulary words in full (91, against
+  124 for LoRA and 189 for base). Words outside its vocabulary are rare
+  here (20 of 941: *Gryphon*, *Chertsey*, *Ealing*, *enhaloed*, …). The character
+  n-gram restores half of them from a long prefix (*Martian*→*Martians*,
+  *Eppi*→*Epping*); the other half are stored whole. Those cost 51 extra characters,
+  against about 33 for the LoRA LM, which restores *Gryphon* from *Gry*. Mean
+  adaptive rounds: 4.92 (base 4.92, LoRA 4.72).
+* **Teacher data:** the books-only ablation's best checkpoint was step 4,000
+  (76.84% selection-dev accuracy); later steps overfit despite 99.9% training
+  accuracy. On the pilot 50, teacher text plus books improves fixed accuracy by
+  10.52 percentage points and saves 238 zstd bytes (10.94%) over books only.
+  Mean rounds fall from 5.76 to 4.92; complete words from 261 to 146. Vocabulary
+  grows from 10,287 to 27,213 words. This compares training recipes, not teacher
+  text alone: vocabulary/parameter count and training budgets (30 versus 62 min)
+  differ. The cumulative evaluation fallback counter falls from 690 to 142;
+  these count repeated calls across fixed/adaptive/merged checks, not unique words.
+
+Caveats: 50 sentences from two books is a small sample. The validation books
+are period fiction like the training books. Teacher sampling was prompted with
+training-book passages, which favours this domain. The 360M decoder is a
+general model with no task training (base) or a light adapter (LoRA). The student
+knows nothing outside its 27k-word vocabulary except what the character n-gram
+can spell, so technical text, names, and other domains will cost more bytes than
+here (not measured). Measured-runtime compute estimates total $3.334616:
+teacher text $0.851091, training/evaluation $1.668197, and ablation $0.815328
+(1,827.18 seconds). The later Modal billing-report snapshot totals **$3.35537611
+of the original $8 cap**: $0.85476469 teacher, $1.67766665 main, $0.82294477
+ablation. Retained storage is separate. `results/student/billing.json` records
+the app-level report, plus the other two experiments ($1.72594133 for 135M and
+$0.11123479 profiling; **$5.19255223 combined**). All three student apps are stopped, with zero tasks;
+recovery launched no training or evaluation jobs on Modal.
+
+Small configs, training histories, per-sentence payloads, and CPU/GPU summaries
+are tracked under `results/student/teacher-books/` and `results/student/books-only/`.
+Large weights stay ignored under `results/student/runs/` and on the Modal volume;
+the ablation is `/student/train-20261111-230219/model`, and teacher text is
+`/student/gen-20261111-211749/teacher.jsonl.gz`. `results/student/verification.json`
+records validation/model hashes and fresh recovery-orb CPU checks of both models.
+The result is promising for this task and domain, not a proven general-purpose
+replacement for the LM decoder.
+
 ## How it works
 
 ### 1. Compression (`compressor.py`)
@@ -409,7 +551,10 @@ neural_compression/
   devlog.py       dev-loop run log: entries, comparison with the previous run
   plots.py        matplotlib charts
   cli.py          python -m neural_compression {compress,decompress,benchmark,plot}
+  student.py      single-pass student decoder: vocabulary, encoder, candidate scoring, n-gram fallback
+  student_train.py  student training data, training loop, validation evaluation
 scripts/
+  modal_student.py       teacher text generation and student training on Modal (time-capped)
   build_dataset.py       builds data/benchmark.jsonl from public datasets
   model_suitability.py   zero-shot model comparison
   modal_app.py           benchmark on Modal GPUs, one container per configuration

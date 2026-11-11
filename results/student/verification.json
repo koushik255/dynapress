@@ -1,0 +1,89 @@
+{
+  "validation_sha256": "ae91209213adbc5bc08e79e07c533f13ecbaefbdbb52c4d1e08b600487320f94",
+  "test_split_downloaded": false,
+  "test_split_evaluated": false,
+  "checks": {
+    "teacher-books": {
+      "run_id": "train-20261111-215809",
+      "model_sha256": {
+        "config.json": "b61dff49f7b6fe303fb3efcef7a912768b7dd64be8fd8133791eb124e46b32fe",
+        "model.pt": "f590272aa92470fbe40a47af7fd1d259b06a149618fefba72a65f3d29f8db0a0",
+        "vocab.tsv": "5b0e4661491f42b005260d2a77cba3e6169b0328b9aba8ebe370e3fa34569e6e"
+      },
+      "a10_vs_recovery_cpu_payloads_identical": 50,
+      "recovery_cpu_summary": {
+        "model": "results/student/runs/train-20261111-215809/model",
+        "device": "cpu",
+        "threads": 2,
+        "torch": "2.15.0+cpu",
+        "samples": "validation rows 0..25 per book",
+        "parameters": 45802062,
+        "vocab_size": 27213,
+        "model_dir_bytes": 91925897,
+        "fixed50": {
+          "word_accuracy": 0.873538788522848,
+          "words": 941,
+          "ms_per_word": 1.447700064824665,
+          "sentence_exact": 8
+        },
+        "adaptive100": {
+          "sentences": 50,
+          "words": 941,
+          "all_exact": true,
+          "merged_corpus_exact": true,
+          "payload_bytes": 3430,
+          "payload_zstd_bytes": 1937,
+          "original_zstd_bytes": 2481,
+          "prefix_chars": 2064,
+          "complete_words": 146,
+          "mean_rounds": 4.92,
+          "compress_seconds": 10.176940933000026,
+          "decode_seconds": 2.050547590000008,
+          "decode_ms_per_word": 2.1791153985122294
+        },
+        "ngram_fallbacks": 142
+      }
+    },
+    "books-only": {
+      "run_id": "train-20261111-230219",
+      "model_sha256": {
+        "config.json": "da5590f1e5013e902220f76df8e141ae7712d4dcc5a1137651fe7fe637d0ecdf",
+        "model.pt": "40a000ab30c17879d2a0848ff8d202173ff85c603d3c2f07b3a30d79417db9e2",
+        "vocab.tsv": "b0f81c5de989b1f4934e0be64a71cdf12d9b2ff69aaff84d4a83d8f5c18fec89"
+      },
+      "a10_vs_recovery_cpu_payloads_identical": 50,
+      "recovery_cpu_summary": {
+        "model": "results/student/runs/train-20261111-230219/model",
+        "device": "cpu",
+        "threads": 2,
+        "torch": "2.15.0+cpu",
+        "samples": "validation rows 0..25 per book",
+        "parameters": 37119024,
+        "vocab_size": 10287,
+        "model_dir_bytes": 74372278,
+        "fixed50": {
+          "word_accuracy": 0.7683315621679064,
+          "words": 941,
+          "ms_per_word": 1.625594345377237,
+          "sentence_exact": 1
+        },
+        "adaptive100": {
+          "sentences": 50,
+          "words": 941,
+          "all_exact": true,
+          "merged_corpus_exact": true,
+          "payload_bytes": 3811,
+          "payload_zstd_bytes": 2175,
+          "original_zstd_bytes": 2481,
+          "prefix_chars": 2445,
+          "complete_words": 261,
+          "mean_rounds": 5.76,
+          "compress_seconds": 13.459688853999978,
+          "decode_seconds": 2.289148288999968,
+          "decode_ms_per_word": 2.432676183846937
+        },
+        "ngram_fallbacks": 690
+      }
+    }
+  }
+}

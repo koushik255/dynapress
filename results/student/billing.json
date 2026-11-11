@@ -1,0 +1,79 @@
+{
+  "source": "modal billing report --for today --json",
+  "date_utc": "2026-11-11",
+  "note": "App compute billing snapshot after all apps stopped; retained volume storage is separate.",
+  "experiments": {
+    "student": {
+      "apps": [
+        {
+          "object_id": "ap-JmInSBvn3UtvA8MSdRjReI",
+          "description": "neural-compression-student",
+          "environment": "main",
+          "interval_start": "2026-11-11T00:00:00",
+          "cost": "0.82294477"
+        },
+        {
+          "object_id": "ap-VcLlZSaP09aJS013U7yMEw",
+          "description": "neural-compression-student",
+          "environment": "main",
+          "interval_start": "2026-11-11T00:00:00",
+          "cost": "1.67766665"
+        },
+        {
+          "object_id": "ap-XJkczje6zxPnJhRccn4N88",
+          "description": "neural-compression-student",
+          "environment": "main",
+          "interval_start": "2026-11-11T00:00:00",
+          "cost": "0.85476469"
+        }
+      ],
+      "usd": "3.35537611"
+    },
+    "135m": {
+      "apps": [
+        {
+          "object_id": "ap-K6a84LNZMnKEnRLT2On3na",
+          "description": "neural-compression-lora-pilot",
+          "environment": "main",
+          "interval_start": "2026-11-11T00:00:00",
+          "cost": "0.02377351"
+        },
+        {
+          "object_id": "ap-NtttPgTjfr7z6e14Qb8MTr",
+          "description": "neural-compression-lora-pilot",
+          "environment": "main",
+          "interval_start": "2026-11-11T00:00:00",
+          "cost": "1.62032754"
+        },
+        {
+          "object_id": "ap-ZqMedKh0MhmEhQv6aZRgos",
+          "description": "neural-compression-lora-pilot",
+          "environment": "main",
+          "interval_start": "2026-11-11T00:00:00",
+          "cost": "0.08184028"
+        }
+      ],
+      "usd": "1.72594133"
+    },
+    "profiling": {
+      "apps": [
+        {
+          "object_id": "ap-z9HFJJvmbhXIS4ASvBznlb",
+          "description": "decode-profile-scratch-2",
+          "environment": "main",
+          "interval_start": "2026-11-11T00:00:00",
+          "cost": "0.02660405"
+        },
+        {
+          "object_id": "ap-zKeoLNenLQKTkkz01w7c9m",
+          "description": "decode-profile-scratch",
+          "environment": "main",
+          "interval_start": "2026-11-11T00:00:00",
+          "cost": "0.08463074"
+        }
+      ],
+      "usd": "0.11123479"
+    }
+  },
+  "combined_usd": "5.19255223"
+}

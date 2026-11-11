@@ -1,0 +1,32 @@
+{
+  "model": "results/student/runs/cpu-books/model",
+  "device": "cpu",
+  "threads": 2,
+  "torch": "2.15.0+cpu",
+  "samples": "validation rows 0..25 per book",
+  "parameters": 9048624,
+  "vocab_size": 10287,
+  "model_dir_bytes": 18218265,
+  "fixed50": {
+    "word_accuracy": 0.6769394261424017,
+    "words": 941,
+    "ms_per_word": 0.41231468012763967,
+    "sentence_exact": 0
+  },
+  "adaptive100": {
+    "sentences": 50,
+    "words": 941,
+    "all_exact": true,
+    "merged_corpus_exact": true,
+    "payload_bytes": 3927,
+    "payload_zstd_bytes": 2225,
+    "original_zstd_bytes": 2481,
+    "prefix_chars": 2561,
+    "complete_words": 273,
+    "mean_rounds": 5.48,
+    "compress_seconds": 4.3156948749997355,
+    "decode_seconds": 0.92804747900027,
+    "decode_ms_per_word": 0.986235365568831
+  },
+  "ngram_fallbacks": 275
+}

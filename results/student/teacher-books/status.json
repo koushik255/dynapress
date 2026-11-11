@@ -1,0 +1,9 @@
+{
+  "run_id": "train-20261111-215809",
+  "status": "complete",
+  "error": null,
+  "gpu": "NVIDIA A10",
+  "seconds": 3738.48957157135,
+  "estimated_compute_usd": 1.6681971243811717,
+  "options": {}
+}

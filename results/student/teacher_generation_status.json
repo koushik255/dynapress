@@ -1,0 +1,11 @@
+{
+  "run_id": "gen-20261111-211749",
+  "batches": 147,
+  "batch_size": 384,
+  "max_new_tokens": 160,
+  "generated_token_slots": 9031680,
+  "gpu": "NVIDIA A10",
+  "seconds": 2161.958510424,
+  "estimated_compute_usd": 0.8510910002702481,
+  "remote": "/cache/student/gen-20261111-211749/teacher.jsonl.gz"
+}

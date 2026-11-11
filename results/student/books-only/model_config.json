@@ -1,0 +1,13 @@
+{
+  "config": {
+    "vocab_size": 10287,
+    "dim": 512,
+    "layers": 8,
+    "heads": 8,
+    "ff": 2048,
+    "dropout": 0.1
+  },
+  "ngram_order": 5,
+  "step": 4000,
+  "dev_fixed50": 0.7683930942895086
+}

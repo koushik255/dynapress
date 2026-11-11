@@ -8,3 +8,5 @@ results/lora/
 .modal.toml
 *.pem
 .amp/portals/*
+data/student/
+results/student/runs/
