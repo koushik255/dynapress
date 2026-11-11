@@ -273,6 +273,10 @@ source snapshot, and downloads the adapter and results under `results/lora/`.
 Merged weights/checkpoints remain in `neural-compression-hf-cache` under the
 reported run directory; retained storage is billed separately. It does not deploy
 a persistent GPU service or open the held-out test set.
+`--model`/`--revision` train another base model (the revision must be pinned),
+`--budget` lowers the safety budget and the function timeout with it, `--gpu A10G`
+pins the GPU type, and `--control-run <run id>` evaluates an earlier run again in
+the same container so decode times share hardware and code.
 
 ## How it works
 
