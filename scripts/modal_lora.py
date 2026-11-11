@@ -147,7 +147,8 @@ def run_pilot(
                         "Budget guard: calibration projects beyond the pilot budget/time limit"
                     )
 
-    error = None
+    # Cancellation and timeouts are not Exceptions: report them as failures too.
+    error = "interrupted before completion (cancelled or timed out)"
     try:
         train(
             SimpleNamespace(
@@ -194,6 +195,7 @@ def run_pilot(
                 )
             )
             cache.commit()
+        error = None
     except Exception as exc:
         error = f"{type(exc).__name__}: {exc}"
         logging.getLogger(__name__).exception("LoRA pilot stopped")
