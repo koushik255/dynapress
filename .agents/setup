@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Prepares a fresh Amp orb: Python 3.12 + locked deps (CPU PyTorch) and the
+# Hugging Face models the tests and CLI load. Idempotent; fast when warm.
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+step() {
+  local name="$1"; shift
+  local start=$SECONDS
+  echo "==> $name"
+  "$@"
+  echo "    $name took $((SECONDS - start))s"
+}
+
+# uv is preinstalled in orbs; install it only if a base image lacks it.
+if ! command -v uv >/dev/null 2>&1; then
+  step "install uv" sh -c 'curl -LsSf https://astral.sh/uv/install.sh | sh'
+  export PATH="$HOME/.local/bin:$PATH"
+fi
+
+# All dependency groups (dev + training) so pytest and the LoRA tooling work.
+step "uv sync" uv sync --frozen --all-groups
+
+# Pre-fetch models into the HF cache (snapshot_download skips cached files):
+# the tiny test model and the pinned default model (~720 MB).
+step "download models" uv run --frozen --no-sync python - <<'EOF'
+from huggingface_hub import snapshot_download
+from neural_compression.models import DEFAULT_MODEL, DEFAULT_REVISION
+
+files = ["*.json", "*.txt", "model.safetensors"]  # skip TF/PyTorch-bin duplicates
+snapshot_download("hf-internal-testing/tiny-random-gpt2", allow_patterns=files)
+snapshot_download(DEFAULT_MODEL, revision=DEFAULT_REVISION, allow_patterns=files)
+EOF
+
+# Cache the Modal client used by `uv run --with modal ...`.
+step "cache modal client" uv run --frozen --no-sync --with modal python -c "import modal"

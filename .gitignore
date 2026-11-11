@@ -7,3 +7,4 @@ results/lora/
 .env*
 .modal.toml
 *.pem
+.amp/portals/*
