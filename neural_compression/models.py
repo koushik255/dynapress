@@ -123,13 +123,33 @@ class LanguageModel:
         return sum(p.numel() * p.element_size() for p in self.model.parameters())
 
     def describe(self) -> dict:
-        return {"model": self.name, "revision": self.revision, "parameters": self.parameters, "size_bytes": self.size_bytes}
+        return {
+            "model": self.name, "revision": self.revision,
+            "parameters": self.parameters, "size_bytes": self.size_bytes,
+            "attention_backend": self.model.config._attn_implementation,
+        }
 
 
 def set_seed(seed: int = 0) -> None:
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
+
+
+def _cpu_gqa_attention(module, query, key, value, attention_mask, dropout=0.0, scaling=None, is_causal=None, **kwargs):
+    """Use native CPU grouped attention without materializing repeated KV heads.
+
+    The standard masked SDPA path repeats KV heads before calling the kernel.
+    PyTorch >= 2.15's CPU flash kernel supports masked GQA directly instead.
+    This backend is only selected for CPU Llama inference, not training/CUDA.
+    """
+    causal = is_causal if is_causal is not None else getattr(module, "is_causal", True)
+    causal = query.shape[2] > 1 and attention_mask is None and causal
+    output = torch.nn.functional.scaled_dot_product_attention(
+        query, key, value, attn_mask=attention_mask, dropout_p=dropout,
+        scale=scaling, is_causal=causal, enable_gqa=True,
+    )
+    return output.transpose(1, 2).contiguous(), None
 
 
 def load_model(
@@ -149,6 +169,16 @@ def load_model(
     torch.set_num_threads(threads or max(1, (os.cpu_count() or 2) // 2))
     tokenizer = AutoTokenizer.from_pretrained(name, revision=revision)
     model = AutoModelForCausalLM.from_pretrained(name, revision=revision, dtype=torch.float32).eval().to(dev)
+    if dev.type == "cpu" and model.config.model_type == "llama" and tuple(map(int, torch.__version__.split(".")[:2])) >= (2, 15):
+        # Older Transformers versions lack the public custom-attention registry.
+        try:
+            from transformers import AttentionInterface, AttentionMaskInterface
+        except ImportError:
+            pass
+        else:
+            AttentionInterface.register("cpu_gqa", _cpu_gqa_attention)
+            AttentionMaskInterface.register("cpu_gqa", AttentionMaskInterface()["sdpa"])
+            model.set_attn_implementation("cpu_gqa")
     special = set(tokenizer.all_special_ids)
     vocab = min(len(tokenizer), model.get_output_embeddings().weight.shape[0])
     strings = ["" if i in special else tokenizer.decode([i]) for i in range(vocab)]
@@ -288,10 +318,15 @@ def _search_batch(lm, requests, shared_prefix, beam_size, scan_top, max_groups):
                 next_tokens.append(token_id)
         if not new_active:
             break
-        index = torch.tensor(rows, device=dev)
-        cache.reorder_cache(index)
-        attn = torch.cat([attn[index], torch.ones(len(rows), 1, dtype=attn.dtype, device=dev)], dim=1)
-        last_pos = last_pos[index] + 1
+        # Forced tokens often keep every beam in place: don't copy the entire
+        # KV cache just to select its existing rows in their existing order.
+        if rows != list(range(len(active))):
+            index = torch.tensor(rows, device=dev)
+            cache.reorder_cache(index)
+            attn = attn[index]
+            last_pos = last_pos[index]
+        attn = torch.cat([attn, torch.ones(len(rows), 1, dtype=attn.dtype, device=dev)], dim=1)
+        last_pos = last_pos + 1
         out = model(
             input_ids=torch.tensor(next_tokens, device=dev)[:, None],
             attention_mask=attn,
