@@ -4,3 +4,6 @@ __pycache__/
 *.bin
 data/lora/
 results/lora/
+.env*
+.modal.toml
+*.pem
