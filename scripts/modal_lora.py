@@ -94,8 +94,16 @@ def run_pilot(
     data = Path("/data/lora")
     info = json.loads((data / "manifest.json").read_text())
     calibration = {}
+    # Chosen at calibration: fewer epochs (or skipping the control) instead of a
+    # second paid launch when the full plan does not fit the budget.
+    plan = {"epochs": 3, "control": bool(control_run)}
 
     class BudgetGuard(TrainerCallback):
+        def on_epoch_end(self, args, state, control, **kwargs):
+            # Trainer still evaluates and saves this epoch before stopping.
+            if state.epoch >= plan["epochs"] - 1e-6:
+                control.should_training_stop = True
+
         def on_step_end(self, args, state, control, **kwargs):
             elapsed = time.monotonic() - started
             if elapsed > timeout_seconds - 20 * 60:
@@ -106,23 +114,49 @@ def run_pilot(
                 self.warm = time.monotonic()
             if state.global_step == 30:
                 seconds_per_step = (time.monotonic() - self.warm) / 25
-                # Four complete validation-loss passes, conservatively charged at
-                # one training microbatch each; also reserve 15 minutes for decoding
-                # (and 15 more when a control run is evaluated again).
-                eval_batches = 4 * (
-                    (2 * info["splits"]["validation"]["sentences"] + 1) // 2
+                steps_per_epoch = -(-state.max_steps // plan["epochs"])
+
+                def project(epochs, with_control):
+                    # One validation-loss pass per epoch plus the final one,
+                    # conservatively charged at one training microbatch per batch;
+                    # also reserve 15 minutes per decoding evaluation.
+                    eval_batches = (epochs + 1) * (
+                        (2 * info["splits"]["validation"]["sentences"] + 1) // 2
+                    )
+                    remaining_equivalent_steps = (
+                        epochs * steps_per_epoch - state.global_step + eval_batches / 8
+                    )
+                    seconds = (
+                        elapsed
+                        + 1.5 * seconds_per_step * remaining_equivalent_steps
+                        + 900 * (2 if with_control else 1)
+                    )
+                    return seconds, seconds * HOURLY_USD / 3600 + RESERVE_USD
+
+                options = [
+                    (epochs, with_control)
+                    for epochs in range(plan["epochs"], 0, -1)
+                    for with_control in ((True, False) if plan["control"] else (False,))
+                ]
+                projections = {
+                    f"{e} epochs{' + control' if c else ''}": project(e, c)
+                    for e, c in options
+                }
+                fits = [
+                    (e, c)
+                    for e, c in options
+                    if project(e, c)[1] <= budget_usd
+                    and project(e, c)[0] <= timeout_seconds - 300
+                ]
+                if fits:
+                    plan.update(epochs=fits[0][0], control=fits[0][1])
+                projected_seconds, projected_usd = project(
+                    plan["epochs"], plan["control"]
                 )
-                remaining_equivalent_steps = (
-                    state.max_steps - state.global_step + eval_batches / 8
-                )
-                projected_seconds = (
-                    elapsed
-                    + 1.5 * seconds_per_step * remaining_equivalent_steps
-                    + 900 * (2 if control_run else 1)
-                )
-                projected_usd = projected_seconds * HOURLY_USD / 3600 + RESERVE_USD
                 calibration.update(
                     {
+                        "plan": dict(plan) if fits else None,
+                        "projections_seconds_usd": projections,
                         "optimizer_steps": state.max_steps,
                         "measured_steps": 25,
                         "seconds_per_step": seconds_per_step,
@@ -139,10 +173,7 @@ def run_pilot(
                 )
                 print("CALIBRATION " + json.dumps(calibration), flush=True)
                 cache.commit()
-                if (
-                    projected_usd > budget_usd
-                    or projected_seconds > timeout_seconds - 300
-                ):
+                if not fits:
                     raise RuntimeError(
                         "Budget guard: calibration projects beyond the pilot budget/time limit"
                     )
@@ -173,7 +204,7 @@ def run_pilot(
         torch.cuda.empty_cache()
         cache.commit()
         runs = [(root / "run", root / "validation")]
-        if control_run:
+        if plan["control"]:
             runs.append((Path("/cache/lora") / control_run / "run", root / "control"))
         for run, out in runs:
             if time.monotonic() - started > timeout_seconds - 900:
@@ -220,6 +251,7 @@ def run_pilot(
             "model": model or DEFAULT_MODEL,
             "revision": revision or DEFAULT_REVISION,
             "control_run": control_run,
+            "plan": plan,
             "calibration": calibration,
             "remote_directory": str(root),
             "volume": "neural-compression-hf-cache",

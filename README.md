@@ -276,7 +276,9 @@ a persistent GPU service or open the held-out test set.
 `--model`/`--revision` train another base model (the revision must be pinned),
 `--budget` lowers the safety budget and the function timeout with it, `--gpu A10G`
 pins the GPU type, and `--control-run <run id>` evaluates an earlier run again in
-the same container so decode times share hardware and code.
+the same container so decode times share hardware and code. If the full plan does not
+fit, calibration first skips the control evaluation, then trains fewer epochs (the
+3-epoch learning-rate schedule is kept), and stops only if one epoch does not fit.
 
 ## How it works
 
