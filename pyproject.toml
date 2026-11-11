@@ -12,6 +12,7 @@ dependencies = [
 
 [dependency-groups]
 dev = ["pytest>=8"]
+training = ["peft>=0.18,<0.20", "accelerate>=1.10,<2"]
 
 [tool.uv]
 python-preference = "managed"

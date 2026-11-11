@@ -1,0 +1,15 @@
+{
+  "note": "Pilot corpus: Project Gutenberg editions, public domain in the USA; check local rights before redistribution. Book-disjoint, not guaranteed absent from base-model pretraining. White Magic (#65432), our existing dev book, is excluded.",
+  "books": [
+    {"id": "gutenberg-120", "title": "Treasure Island", "split": "train", "url": "https://www.gutenberg.org/cache/epub/120/pg120.txt", "sha256": "5bc08275eacea8640b1aa185c645283bb8c564d7b23df6b03437d229b4fc6ebd"},
+    {"id": "gutenberg-35", "title": "The Time Machine", "split": "train", "url": "https://www.gutenberg.org/cache/epub/35/pg35.txt", "sha256": "2892e919000e17c83e1dac51b30f4675db50536b644d7579fe8a89bb399a9bdc"},
+    {"id": "gutenberg-1661", "title": "The Adventures of Sherlock Holmes", "split": "train", "url": "https://www.gutenberg.org/cache/epub/1661/pg1661.txt", "sha256": "922e2a12ccb43a4c9544c260b2166c6ad2097aeb5957faeee113f173bb857cd0"},
+    {"id": "gutenberg-76", "title": "Adventures of Huckleberry Finn", "split": "train", "url": "https://www.gutenberg.org/cache/epub/76/pg76.txt", "sha256": "d617a37aa7ae1e1a93dcde2634db2bccb86824e31e29a55230bdbf77d6872d59"},
+    {"id": "gutenberg-84", "title": "Frankenstein", "split": "train", "url": "https://www.gutenberg.org/cache/epub/84/pg84.txt", "sha256": "2b97b7f8aad508649481d8dd4f6b54f9b965ddb3ba634e9151c815f537b49e42"},
+    {"id": "gutenberg-64317", "title": "The Great Gatsby", "split": "train", "url": "https://www.gutenberg.org/cache/epub/64317/pg64317.txt", "sha256": "ce760ec377accd352b41bb8f64504a72d7aa18ab3afb42ded2b56cecacf29e35"},
+    {"id": "gutenberg-36", "title": "The War of the Worlds", "split": "validation", "url": "https://www.gutenberg.org/cache/epub/36/pg36.txt", "sha256": "8417469e3ab664749f7b36ebb85799075818207b0380b54c27d07d592a44117d"},
+    {"id": "gutenberg-11", "title": "Alice's Adventures in Wonderland", "split": "validation", "url": "https://www.gutenberg.org/cache/epub/11/pg11.txt", "sha256": "01b38ea4c710a84bc18d0bd41271a5a1a92b94e97b2812f4dece97d4a694725e"},
+    {"id": "gutenberg-174", "title": "The Picture of Dorian Gray", "split": "test", "url": "https://www.gutenberg.org/cache/epub/174/pg174.txt", "sha256": "38f36b510417177aa87a6a24c968e3ec63a447b7df36a9c1a7c5a3f2d9e51547"},
+    {"id": "gutenberg-345", "title": "Dracula", "split": "test", "url": "https://www.gutenberg.org/cache/epub/345/pg345.txt", "sha256": "96cd16eacdbfebae8fdda5591f66e0cc8ee76be18e0cd1aca02bc00615782d28"}
+  ]
+}

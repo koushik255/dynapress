@@ -187,6 +187,85 @@ uv run python scripts/dev.py --history                               # all logge
 Baseline (SmolLM2-360M, beam 4, NVIDIA A10): 73.8% word accuracy at fixed 50%;
 adaptive 2,021 bytes against 2,286 for zstd -19 (88.4%).
 
+### LoRA experiment
+
+`python -m neural_compression.finetune` prepares a pilot corpus, trains a shared
+prefix-restoration adapter, and compares it with the unchanged base model using
+the real constrained decoder. It does not change the default model or payload.
+
+The explicit book split is in `data/lora_books.json`: six training books,
+two validation books (*The War of the Worlds*, *Alice's Adventures in Wonderland*),
+and two test books (*The Picture of Dorian Gray*, *Dracula*). The existing dev
+book (*White Magic*) and benchmark are not training sources. These are Gutenberg
+books, public domain in the USA; check local rights before redistribution.
+They may already be in the pretrained model's training data: this tests adaptation
+to held-out fine-tuning books, not guaranteed unseen literature. Splits are by
+book, not author (Wells occurs in training and validation).
+
+```bash
+uv sync --group training
+uv run --group training python -m neural_compression.finetune prepare
+uv run --group training python -m neural_compression.finetune train --out results/lora/pilot
+uv run --group training python -m neural_compression.finetune evaluate --run results/lora/pilot --out results/lora/pilot-validation
+# Only after choosing the experiment using validation:
+uv run --group training python -m neural_compression.finetune evaluate --run results/lora/pilot --split test --final-test --out results/lora/pilot-test
+```
+
+Preparation caches raw downloads in `data/lora/books`, strips Gutenberg wrappers,
+normalizes whitespace, and selects up to 2,000 shuffled sentence units per book
+with seed 0. Units follow the decoder's boundaries, contain 5–48 words, and end
+in sentence punctuation. Duplicate book ids/contents are rejected; sentences
+shared across splits are removed. Source checksums are pinned in the book list;
+changed downloads are rejected. `data/lora/manifest.json` records source and
+split SHA-256 hashes. Keep this generated manifest with any reported results.
+For your own corpus, `--manifest` accepts the same book entries with a local
+`path` (relative to the manifest) instead of a `url`. Do not change splits after
+looking at validation or test results.
+
+Training uses the decoder's existing few-shot prompts. Each sentence contributes
+one fixed-prefix example (25%, 50%, or 75%) and one mixed-length adaptive example;
+numbers stay complete. Only answer tokens contribute to loss, never prompts or
+padding; overlength examples are dropped rather than truncated. The base weights
+stay frozen: LoRA rank 8, alpha 16, dropout 0.05 on attention `q_proj`/`v_proj`,
+learning rate 0.0002, effective batch size 16, three epochs, fp32. Validation
+answer-token loss selects the checkpoint; **validation adaptive-100% bytes and
+runtime decide whether the experiment is worth taking to test**. Training never
+loads test text. This first experiment has no paragraph context or book memory.
+
+Outputs include `adapter/`, `merged/`, and `experiment.json` (data hashes,
+hyperparameters, versions and metrics). The merged export can be passed directly
+to existing commands as `--model results/lora/pilot/merged`. Both sender and
+receiver must use that same export and decoder settings. Each run needs a fresh
+output directory; interrupted training is not automatically resumed.
+
+Evaluation defaults to 25 sentences from each validation book, using the same
+samples, beam 4, batch size 16 and device for both models. It reports fixed-50%
+accuracy, adaptive-100% merged/zstd payload bytes, mean rounds, compression and
+decode time, per-book scores, and adapter storage separately. Every adaptive
+payload is decoded again and exact reconstruction is required. Increase
+`--per-book` for the final comparison. Shared weights are excluded from payload
+sizes; transmitting a new adapter is an additional cost. `--final-test` is an
+explicit safeguard, not a mechanism that prevents repeated test-set tuning.
+
+**Compute:** the repository's uv configuration installs CPU PyTorch. A full run
+is intended for a GPU environment with CUDA-enabled PyTorch, `transformers`,
+`peft`, `accelerate`, `numpy` and `zstandard`; invoke `python -m ...` there rather
+than syncing this CPU-only uv environment over it. On CPU use `--cpu`; `--max-steps 1`
+and a separately prepared small corpus provide a wiring check, not evidence of
+quality improvement.
+
+For the calibrated Modal pilot, run `uv run --with modal modal run scripts/modal_lora.py`
+after preparing the corpus. It uses one L4 (A10G fallback) with capped 2-core/8-GiB
+CPU resources, no automatic retries, and a three-hour function timeout. The first 30 optimizer
+steps are part of training; their measured throughput gates continuation against
+a $5 estimate, with a 50% timing margin and $0.75 contingency. This is a runtime
+safety mechanism, not a Modal account-level spending limit. The script uploads
+only train/validation files, evaluates 25 sentences per validation book, saves a
+source snapshot, and downloads the adapter and results under `results/lora/`.
+Merged weights/checkpoints remain in `neural-compression-hf-cache` under the
+reported run directory; retained storage is billed separately. It does not deploy
+a persistent GPU service or open the held-out test set.
+
 ## How it works
 
 ### 1. Compression (`compressor.py`)
