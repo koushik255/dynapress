@@ -25,6 +25,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers.cache_utils import Cache, DynamicLayer
 
 from .compressor import is_word_char
 
@@ -261,10 +262,10 @@ def _search_batch(lm, requests, shared_prefix, beam_size, scan_top, max_groups):
     dev = lm.device
     input_ids = torch.tensor([[pad_id] * (width - len(e)) + e for e in encoded], device=dev)
     attn = torch.tensor([[0] * (width - len(e)) + [1] * len(e) for e in encoded], device=dev)
-    cache = None
+    cache = _beam_cache()
     if shared_prefix:
         prefix_len, prefix_cache = _shared_prefix_cache(lm, shared_prefix)
-        cache = _copy_cache(prefix_cache, n)
+        cache = _beam_cache(prefix_cache, n)
         attn = torch.cat([torch.ones(n, prefix_len, dtype=attn.dtype, device=dev), attn], dim=1)
     positions = (attn.cumsum(1) - 1).clamp(min=0)
     out = model(input_ids=input_ids, attention_mask=attn, position_ids=positions[:, -width:], past_key_values=cache, use_cache=True)
@@ -410,10 +411,52 @@ def _template_chars(template: Template) -> int:
     return sum(len(p) if isinstance(p, str) else p.max_chars for p in template)
 
 
-def _copy_cache(cache, n: int):
-    """Repeat a batch-1 cache n times (deep copy so the shared cache stays intact)."""
-    import copy
+class _BeamLayer(DynamicLayer):
+    """KV cache layer for beam search that appends in place.
 
-    clone = copy.deepcopy(cache)
-    clone.batch_repeat_interleave(n)
-    return clone
+    DynamicLayer appends with torch.cat, which copies the whole cache of every layer on
+    every step. Here ``keys``/``values`` are views into buffers with spare positions, so
+    an append writes only the new token. A beam reorder still gathers every row into new
+    buffers sized to the beam, one copy as before, so memory follows the beam width.
+    """
+
+    def __init__(self, keys: torch.Tensor | None = None, values: torch.Tensor | None = None, rows: int = 1):
+        super().__init__()
+        if keys is not None:  # batch-1 shared-prefix states, repeated for ``rows`` rows
+            self.lazy_initialization(keys, values)
+            self._store(keys.expand(rows, -1, -1, -1), values.expand(rows, -1, -1, -1))
+
+    def _store(self, keys: torch.Tensor, values: torch.Tensor, capacity: int = 0, index: torch.Tensor | None = None) -> None:
+        """Copy ``keys``/``values`` (rows ``index`` only, if given) into new buffers."""
+        rows = len(index) if index is not None else keys.shape[0]
+        _, heads, length, dim = keys.shape
+        shape = (rows, heads, max(capacity, length + 16), dim)
+        self._k, self._v = (torch.empty(shape, dtype=self.dtype, device=self.device) for _ in range(2))
+        self.keys, self.values = self._k[:, :, :length], self._v[:, :, :length]
+        for src, dst in ((keys, self.keys), (values, self.values)):
+            if index is None:
+                dst.copy_(src)
+            else:
+                torch.index_select(src, 0, index, out=dst)
+
+    def update(self, key_states, value_states, *args, **kwargs):
+        if not self.is_initialized:
+            self.lazy_initialization(key_states, value_states)
+            self._store(key_states[..., :0, :], value_states[..., :0, :])
+        length, new = self.keys.shape[-2], key_states.shape[-2]
+        if length + new > self._k.shape[-2]:
+            self._store(self.keys, self.values, length + new + 16)
+        self._k[:, :, length : length + new] = key_states
+        self._v[:, :, length : length + new] = value_states
+        self.keys, self.values = self._k[:, :, : length + new], self._v[:, :, : length + new]
+        return self.keys, self.values
+
+    def reorder_cache(self, beam_idx: torch.LongTensor) -> None:
+        self._store(self.keys, self.values, self._k.shape[-2], beam_idx)
+
+
+def _beam_cache(prefix_cache=None, n: int = 1) -> Cache:
+    """Empty beam cache, or one starting from a batch-1 prefix cache repeated n times (left intact)."""
+    if prefix_cache is None:
+        return Cache(layer_class_to_replicate=_BeamLayer)
+    return Cache(layers=[_BeamLayer(layer.keys, layer.values, n) for layer in prefix_cache.layers])
