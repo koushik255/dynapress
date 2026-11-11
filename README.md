@@ -135,7 +135,7 @@ shows the same thing: hard text needs longer prefixes.
 
 ```bash
 uv sync                                   # Python 3.12, CPU-only PyTorch
-uv run pytest                             # unit + decoder-guarantee tests (~10 s)
+uv run pytest                             # decoder-guarantee tests (a few seconds)
 
 echo "The programmer discovered an unexpected problem in the application." > input.txt
 uv run python -m neural_compression compress input.txt --retention 0.5          # -> input.bin
@@ -150,6 +150,14 @@ uv run python -m neural_compression plot --results results     # redraw charts
 The first model call downloads `HuggingFaceTB/SmolLM2-360M` (~720 MB, pinned
 revision) into the Hugging Face cache. A plain `.txt` file with one sample per
 line also works as `--dataset`. Use `--device cuda` / `--batch-size 64` on a GPU.
+
+**CPU inference:** on PyTorch >= 2.15 with the Transformers custom-attention
+registry, Llama models (including SmolLM2) automatically use native masked
+grouped-query attention, avoiding copies of repeated key/value heads. Older
+versions and other architectures keep their existing backend; CUDA is unchanged.
+The beam search also skips cache copies when beam rows have not changed.
+The selected attention backend is recorded in benchmark metadata. This keeps
+fp32 weights and the same search constraints; it is not quantization or retraining.
 
 **On Modal GPUs** (each configuration runs in its own container, in parallel;
 finished configurations are cached in `results/_parts/`, so reruns resume):
