@@ -18,16 +18,19 @@ from pathlib import Path
 
 from .compressor import Compressed, compress
 from .decoder import parse_context
-from .models import DEFAULT_MODEL, DEFAULT_REVISION
+from .models import DEFAULT_MODEL, DEFAULT_QUANT, DEFAULT_REVISION, GGUF_QUANTS
 
 
 def _model_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--model", default=DEFAULT_MODEL, help=f"HF model id (default {DEFAULT_MODEL})")
+    p.add_argument("--model", default=DEFAULT_MODEL, help=f"{DEFAULT_MODEL}, a .gguf path or owner/repo/file.gguf, or (torch) a HF model id")
     p.add_argument("--revision", default=None, help=f"model commit (default model is pinned to {DEFAULT_REVISION[:10]})")
+    p.add_argument("--backend", choices=["llama", "torch"], default=None,
+                   help="llama.cpp (default) or torch (needs the training group; default for --device cuda and HF ids)")
+    p.add_argument("--quant", choices=GGUF_QUANTS, default=DEFAULT_QUANT, help="llama.cpp: GGUF file of the default model")
     p.add_argument("--beam", type=int, default=4)
     p.add_argument("--threads", type=int, default=None)
     p.add_argument("--seed", type=int, default=0)
-    p.add_argument("--device", default=None, help="cpu or cuda (default: cuda if available)")
+    p.add_argument("--device", default=None, help="cpu or cuda (default: cpu for llama.cpp, cuda if available for torch)")
     p.add_argument("--batch-size", type=int, default=16, help="decoder requests per model batch")
 
 
@@ -35,7 +38,7 @@ def _load(args):
     from .models import load_model
 
     t0 = time.perf_counter()
-    lm = load_model(args.model, args.revision, threads=args.threads, seed=args.seed, device=args.device)
+    lm = load_model(args.model, args.revision, threads=args.threads, seed=args.seed, device=args.device, backend=args.backend, quant=args.quant)
     print(
         f"loaded {args.model} ({lm.parameters / 1e6:.0f}M params, {lm.size_bytes / 1e6:.0f} MB) on {lm.device} in {time.perf_counter() - t0:.1f}s",
         file=sys.stderr,
@@ -82,9 +85,6 @@ def cmd_decompress(args) -> None:
 
 
 def cmd_benchmark(args) -> None:
-    import torch
-    import transformers
-
     from .benchmark import corpus_baselines, export, load_samples, run_adaptive, run_fixed, summarize
     from .plots import device_label, plot_all
 
@@ -124,8 +124,6 @@ def cmd_benchmark(args) -> None:
         "samples": len(samples),
         "beam": args.beam,
         "seed": args.seed,
-        "torch": torch.__version__,
-        "transformers": transformers.__version__,
         "python": platform.python_version(),
         "platform": platform.platform(),
         "corpus": corpus_baselines(samples, args.retentions),

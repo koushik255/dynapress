@@ -110,7 +110,7 @@ def main() -> None:
             params = sum(p.numel() for p in model.parameters())
             run = lambda payloads: [byt5_reconstruct(model, p) for p in payloads]  # noqa: E731
         else:
-            lm = load_model(name)
+            lm = load_model(name, backend="torch")
             params = lm.parameters
             decoder = Decoder(lm, "full")
             run = lambda payloads: [r.text for r in decoder.decode_many(payloads)]  # noqa: E731

@@ -49,7 +49,7 @@ def main() -> None:
         "seconds": round(time.perf_counter() - t0, 1),
     }
     print(json.dumps(report, indent=2))
-    with open(f"{args.results}/verify_{args.mode}_{lm.device.type}.json", "w") as f:
+    with open(f"{args.results}/verify_{args.mode}_{lm.device.split(":")[0]}.json", "w") as f:
         json.dump(report, f, indent=2)
 
 

@@ -1,4 +1,4 @@
-"""Decoder guarantees, checked with a tiny random-weight model (fast; needs a one-time download).
+"""Decoder guarantees, checked with tiny random-weight models (fast; needs a one-time download).
 
 A random model reconstructs nothing correctly, which is the point. Whatever the
 model prefers, the output must keep every stored prefix and separator and
@@ -10,7 +10,11 @@ import pytest
 from neural_compression.compressor import WORD_RE, Compressed, compress, compress_with_lengths
 from neural_compression.decoder import Decoder, sentence_units
 
-TINY = "hf-internal-testing/tiny-random-gpt2"
+# llama.cpp backend (default install) and torch backend (``training`` group, skipped without it).
+TINY = {
+    "llama": ("aladar/llama-2-tiny-random-GGUF/llama-2-tiny-random.gguf", "8d5321916486e1d33c46b16990e8da6567785769"),
+    "torch": ("hf-internal-testing/tiny-random-gpt2", None),
+}
 
 TEXTS = [
     "The programmer discovered an unexpected problem in the application.",
@@ -19,14 +23,21 @@ TEXTS = [
 ]
 
 
-@pytest.fixture(scope="module")
-def lm():
+def _load(backend):
     from neural_compression.models import load_model
 
+    if backend == "torch":
+        pytest.importorskip("torch")
+    name, revision = TINY[backend]
     try:
-        return load_model(TINY, threads=2)
+        return load_model(name, revision, threads=2, backend=backend, device="cpu")
     except Exception as exc:  # offline
-        pytest.skip(f"cannot load {TINY}: {exc}")
+        pytest.skip(f"cannot load {name}: {exc}")
+
+
+@pytest.fixture(scope="module", params=["llama", "torch"])
+def lm(request):
+    return _load(request.param)
 
 
 @pytest.mark.parametrize("context", [0, 2, "full"])
@@ -75,42 +86,43 @@ def test_sentence_units_split_on_sentence_ends():
     assert [len(u) for u in units] == [3, 3, 4]
 
 
-def test_cpu_grouped_attention_preserves_masked_cached_and_batched_inference(lm, tmp_path):
-    import torch
+def test_cpu_grouped_attention_preserves_masked_cached_and_batched_inference(tmp_path):
+    torch = pytest.importorskip("torch")
     from transformers import LlamaConfig, LlamaForCausalLM
 
     from neural_compression.models import load_model
 
+    tokenizer = _load("torch").backend.tokenizer
     if tuple(map(int, torch.__version__.split(".")[:2])) < (2, 15):
         pytest.skip("native CPU grouped attention needs PyTorch >= 2.15")
     # Real, small grouped-attention model; no pretrained Llama download needed.
     config = LlamaConfig(
-        vocab_size=len(lm.tokenizer), hidden_size=32, intermediate_size=64,
+        vocab_size=len(tokenizer), hidden_size=32, intermediate_size=64,
         num_hidden_layers=2, num_attention_heads=4, num_key_value_heads=2,
     )
     torch.manual_seed(9)
     LlamaForCausalLM(config).save_pretrained(tmp_path)
-    lm.tokenizer.save_pretrained(tmp_path)
+    tokenizer.save_pretrained(tmp_path)
     fast = load_model(str(tmp_path), threads=2, device="cpu")
     reference = load_model(str(tmp_path), threads=2, device="cpu")
-    reference.model.set_attn_implementation("sdpa")
+    reference.backend.model.set_attn_implementation("sdpa")
     ids = torch.tensor([[0, 0, 17, 31, 42], [7, 13, 29, 41, 53]])
     mask = torch.tensor([[0, 0, 1, 1, 1], [1, 1, 1, 1, 1]])
     positions = (mask.cumsum(1) - 1).clamp(min=0)
     with torch.no_grad():
         # Without padding, causality still has to stop future-token attention.
-        a = fast.model(input_ids=ids[1:], use_cache=False)
-        b = reference.model(input_ids=ids[1:], use_cache=False)
+        a = fast.backend.model(input_ids=ids[1:], use_cache=False)
+        b = reference.backend.model(input_ids=ids[1:], use_cache=False)
         torch.testing.assert_close(a.logits, b.logits, rtol=1e-5, atol=1e-6)
-        a = fast.model(input_ids=ids, attention_mask=mask, position_ids=positions, use_cache=True)
-        b = reference.model(input_ids=ids, attention_mask=mask, position_ids=positions, use_cache=True)
+        a = fast.backend.model(input_ids=ids, attention_mask=mask, position_ids=positions, use_cache=True)
+        b = reference.backend.model(input_ids=ids, attention_mask=mask, position_ids=positions, use_cache=True)
         torch.testing.assert_close(a.logits[:, -1], b.logits[:, -1], rtol=1e-5, atol=1e-6)
         # A one-token cached step must see the entire earlier, non-padding context.
         next_mask = torch.cat([mask, torch.ones(2, 1, dtype=mask.dtype)], dim=1)
         extra = {"input_ids": torch.tensor([[23], [61]]), "attention_mask": next_mask,
                      "position_ids": positions[:, -1:] + 1, "use_cache": True}
-        a = fast.model(**extra, past_key_values=a.past_key_values)
-        b = reference.model(**extra, past_key_values=b.past_key_values)
+        a = fast.backend.model(**extra, past_key_values=a.past_key_values)
+        b = reference.backend.model(**extra, past_key_values=b.past_key_values)
         torch.testing.assert_close(a.logits, b.logits, rtol=1e-5, atol=1e-6)
     payloads = [compress(t, 0.5).to_bytes() for t in TEXTS]
     expected = [r.text for r in Decoder(reference, "full", beam_size=2).decode_many(payloads)]

@@ -134,7 +134,7 @@ shows the same thing: hard text needs longer prefixes.
 ## Quick start
 
 ```bash
-uv sync                                   # Python 3.14, CPU-only PyTorch
+uv sync                                   # Python 3.14, llama.cpp (~140 MB, no PyTorch)
 uv run pytest                             # decoder-guarantee tests (a few seconds)
 
 echo "The programmer discovered an unexpected problem in the application." > input.txt
@@ -148,11 +148,25 @@ uv run python -m neural_compression benchmark --dataset data/benchmark.jsonl --o
 uv run python -m neural_compression plot --results results     # redraw charts
 ```
 
-The first model call downloads `HuggingFaceTB/SmolLM2-360M` (~720 MB, pinned
-revision) into the Hugging Face cache. A plain `.txt` file with one sample per
-line also works as `--dataset`. Use `--device cuda` / `--batch-size 64` on a GPU.
+The first model call downloads a GGUF conversion of `HuggingFaceTB/SmolLM2-360M`
+(`mradermacher/SmolLM2-360M-GGUF`, f16, ~725 MB, pinned revision) into the Hugging
+Face cache. Its next-token log-probabilities are within 0.012 nats of the fp32
+checkpoint. `--quant Q8_0` (~390 MB) or `--quant Q4_K_M` (~270 MB) download less, but
+with them llama.cpp switches CPU kernels with the number of tokens in a batch, which
+moves a sentence's scores by up to ~0.4 nats depending on what it is batched with; on
+the 25-sentence benchmark 2 adaptive payloads verified with Q8_0 then decoded
+differently in a fresh batch. f16 showed no such difference. A plain `.txt` file with
+one sample per line also works as `--dataset`.
 
-**CPU inference:** on PyTorch >= 2.15 with the Transformers custom-attention
+**Backends:** the model runs in llama.cpp by default. All beams of a batch share one
+unified KV cache (a beam is a llama.cpp sequence, so forking a beam copies nothing).
+`--backend torch` runs the original Hugging Face checkpoint in fp32 with PyTorch and
+transformers (`uv sync --group training`); it is the default for `--device cuda` and
+for Hugging Face model ids, so use `--device cuda --batch-size 64` on a GPU. The two
+backends produce slightly different scores, so an adaptive payload is only guaranteed
+to reconstruct exactly with the backend and weights that verified it.
+
+**CPU inference (torch backend):** on PyTorch >= 2.15 with the Transformers custom-attention
 registry, Llama models (including SmolLM2) automatically use native masked
 grouped-query attention, avoiding copies of repeated key/value heads. Older
 versions and other architectures keep their existing backend; CUDA is unchanged.
@@ -256,7 +270,7 @@ payload is decoded again and exact reconstruction is required. Increase
 sizes; transmitting a new adapter is an additional cost. `--final-test` is an
 explicit safeguard, not a mechanism that prevents repeated test-set tuning.
 
-**Compute:** the repository's uv configuration installs CPU PyTorch. A full run
+**Compute:** the repository's uv configuration installs CPU PyTorch in the `training` group. A full run
 is intended for a GPU environment with CUDA-enabled PyTorch, `transformers`,
 `peft`, `accelerate` and `numpy` on Python 3.14 (zstd comes from the standard
 library's `compression.zstd`); invoke `python -m ...` there rather
@@ -826,8 +840,8 @@ share. Loading takes ~2 s from a warm cache.
 
 * Fixed model revision, greedy-deterministic beam search (no sampling), seeds set
   (`--seed`), fixed few-shot examples (in `decoder.py`), fixed dataset file.
-* `results/*/results.json` records the model, revision, parameter count, torch /
-  transformers / Python versions, and platform.
+* `results/*/results.json` records the model, revision, parameter count, backend
+  (llama.cpp and GGUF file, or torch) versions, Python version, and platform.
 * Decoding is deterministic on a given machine (tested). Batched and unbatched
   decoding give identical outputs (tested). Rerunning the adaptive benchmark on
   a different GPU type (A10 vs A10G) gave identical results, and CPU and GPU

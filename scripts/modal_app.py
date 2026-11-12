@@ -47,7 +47,7 @@ def run_config(spec: dict, samples: list[dict]) -> dict:
     from neural_compression.models import load_model
 
     t0 = time.perf_counter()
-    lm = load_model(spec["model"], seed=spec["seed"])
+    lm = load_model(spec["model"], seed=spec["seed"], backend="torch")  # CUDA runs use the torch backend
     cache.commit()  # persist downloaded weights for the other containers / next run
     data = [Sample(**s) for s in samples]
     common = {"beam_size": spec["beam"], "batch_size": spec["batch_size"]}
@@ -60,7 +60,6 @@ def run_config(spec: dict, samples: list[dict]) -> dict:
     meta = {
         **lm.describe(),
         "device": f"{lm.device} ({torch.cuda.get_device_name() if torch.cuda.is_available() else 'cpu'})",
-        "torch": torch.__version__,
         "transformers": transformers.__version__,
         "python": platform.python_version(),
     }

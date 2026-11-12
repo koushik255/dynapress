@@ -4,25 +4,32 @@ version = "0.1.0"
 description = "Experimental lossy text compression: store word prefixes, reconstruct with a small pretrained LM."
 requires-python = ">=3.14"
 dependencies = [
-    "torch>=2.4",
-    "transformers>=4.46",
+    "llama-cpp-python>=0.3.36",
     "numpy>=1.26",
 ]
 
 [dependency-groups]
 dev = ["pytest>=8"]
 plots = ["matplotlib>=3.9"]
-training = ["peft>=0.18,<0.20", "accelerate>=1.10,<2"]
+# Training, the student decoder, and the torch inference backend (CUDA, Hugging Face checkpoints).
+training = ["torch>=2.4", "transformers>=4.46", "peft>=0.18,<0.20", "accelerate>=1.10,<2"]
 
 [tool.uv]
 python-preference = "managed"
 
 [tool.uv.sources]
 torch = { index = "pytorch-cpu" }
+llama-cpp-python = { index = "llama-cpp-cpu" }
 
 [[tool.uv.index]]
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+# Prebuilt CPU wheels; PyPI only has the source distribution.
+[[tool.uv.index]]
+name = "llama-cpp-cpu"
+url = "https://abetlen.github.io/llama-cpp-python/whl/cpu"
 explicit = true
 
 [tool.pytest.ini_options]

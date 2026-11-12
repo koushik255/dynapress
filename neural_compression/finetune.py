@@ -342,6 +342,7 @@ def evaluate(args) -> None:
             device=args.device,
             threads=args.threads,
             seed=meta["seed"],
+            backend="torch",  # the merged LoRA checkpoint has no GGUF; compare like with like
         )
         measured = run_fixed(
             lm, samples, 0.5, "full", beam_size=args.beam, batch_size=args.batch_size
