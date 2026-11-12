@@ -4,15 +4,18 @@ version = "0.1.0"
 description = "Experimental lossy text compression: store word prefixes, reconstruct with a small pretrained LM."
 requires-python = ">=3.14"
 dependencies = [
-    "torch>=2.4",
-    "transformers>=4.46",
+    "onnxruntime>=1.23",
+    "tokenizers>=0.20",
+    "huggingface-hub>=0.24",
     "numpy>=1.26",
 ]
 
 [dependency-groups]
 dev = ["pytest>=8"]
 plots = ["matplotlib>=3.9"]
-training = ["peft>=0.18,<0.20", "accelerate>=1.10,<2"]
+# The torch backend (CUDA, Modal), the student model, and the training scripts.
+torch = ["torch>=2.4", "transformers>=4.46"]
+training = [{ include-group = "torch" }, "peft>=0.18,<0.20", "accelerate>=1.10,<2"]
 
 [tool.uv]
 python-preference = "managed"

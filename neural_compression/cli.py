@@ -14,6 +14,7 @@ import json
 import platform
 import sys
 import time
+from importlib import metadata
 from pathlib import Path
 
 from .compressor import Compressed, compress
@@ -27,7 +28,8 @@ def _model_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--beam", type=int, default=4)
     p.add_argument("--threads", type=int, default=None)
     p.add_argument("--seed", type=int, default=0)
-    p.add_argument("--device", default=None, help="cpu or cuda (default: cuda if available)")
+    p.add_argument("--device", default=None, help="cpu or cuda (default: cuda if torch is installed and sees a GPU)")
+    p.add_argument("--backend", choices=["onnx", "torch"], default=None, help="default: onnx on CPU, torch on CUDA")
     p.add_argument("--batch-size", type=int, default=16, help="decoder requests per model batch")
 
 
@@ -35,7 +37,7 @@ def _load(args):
     from .models import load_model
 
     t0 = time.perf_counter()
-    lm = load_model(args.model, args.revision, threads=args.threads, seed=args.seed, device=args.device)
+    lm = load_model(args.model, args.revision, threads=args.threads, seed=args.seed, device=args.device, backend=args.backend)
     print(
         f"loaded {args.model} ({lm.parameters / 1e6:.0f}M params, {lm.size_bytes / 1e6:.0f} MB) on {lm.device} in {time.perf_counter() - t0:.1f}s",
         file=sys.stderr,
@@ -81,10 +83,14 @@ def cmd_decompress(args) -> None:
     )
 
 
-def cmd_benchmark(args) -> None:
-    import torch
-    import transformers
+def _installed(package: str) -> str | None:
+    try:
+        return metadata.version(package)
+    except metadata.PackageNotFoundError:
+        return None
 
+
+def cmd_benchmark(args) -> None:
     from .benchmark import corpus_baselines, export, load_samples, run_adaptive, run_fixed, summarize
     from .plots import device_label, plot_all
 
@@ -124,8 +130,7 @@ def cmd_benchmark(args) -> None:
         "samples": len(samples),
         "beam": args.beam,
         "seed": args.seed,
-        "torch": torch.__version__,
-        "transformers": transformers.__version__,
+        **{pkg: _installed(pkg) for pkg in ("onnxruntime", "torch", "transformers")},
         "python": platform.python_version(),
         "platform": platform.platform(),
         "corpus": corpus_baselines(samples, args.retentions),

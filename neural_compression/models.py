@@ -16,16 +16,16 @@ there is exactly one way to align any string against the template.
 from __future__ import annotations
 
 import bisect
+import json
 import os
 import random
 import re
+import sys
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import numpy as np
-import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
-from transformers.cache_utils import Cache, DynamicLayer
 
 from .compressor import is_word_char
 
@@ -103,54 +103,44 @@ class InferenceStats:
 class LanguageModel:
     name: str
     revision: str
-    model: torch.nn.Module
-    tokenizer: object
+    backend: object  # OnnxLlama (default) or TorchBackend: prefix / start / step
+    tokenizer: object  # tokenizers.Tokenizer
     token_strings: list[str]
     ids_by_string: dict[str, list[int]]  # exact string -> token ids
     sorted_strings: list[str]  # all token strings, sorted (for prefix range lookups)
-    sorted_ids: torch.Tensor  # token id for each entry of sorted_strings
-    word_ids: torch.Tensor  # tokens starting with a word character...
-    word_lead: torch.Tensor  # ...and how many word characters each starts with
-    device: torch.device = torch.device("cpu")
+    sorted_ids: np.ndarray  # token id for each entry of sorted_strings
+    word_ids: np.ndarray  # tokens starting with a word character...
+    word_lead: np.ndarray  # ...and how many word characters each starts with
+    parameters: int
+    size_bytes: int  # fp32 weights in memory
+    device: str = "cpu"
     stats: InferenceStats = field(default_factory=InferenceStats)
     _prefix_cache: dict = field(default_factory=dict)
 
-    @property
-    def parameters(self) -> int:
-        return sum(p.numel() for p in self.model.parameters())
-
-    @property
-    def size_bytes(self) -> int:
-        return sum(p.numel() * p.element_size() for p in self.model.parameters())
+    def encode(self, text: str) -> list[int]:
+        return self.tokenizer.encode(text, add_special_tokens=False).ids
 
     def describe(self) -> dict:
         return {
             "model": self.name, "revision": self.revision,
             "parameters": self.parameters, "size_bytes": self.size_bytes,
-            "attention_backend": self.model.config._attn_implementation,
+            "attention_backend": self.backend.attention_backend,
         }
 
 
 def set_seed(seed: int = 0) -> None:
     random.seed(seed)
     np.random.seed(seed)
-    torch.manual_seed(seed)
+    if "torch" in sys.modules:
+        sys.modules["torch"].manual_seed(seed)
 
 
-def _cpu_gqa_attention(module, query, key, value, attention_mask, dropout=0.0, scaling=None, is_causal=None, **kwargs):
-    """Use native CPU grouped attention without materializing repeated KV heads.
+def _model_file(name: str, revision: str, filename: str) -> str:
+    if Path(name).is_dir():
+        return str(Path(name) / filename)
+    from huggingface_hub import hf_hub_download
 
-    The standard masked SDPA path repeats KV heads before calling the kernel.
-    PyTorch >= 2.15's CPU flash kernel supports masked GQA directly instead.
-    This backend is only selected for CPU Llama inference, not training/CUDA.
-    """
-    causal = is_causal if is_causal is not None else getattr(module, "is_causal", True)
-    causal = query.shape[2] > 1 and attention_mask is None and causal
-    output = torch.nn.functional.scaled_dot_product_attention(
-        query, key, value, attn_mask=attention_mask, dropout_p=dropout,
-        scale=scaling, is_causal=causal, enable_gqa=True,
-    )
-    return output.transpose(1, 2).contiguous(), None
+    return hf_hub_download(name, filename, revision=revision)
 
 
 def load_model(
@@ -159,30 +149,50 @@ def load_model(
     threads: int | None = None,
     seed: int = 0,
     device: str | None = None,
+    backend: str | None = None,
 ) -> LanguageModel:
-    """Load a causal LM in fp32 on ``device`` (default: CUDA if available, else CPU).
+    """Load a causal LM in fp32 (``name`` is a Hub id or a local directory).
 
+    ``backend`` is "onnx" (ONNX Runtime, CPU, Llama-architecture models; the default on
+    CPU) or "torch" (needs the ``torch`` dependency group; the default for CUDA).
+    ``device`` defaults to CUDA if torch is installed and sees a GPU, else CPU.
     ``revision`` defaults to the pinned commit for the default model.
     """
+    from tokenizers import Tokenizer
+
     revision = revision or (DEFAULT_REVISION if name == DEFAULT_MODEL else "main")
-    dev = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
-    set_seed(seed)
-    torch.set_num_threads(threads or max(1, (os.cpu_count() or 2) // 2))
-    tokenizer = AutoTokenizer.from_pretrained(name, revision=revision)
-    model = AutoModelForCausalLM.from_pretrained(name, revision=revision, dtype=torch.float32).eval().to(dev)
-    if dev.type == "cpu" and model.config.model_type == "llama" and tuple(map(int, torch.__version__.split(".")[:2])) >= (2, 15):
-        # Older Transformers versions lack the public custom-attention registry.
+    if device is None:
         try:
-            from transformers import AttentionInterface, AttentionMaskInterface
+            import torch
         except ImportError:
-            pass
+            device = "cpu"
         else:
-            AttentionInterface.register("cpu_gqa", _cpu_gqa_attention)
-            AttentionMaskInterface.register("cpu_gqa", AttentionMaskInterface()["sdpa"])
-            model.set_attn_implementation("cpu_gqa")
-    special = set(tokenizer.all_special_ids)
-    vocab = min(len(tokenizer), model.get_output_embeddings().weight.shape[0])
-    strings = ["" if i in special else tokenizer.decode([i]) for i in range(vocab)]
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+    backend = backend or ("torch" if device != "cpu" else "onnx")
+    if backend == "torch":
+        from .torch_backend import TorchBackend  # imports torch, so set_seed seeds it too
+    set_seed(seed)
+    threads = threads or max(1, (os.cpu_count() or 2) // 2)
+    tokenizer = Tokenizer.from_file(_model_file(name, revision, "tokenizer.json"))
+    if backend == "onnx":
+        if device != "cpu":
+            raise ValueError("the onnx backend runs on CPU only; use backend='torch' for CUDA")
+        from .onnx_llama import OnnxLlama, read_safetensors
+
+        config = json.loads(Path(_model_file(name, revision, "config.json")).read_text())
+        if config.get("model_type") != "llama":
+            raise ValueError(f"the onnx backend supports Llama-architecture models, not {config.get('model_type')}; use backend='torch'")
+        weights = read_safetensors(_model_file(name, revision, "model.safetensors"))
+        model = OnnxLlama(config, weights, threads)
+        vocab_rows = weights.get("lm_head.weight", weights["model.embed_tokens.weight"]).shape[0]
+        parameters = sum(w.size for w in weights.values())
+    else:
+        model = TorchBackend(name, revision, device, threads)
+        vocab_rows = model.vocab_rows
+        parameters = model.parameters
+    special = {i for i, t in tokenizer.get_added_tokens_decoder().items() if t.special}
+    vocab = min(tokenizer.get_vocab_size(with_added_tokens=True), vocab_rows)
+    strings = ["" if i in special else tokenizer.decode([i], skip_special_tokens=False) for i in range(vocab)]
     # Tokens that are partial UTF-8 sequences decode to U+FFFD; never allow them.
     strings = ["" if "�" in s else s for s in strings]
     by_string: dict[str, list[int]] = {}
@@ -204,22 +214,23 @@ def load_model(
         strings,
         by_string,
         [s for s, _ in order],
-        torch.tensor([i for _, i in order]),
-        torch.tensor(word_ids),
-        torch.tensor(word_lead),
-        dev,
+        np.array([i for _, i in order], dtype=np.int64),
+        np.array(word_ids, dtype=np.int64),
+        np.array(word_lead, dtype=np.int64),
+        parameters,
+        parameters * 4,
+        device,
     )
 
 
 def _shared_prefix_cache(lm: LanguageModel, prefix: str):
     """KV cache for a prompt prefix shared by every request (instructions + examples)."""
     if prefix not in lm._prefix_cache:
-        ids = lm.tokenizer(prefix, add_special_tokens=False, return_tensors="pt").input_ids
-        with torch.no_grad():
-            out = lm.model(input_ids=ids.to(lm.device), use_cache=True)
+        ids = lm.encode(prefix)
+        state = lm.backend.prefix(ids)
         lm.stats.forward_calls += 1
-        lm.stats.prompt_tokens += ids.shape[1]
-        lm._prefix_cache = {prefix: (ids.shape[1], out.past_key_values)}
+        lm.stats.prompt_tokens += len(ids)
+        lm._prefix_cache = {prefix: (len(ids), state)}
     return lm._prefix_cache[prefix]
 
 
@@ -248,31 +259,22 @@ def constrained_beam_search(
     return results
 
 
-@torch.no_grad()
 def _search_batch(lm, requests, shared_prefix, beam_size, scan_top, max_groups):
     t0 = time.perf_counter()
-    tok, model = lm.tokenizer, lm.model
     n = len(requests)
     stats = lm.stats
 
     # ---- prompt pass: [shared prefix][left-padded request prompt] ----------
-    encoded = [tok(r.prompt, add_special_tokens=False).input_ids for r in requests]
+    encoded = [lm.encode(r.prompt) for r in requests]
     width = max(len(e) for e in encoded)
-    pad_id = tok.pad_token_id if tok.pad_token_id is not None else 0
-    dev = lm.device
-    input_ids = torch.tensor([[pad_id] * (width - len(e)) + e for e in encoded], device=dev)
-    attn = torch.tensor([[0] * (width - len(e)) + [1] * len(e) for e in encoded], device=dev)
-    cache = _beam_cache()
-    if shared_prefix:
-        prefix_len, prefix_cache = _shared_prefix_cache(lm, shared_prefix)
-        cache = _beam_cache(prefix_cache, n)
-        attn = torch.cat([torch.ones(n, prefix_len, dtype=attn.dtype, device=dev), attn], dim=1)
-    positions = (attn.cumsum(1) - 1).clamp(min=0)
-    out = model(input_ids=input_ids, attention_mask=attn, position_ids=positions[:, -width:], past_key_values=cache, use_cache=True)
+    input_ids = np.array([[0] * (width - len(e)) + e for e in encoded], dtype=np.int64)  # padding is masked
+    attn = np.array([[0] * (width - len(e)) + [1] * len(e) for e in encoded], dtype=np.int64)
+    prefix_len, prefix_state = _shared_prefix_cache(lm, shared_prefix) if shared_prefix else (0, None)
+    positions = np.clip(prefix_len + attn.cumsum(1) - 1, 0, None)
+    cache, logprobs = lm.backend.start(prefix_state, input_ids, attn, positions)
     stats.forward_calls += 1
     stats.prompt_tokens += sum(len(e) for e in encoded)
     stats.sequences += n
-    cache, logits = out.past_key_values, out.logits[:, -1]
     last_pos = positions[:, -1]
 
     active = [_Hyp(i, i, (0, 0), "", 0.0) for i in range(n)]
@@ -282,8 +284,6 @@ def _search_batch(lm, requests, shared_prefix, beam_size, scan_top, max_groups):
     for _ in range(max_steps):
         if not active:
             break
-        # Token bookkeeping happens on the CPU; only the model runs on ``dev``.
-        logprobs = torch.log_softmax(logits.float(), dim=-1).cpu()
         candidates: dict[int, dict[str, tuple]] = {}
         for hyp in active:
             found = _best_valid_tokens(lm, hyp, requests[hyp.request].template, logprobs[hyp.row], beam_size, scan_top)
@@ -321,30 +321,21 @@ def _search_batch(lm, requests, shared_prefix, beam_size, scan_top, max_groups):
             break
         # Forced tokens often keep every beam in place: don't copy the entire
         # KV cache just to select its existing rows in their existing order.
+        index = None
         if rows != list(range(len(active))):
-            index = torch.tensor(rows, device=dev)
-            cache.reorder_cache(index)
-            attn = attn[index]
+            index = np.array(rows, dtype=np.int64)
             last_pos = last_pos[index]
-        attn = torch.cat([attn, torch.ones(len(rows), 1, dtype=attn.dtype, device=dev)], dim=1)
         last_pos = last_pos + 1
-        out = model(
-            input_ids=torch.tensor(next_tokens, device=dev)[:, None],
-            attention_mask=attn,
-            position_ids=last_pos[:, None],
-            past_key_values=cache,
-            use_cache=True,
-        )
+        logprobs = lm.backend.step(cache, index, np.array(next_tokens, dtype=np.int64), last_pos)
         stats.forward_calls += 1
         stats.generated_tokens += len(rows)
-        cache, logits = out.past_key_values, out.logits[:, -1]
         active = new_active
 
     stats.seconds += time.perf_counter() - t0
     return [b[1] if b else None for b in best]
 
 
-def _forced_candidates(lm: LanguageModel, text: str, template_ends: bool) -> torch.Tensor:
+def _forced_candidates(lm: LanguageModel, text: str, template_ends: bool) -> np.ndarray:
     """Tokens that can start ``text``: its own prefixes, or longer tokens beginning with all of it.
 
     If the template ends with ``text``, a longer token always overruns it. Leaving those out
@@ -353,14 +344,14 @@ def _forced_candidates(lm: LanguageModel, text: str, template_ends: bool) -> tor
     """
     ids = [i for j in range(1, len(text) + 1) for i in lm.ids_by_string.get(text[:j], ())]
     if template_ends:
-        return torch.tensor(ids, dtype=torch.long)
+        return np.array(ids, dtype=np.int64)
     lo = bisect.bisect_right(lm.sorted_strings, text)  # strictly longer than ``text``
     hi = bisect.bisect_left(lm.sorted_strings, text + "\U0010ffff")
     longer = lm.sorted_ids[lo:hi]
-    return torch.cat([torch.tensor(ids, dtype=torch.long), longer]) if ids else longer
+    return np.concatenate([np.array(ids, dtype=np.int64), longer]) if ids else longer
 
 
-def _candidates(lm: LanguageModel, template: Template, state: tuple[int, int]) -> torch.Tensor:
+def _candidates(lm: LanguageModel, template: Template, state: tuple[int, int]) -> np.ndarray:
     """A superset of the valid next tokens. ``advance`` makes the final decision."""
     seg, pos = state
     part = template[seg]
@@ -371,7 +362,7 @@ def _candidates(lm: LanguageModel, template: Template, state: tuple[int, int]) -
         groups.append(lm.word_ids[lm.word_lead <= part.max_chars - pos])
     if pos >= part.min_chars:  # or close it: the next segment is always fixed text
         groups.append(_forced_candidates(lm, template[seg + 1], seg + 2 == len(template)))
-    return torch.cat(groups) if groups else torch.empty(0, dtype=torch.long)
+    return np.concatenate(groups) if groups else np.empty(0, dtype=np.int64)
 
 
 def _best_valid_tokens(lm, hyp, template, logprobs, beam_size, scan_top):
@@ -385,10 +376,11 @@ def _best_valid_tokens(lm, hyp, template, logprobs, beam_size, scan_top):
         return []
     lps = logprobs[ids]
     k = min(scan_top, len(ids))
-    top_lp, top_idx = lps.topk(k)
-    found = _expand(lm, hyp, template, ids[top_idx].tolist(), top_lp.tolist(), beam_size)
+    top_idx = np.argpartition(-lps, k - 1)[:k] if k < len(ids) else np.arange(k)
+    top_idx = top_idx[np.argsort(-lps[top_idx], kind="stable")]
+    found = _expand(lm, hyp, template, ids[top_idx].tolist(), lps[top_idx].tolist(), beam_size)
     if len(found) < beam_size and k < len(ids):
-        order = lps.argsort(descending=True)[k:]
+        order = np.argsort(-lps, kind="stable")[k:]
         found += _expand(lm, hyp, template, ids[order].tolist(), lps[order].tolist(), beam_size - len(found))
     return found
 
@@ -409,54 +401,3 @@ def _expand(lm, hyp, template, ids, lps, limit):
 
 def _template_chars(template: Template) -> int:
     return sum(len(p) if isinstance(p, str) else p.max_chars for p in template)
-
-
-class _BeamLayer(DynamicLayer):
-    """KV cache layer for beam search that appends in place.
-
-    DynamicLayer appends with torch.cat, which copies the whole cache of every layer on
-    every step. Here ``keys``/``values`` are views into buffers with spare positions, so
-    an append writes only the new token. A beam reorder still gathers every row into new
-    buffers sized to the beam, one copy as before, so memory follows the beam width.
-    """
-
-    def __init__(self, keys: torch.Tensor | None = None, values: torch.Tensor | None = None, rows: int = 1):
-        super().__init__()
-        if keys is not None:  # batch-1 shared-prefix states, repeated for ``rows`` rows
-            self.lazy_initialization(keys, values)
-            self._store(keys.expand(rows, -1, -1, -1), values.expand(rows, -1, -1, -1))
-
-    def _store(self, keys: torch.Tensor, values: torch.Tensor, capacity: int = 0, index: torch.Tensor | None = None) -> None:
-        """Copy ``keys``/``values`` (rows ``index`` only, if given) into new buffers."""
-        rows = len(index) if index is not None else keys.shape[0]
-        _, heads, length, dim = keys.shape
-        shape = (rows, heads, max(capacity, length + 16), dim)
-        self._k, self._v = (torch.empty(shape, dtype=self.dtype, device=self.device) for _ in range(2))
-        self.keys, self.values = self._k[:, :, :length], self._v[:, :, :length]
-        for src, dst in ((keys, self.keys), (values, self.values)):
-            if index is None:
-                dst.copy_(src)
-            else:
-                torch.index_select(src, 0, index, out=dst)
-
-    def update(self, key_states, value_states, *args, **kwargs):
-        if not self.is_initialized:
-            self.lazy_initialization(key_states, value_states)
-            self._store(key_states[..., :0, :], value_states[..., :0, :])
-        length, new = self.keys.shape[-2], key_states.shape[-2]
-        if length + new > self._k.shape[-2]:
-            self._store(self.keys, self.values, length + new + 16)
-        self._k[:, :, length : length + new] = key_states
-        self._v[:, :, length : length + new] = value_states
-        self.keys, self.values = self._k[:, :, : length + new], self._v[:, :, : length + new]
-        return self.keys, self.values
-
-    def reorder_cache(self, beam_idx: torch.LongTensor) -> None:
-        self._store(self.keys, self.values, self._k.shape[-2], beam_idx)
-
-
-def _beam_cache(prefix_cache=None, n: int = 1) -> Cache:
-    """Empty beam cache, or one starting from a batch-1 prefix cache repeated n times (left intact)."""
-    if prefix_cache is None:
-        return Cache(layer_class_to_replicate=_BeamLayer)
-    return Cache(layers=[_BeamLayer(layer.keys, layer.values, n) for layer in prefix_cache.layers])
