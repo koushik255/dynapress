@@ -5,6 +5,10 @@ keep every stored prefix and separator, respect each slot's length range, and
 adaptive compression with it must still reconstruct exactly.
 """
 
+import json
+import subprocess
+import sys
+
 import torch
 
 from neural_compression.adaptive import compress_adaptive_many
@@ -65,3 +69,29 @@ def test_adaptive_is_exact_and_merges():
     assert [r.text for r in dec.decode_many([r.payload for r in results])] == TEXTS
     merged = merge_payloads([Compressed.from_bytes(r.payload) for r in results])
     assert dec.decode(merged.to_bytes()).text == "\n".join(TEXTS)
+
+
+def test_continuation_keeps_checkpoint_and_vocabulary_on_tie(tmp_path):
+    """New text must not rebuild the vocabulary or replace an unimproved checkpoint."""
+    source = tmp_path / "source"
+    decoder().save(source)
+    initial = StudentDecoder.load(source)
+    data = tmp_path / "data"
+    data.mkdir()
+    for split in ("train", "validation"):
+        texts = TEXTS if split == "validation" else ["Unlistedwords appear alongside the programmer and the application."]
+        (data / f"{split}.jsonl").write_text("".join(json.dumps({"book_id": "sample", "text": t}) + "\n" for t in texts))
+    out = tmp_path / "continued"
+    subprocess.run(
+        [sys.executable, "-m", "neural_compression.student_train", "train", "--data", str(data), "--out", str(out),
+         "--init-model", str(source), "--steps", "1", "--lr", "0", "--workers", "0", "--threads", "1", "--batch-size", "4",
+         "--dev-start", "0", "--dev-per-book", "3", "--select-by", "adaptive-bytes"],
+        check=True, capture_output=True, text=True,
+    )
+    continued = StudentDecoder.load(out / "model")
+    assert continued.model.cfg == initial.model.cfg
+    assert (out / "model/vocab.tsv").read_bytes() == (source / "vocab.tsv").read_bytes()
+    for k, value in initial.model.state_dict().items():
+        assert torch.equal(value, continued.model.state_dict()[k])
+    assert json.loads((out / "model/config.json").read_text())["step"] == 0
+    assert continued.decode(compress(TEXTS[0], 0.5)).text == initial.decode(compress(TEXTS[0], 0.5)).text

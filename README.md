@@ -404,13 +404,13 @@ training-book passages, which favours this domain. The 360M decoder is a
 general model with no task training (base) or a light adapter (LoRA). The student
 knows nothing outside its 27k-word vocabulary except what the character n-gram
 can spell, so technical text, names, and other domains will cost more bytes than
-here (not measured). Measured-runtime compute estimates total $3.334616:
+here (see the broader continuation measurement below). Measured-runtime compute estimates total $3.334616:
 teacher text $0.851091, training/evaluation $1.668197, and ablation $0.815328
 (1,827.18 seconds). The later Modal billing-report snapshot totals **$3.35537611
 of the original $8 cap**: $0.85476469 teacher, $1.67766665 main, $0.82294477
 ablation. Retained storage is separate. `results/student/billing.json` records
 the app-level report, plus the other two experiments ($1.72594133 for 135M and
-$0.11123479 profiling; **$5.19255223 combined**). All three student apps are stopped, with zero tasks;
+$0.11123479 profiling; **$5.19255223 combined**). All three original student apps are stopped, with zero tasks;
 recovery launched no training or evaluation jobs on Modal.
 
 Small configs, training histories, per-sentence payloads, and CPU/GPU summaries
@@ -421,6 +421,117 @@ the ablation is `/student/train-20261111-230219/model`, and teacher text is
 records validation/model hashes and fresh recovery-orb CPU checks of both models.
 The result is promising for this task and domain, not a proven general-purpose
 replacement for the LM decoder.
+
+### Continuing the student on broader text
+
+`student_train train --init-model <saved-model-directory>` starts from saved
+weights with the **same vocabulary, unigram prior, n-gram fallback, and encoder
+architecture**. AdamW and its learning-rate schedule start fresh; this is not
+an exact optimizer-state resume. Architecture flags apply only to new models.
+Use a new output directory and a lower learning rate. Optional `weight` values
+on training JSONL rows override `--book-weight` for those real-text sentences;
+teacher sentences retain weight 1. The source model is never overwritten.
+
+`--select-by adaptive-bytes` picks the lowest merged development payload size
+after zstd, checking exact per-sentence and merged reconstruction at each
+evaluation. Otherwise selection remains fixed-50% accuracy. Continuation first
+scores and saves the original as step zero, so an unimproved run keeps it.
+`--dev-start 0 --dev-per-book 40` evaluates the first 40 rows per source group;
+the original default remains rows 25–125 per book. Development data is used for
+selection, not for a final held-out generalization claim.
+
+`scripts/prepare_student_continuation.py` builds a small document-disjoint
+experiment using DailyDialog conversations, Transformers documentation pages,
+and another Austen novel, while retaining the original six training books.
+It uses cached HTTP responses, records source/content/split hashes, and removes
+normalized exact matches to previous training/validation, teacher text, and the
+benchmark from new sentences. New training and development documents and exact
+sentences are disjoint. It does not open the original book test split.
+Near-duplicate text and overlap with the teacher's pretraining are not ruled out.
+Raw sources, prepared text, teacher text, and model weights remain ignored.
+The script expects the previous book train/validation data and teacher gzip
+under its documented `data/student/` paths. Prepared continuation train and
+development files are also retained on the Modal volume at
+`/student/continuation-20261112/`, alongside their manifest.
+
+**Licensing:** DailyDialog is CC BY-NC-SA 4.0 (Li et al., IJCNLP 2017), so this
+new checkpoint is for noncommercial research, not commercially cleared.
+The Transformers documentation dataset is Apache-2.0; Gutenberg text is public
+domain in the USA, with local rights to be checked. The result manifest records
+source URLs and attribution. No new dialogue text or model weights are published
+in Git.
+
+For Modal, `STUDENT_DATA=<prepared-directory>` chooses which train/validation
+files to upload. Only those two files and the pilot train/validation files are
+mounted, never test text or the raw-source directory. For example, the following
+launches a **new paid job**, rather than reconnecting to an existing run:
+
+```bash
+STUDENT_DATA=data/student/continuation uv run --frozen --with modal modal run --detach scripts/modal_student.py::train \
+  --teacher /cache/student/gen-20261111-211749/teacher.jsonl.gz \
+  --options '{"init_model":"/cache/student/train-20261111-215809/model","train_seconds":1800,"lr":0.00006,"warmup":200,"steps":20000,"eval_every":2000,"dev_start":0,"dev_per_book":40,"select_by":"adaptive-bytes","seed":731}'
+```
+
+This run reuses the existing teacher corpus, checks a paired GPU baseline, and
+evaluates the saved result on CPU/GPU and the original pilot. There are no
+automatic paid retries or persistent deployments. At the script's list-price
+estimate the complete 95-minute timeout costs at most $2.54 compute; storage is
+separate. An experiment budget must include every launch, not reset per job.
+
+**Continuation result (2026-11-12 UTC).** One 30-minute-guarded run mixed
+20,610 original book sentences, 5,973 new real sentences (weight 20 each), and
+327,775 eligible sentences from the existing teacher corpus (weight 1; original
+books weight 3). The vocabulary and architecture stayed fixed. No new teacher
+generation was launched. Step **4,000** was selected; continuing to step 15,598
+did not improve its in-training development score. The checkpoint is retained
+at `/student/train-20261112-000121/model` on the existing Modal volume; the
+original checkpoint is unchanged. This is a continuation/data-mixture experiment,
+not a controlled test of more diverse text alone.
+
+The new development set has **120 sentences / 1,840 words**, 40 per domain.
+Training uses *Pride and Prejudice*, development *Sense and Sensibility*: they
+are book-disjoint, not author-disjoint. Dialogue splits are conversation-disjoint
+and technical splits are documentation-page-disjoint. They are not guaranteed
+absent from the teacher's base pretraining. No original test file was accessed.
+
+| development subset (CPU, independently compressed) | original zstd bytes | continued zstd bytes | fixed-50% word accuracy, original → continued |
+|---|---:|---:|---:|
+| dialogue | 824 | 813 | 86.1% → 86.1% |
+| technical | 1,760 | 1,601 | 59.8% → 75.5% |
+| fiction | 1,761 | 1,760 | 86.6% → 87.0% |
+| **merged 120 sentences** | **4,163** | **3,974** | **76.7% → 82.6%** |
+
+The independently compressed domain sizes do not sum to the merged size.
+The saved export saves **4.54%** on the orb CPU. Paired A10 measurements in the
+same job are **4,161 → 3,976 B (4.45%)**, with adaptive decoding
+**0.911 → 0.987 ms/word (8.3% slower)**. Alternating three CPU decoding trials
+measured median **1.185 → 1.332 ms/word (12.4% slower)**. CPU fixed-50 timing
+during concurrent tests is not used for the speed comparison. Selection evaluated
+the live fp32 checkpoint at 3,974 B; its fp16 export reloaded as fp32 measured
+3,976 B on GPU and 3,974 B on CPU, so final comparisons use the exported weights.
+
+There is a small regression on the original pilot: fresh CPU adaptive size
+**1,937 → 1,960 B (+1.19%)**, despite fixed-50 accuracy rising 87.35% → 88.10%.
+The new checkpoint is therefore an optional broader-domain trade-off, not a
+universal replacement for the original. No default decoder was changed.
+Technical OOV words remain **147/674 (21.8%)**; fixed-vocabulary training cannot
+add those words to the candidate list. Vocabulary coverage is a sensible next
+experiment, not an excuse to spend the unused budget automatically.
+
+Every new development and pilot adaptive payload and merged corpus reconstructed
+exactly on its producing device. Independently on the orb CPU, **120/120 broader
+and 50/50 pilot GPU-produced payloads**, plus their merged payloads, decoded
+exactly. Broader CPU/GPU adaptive payloads were byte-identical for 119/120
+sentences, not all 120; both different forms decoded exactly. CPU-produced
+payloads were not separately rechecked on GPU, and arbitrary-platform
+compatibility is not guaranteed.
+
+`results/student/continuation/` retains the source/split manifest, training
+history, exported model metadata, CPU/GPU summaries, per-domain and three-trial
+CPU checks, and app billing. Latest stopped-app compute billing is **$0.86108648
+of the additional $3 cap** (a billing snapshot, not a final invoice; storage
+separate). The app stopped with zero tasks. All 15 tests passed. These are
+checkpoint-selection development results, not a final held-out test result.
 
 ## How it works
 

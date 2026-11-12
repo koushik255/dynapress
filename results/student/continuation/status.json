@@ -1,0 +1,20 @@
+{
+  "run_id": "train-20261112-000121",
+  "status": "complete",
+  "error": null,
+  "gpu": "NVIDIA A10",
+  "seconds": 1911.3228781223297,
+  "estimated_compute_usd": 0.8528747420599198,
+  "options": {
+    "init_model": "/cache/student/train-20261111-215809/model",
+    "lr": 6e-05,
+    "warmup": 200,
+    "steps": 20000,
+    "eval_every": 2000,
+    "log_every": 500,
+    "dev_start": 0,
+    "dev_per_book": 40,
+    "select_by": "adaptive-bytes",
+    "seed": 731
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "model": "/cache/student/train-20261112-000121/model",
+  "device": "cpu",
+  "threads": 4,
+  "torch": "2.15.0+cu132",
+  "samples": "validation rows 0..25 per book",
+  "parameters": 45802062,
+  "vocab_size": 27213,
+  "model_dir_bytes": 91925957,
+  "fixed50": {
+    "word_accuracy": 0.8809776833156217,
+    "words": 941,
+    "ms_per_word": 0.7650547183847605,
+    "sentence_exact": 7
+  },
+  "adaptive100": {
+    "sentences": 50,
+    "words": 941,
+    "all_exact": true,
+    "merged_corpus_exact": true,
+    "payload_bytes": 3458,
+    "payload_zstd_bytes": 1960,
+    "original_zstd_bytes": 2481,
+    "prefix_chars": 2092,
+    "complete_words": 156,
+    "mean_rounds": 4.94,
+    "compress_seconds": 6.516999256999952,
+    "decode_seconds": 1.0821325550000438,
+    "decode_ms_per_word": 1.1499814612115238
+  },
+  "ngram_fallbacks": 190
+}

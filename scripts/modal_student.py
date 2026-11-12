@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import gzip
 import json
+import os
 import random
 import sys
 import time
@@ -139,7 +140,10 @@ TRAIN_TIMEOUT = 95 * 60
 TRAIN_HOURLY_USD = 1.10 + 8 * 0.0473 + 16 * 0.008  # A10G + 8 cores (data workers) + 16 GiB
 TRAIN_SECONDS = 62 * 60  # training stops here (best dev checkpoint kept); then GPU evaluation
 
-train_image = image.add_local_dir(ROOT / "data/student/books_all", "/data/books_all", ignore=["books", "books/**", "test.jsonl"]).add_local_file(
+TRAIN_DATA = Path(os.environ.get("STUDENT_DATA", ROOT / "data/student/books_all"))
+train_image = image.add_local_file(TRAIN_DATA / "train.jsonl", "/data/books_all/train.jsonl").add_local_file(
+    TRAIN_DATA / "validation.jsonl", "/data/books_all/validation.jsonl"
+).add_local_file(
     ROOT / "data/lora/validation.jsonl", "/data/lora/validation.jsonl"
 )
 
@@ -177,6 +181,9 @@ def train_remote(run_id: str, teacher: str, options: dict) -> dict:
         log_every=500,
         eval_every=4000,
         dev_per_book=100,
+        dev_start=25,
+        select_by="fixed50",
+        init_model=None,
         workers=6,
         threads=1,
         device="cuda",
@@ -191,12 +198,23 @@ def train_remote(run_id: str, teacher: str, options: dict) -> dict:
         lines.append(s)
 
     try:
+        if args.init_model:
+            # Paired GPU timings and bytes on the same development corpus before updating weights.
+            student_train.evaluate(
+                SimpleNamespace(model=args.init_model, data=args.data, out=root / "baseline-cuda",
+                                start=args.dev_start, per_book=args.dev_per_book, device="cuda", threads=4)
+            )
         student_train.train(args, deadline=started + train_seconds, log=log)
         cache.commit()
         for device in ("cuda", "cpu"):
             student_train.evaluate(
                 SimpleNamespace(model=root / "model", data=Path("/data/lora"), out=root / f"eval-{device}", start=0, per_book=25, device=device, threads=4)
             )
+            if args.init_model:
+                student_train.evaluate(
+                    SimpleNamespace(model=root / "model", data=args.data, out=root / f"eval-dev-{device}",
+                                    start=args.dev_start, per_book=args.dev_per_book, device=device, threads=4)
+                )
     except Exception as exc:
         error = f"{type(exc).__name__}: {exc}"
         log(error)

@@ -1,0 +1,33 @@
+{
+  "model": "/cache/student/train-20261111-215809/model",
+  "device": "cuda",
+  "threads": 4,
+  "torch": "2.15.0+cu132",
+  "samples": "validation rows 0..40 per book",
+  "parameters": 45802062,
+  "vocab_size": 27213,
+  "model_dir_bytes": 91925897,
+  "fixed50": {
+    "word_accuracy": 0.7668478260869566,
+    "words": 1840,
+    "ms_per_word": 0.6735113097826089,
+    "sentence_exact": 23
+  },
+  "adaptive100": {
+    "sentences": 120,
+    "words": 1840,
+    "all_exact": true,
+    "merged_corpus_exact": true,
+    "payload_bytes": 8107,
+    "payload_zstd_bytes": 4161,
+    "original_zstd_bytes": 4729,
+    "prefix_chars": 5686,
+    "complete_words": 489,
+    "mean_rounds": 5.4,
+    "compress_seconds": 16.07729135,
+    "decode_seconds": 1.6761005110000013,
+    "decode_ms_per_word": 0.9109241907608704
+  },
+  "ngram_fallbacks": 870,
+  "gpu": "NVIDIA A10"
+}

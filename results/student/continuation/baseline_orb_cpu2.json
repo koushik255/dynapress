@@ -1,0 +1,32 @@
+{
+  "model": "data/student/continuation/base/model",
+  "device": "cpu",
+  "threads": 2,
+  "torch": "2.15.0+cpu",
+  "samples": "validation rows 0..40 per book",
+  "parameters": 45802062,
+  "vocab_size": 27213,
+  "model_dir_bytes": 91925897,
+  "fixed50": {
+    "word_accuracy": 0.7668478260869566,
+    "words": 1840,
+    "ms_per_word": 2.6369735043478277,
+    "sentence_exact": 23
+  },
+  "adaptive100": {
+    "sentences": 120,
+    "words": 1840,
+    "all_exact": true,
+    "merged_corpus_exact": true,
+    "payload_bytes": 8108,
+    "payload_zstd_bytes": 4163,
+    "original_zstd_bytes": 4729,
+    "prefix_chars": 5687,
+    "complete_words": 490,
+    "mean_rounds": 5.4,
+    "compress_seconds": 26.048125476999758,
+    "decode_seconds": 2.021919388000242,
+    "decode_ms_per_word": 1.0988692326088272
+  },
+  "ngram_fallbacks": 873
+}

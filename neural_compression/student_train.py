@@ -264,33 +264,52 @@ def train(args, deadline: float | None = None, log=lambda s: print(s, flush=True
     torch.manual_seed(args.seed)
     torch.set_num_threads(args.threads)
     device = torch.device(args.device)
-    books = [r["text"] for r in read_jsonl(args.data / "train.jsonl")]
+    book_rows = read_jsonl(args.data / "train.jsonl")
+    books = [r["text"] for r in book_rows]
     val_rows = read_jsonl(args.data / "validation.jsonl")
     exclude = {r["text"] for r in val_rows}
     teacher = []
     for path in args.teacher or []:
         teacher += teacher_sentences(Path(path), exclude)
     log(f"book sentences {len(books)}, teacher sentences {len(teacher)}")
-    vocab = build_vocab(books + teacher, args.min_count)
+    initial = getattr(args, "init_model", None)
+    if initial:
+        decoder = StudentDecoder.load(initial, args.device)
+        model, vocab, ngram = decoder.model, decoder.vocab, decoder.ngram
+    else:
+        vocab = build_vocab(books + teacher, args.min_count)
+        cfg = Config(len(vocab), args.dim, args.layers, args.heads, args.dim * 4, args.dropout)
+        model = StudentModel(cfg, vocab.logprior).to(device)
+        ngram = CharNgram(vocab.words, vocab.counts.tolist())
     log(f"vocab {len(vocab)}")
     sentences = books + teacher
-    # Draw book sentences ``book_weight`` times as often as a teacher sentence.
-    weights = [args.book_weight] * len(books) + [1.0] * len(teacher)
-    cfg = Config(len(vocab), args.dim, args.layers, args.heads, args.dim * 4, args.dropout)
-    model = StudentModel(cfg, vocab.logprior).to(device)
+    # Optional per-row weights let new domains coexist with the original books and teacher text.
+    weights = [r.get("weight", args.book_weight) for r in book_rows] + [1.0] * len(teacher)
     log(f"parameters {sum(p.numel() for p in model.parameters()):,}")
     vlen = torch.tensor(vocab.lens, device=device)
     loader = torch.utils.data.DataLoader(
         Batches(sentences, weights, vocab, args.batch_size, args.seed), batch_size=None, num_workers=args.workers, persistent_workers=args.workers > 0
     )
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01, betas=(0.9, 0.98))
-    dev_texts = validation_samples(args.data / "validation.jsonl", 25, args.dev_per_book)
-    ngram = CharNgram(vocab.words, vocab.counts.tolist())
+    dev_texts = validation_samples(args.data / "validation.jsonl", getattr(args, "dev_start", 25), args.dev_per_book)
+    select_bytes = getattr(args, "select_by", "fixed50") == "adaptive-bytes"
     history = []
     t0 = time.time()
     run_loss = run_correct = run_total = 0.0
     use_amp = device.type == "cuda"
     best = None
+    if initial:
+        decoder = StudentDecoder(model, vocab, ngram, args.device)
+        if select_bytes:
+            baseline, _ = adaptive_eval(decoder, dev_texts)
+            if not baseline["all_exact"] or not baseline["merged_corpus_exact"]:
+                raise ValueError("initial checkpoint failed exact reconstruction")
+            score = -baseline["payload_zstd_bytes"]
+        else:
+            score = fixed_accuracy(decoder, dev_texts)["word_accuracy"]
+        best = (score, 0)
+        decoder.save(args.out / "model", {"step": 0, "selection_score": score, "select_by": getattr(args, "select_by", "fixed50")})
+        log(json.dumps({"step": 0, "selection_score": score}))
     for step, batch in enumerate(loader, 1):
         model.train()
         # Warmup, then cosine decay over whichever runs out first: steps or the time budget.
@@ -315,9 +334,16 @@ def train(args, deadline: float | None = None, log=lambda s: print(s, flush=True
             if step % args.eval_every == 0 or last:
                 decoder = StudentDecoder(model, vocab, ngram, args.device)
                 entry["dev_fixed50"] = fixed_accuracy(decoder, dev_texts)["word_accuracy"]
-                if best is None or entry["dev_fixed50"] > best[0]:
-                    best = (entry["dev_fixed50"], step)
-                    decoder.save(args.out / "model", {"step": step, "dev_fixed50": entry["dev_fixed50"]})
+                score = entry["dev_fixed50"]
+                if select_bytes:
+                    adaptive, _ = adaptive_eval(decoder, dev_texts)
+                    if not adaptive["all_exact"] or not adaptive["merged_corpus_exact"]:
+                        raise ValueError("checkpoint failed exact reconstruction")
+                    entry["dev_zstd_bytes"] = adaptive["payload_zstd_bytes"]
+                    score = -entry["dev_zstd_bytes"]
+                if best is None or score > best[0]:
+                    best = (score, step)
+                    decoder.save(args.out / "model", {"step": step, "dev_fixed50": entry["dev_fixed50"], "selection_score": score, "select_by": getattr(args, "select_by", "fixed50")})
             history.append(entry)
             log(json.dumps(entry))
         if last:
@@ -334,6 +360,7 @@ def main() -> None:
     p.add_argument("--data", type=Path, default=Path("data/student/books_all"))
     p.add_argument("--teacher", nargs="*", default=[])
     p.add_argument("--out", type=Path, required=True)
+    p.add_argument("--init-model", type=Path, help="Continue saved weights with fixed vocabulary/architecture and a fresh optimizer")
     p.add_argument("--min-count", type=int, default=2)
     p.add_argument("--book-weight", type=float, default=3.0)
     p.add_argument("--dim", type=int, default=256)
@@ -347,6 +374,8 @@ def main() -> None:
     p.add_argument("--log-every", type=int, default=100)
     p.add_argument("--eval-every", type=int, default=500)
     p.add_argument("--dev-per-book", type=int, default=100)
+    p.add_argument("--dev-start", type=int, default=25)
+    p.add_argument("--select-by", choices=["fixed50", "adaptive-bytes"], default="fixed50")
     p.add_argument("--workers", type=int, default=1)
     p.add_argument("--threads", type=int, default=2)
     p.add_argument("--device", default="cpu")
