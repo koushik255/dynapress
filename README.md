@@ -134,7 +134,7 @@ shows the same thing: hard text needs longer prefixes.
 ## Quick start
 
 ```bash
-uv sync                                   # Python 3.12, CPU-only PyTorch
+uv sync                                   # Python 3.14, CPU-only PyTorch
 uv run pytest                             # decoder-guarantee tests (a few seconds)
 
 echo "The programmer discovered an unexpected problem in the application." > input.txt
@@ -143,6 +143,7 @@ uv run python -m neural_compression decompress input.bin --context full
 uv run python -m neural_compression decompress input.bin --context 4
 uv run python -m neural_compression compress input.txt --adaptive --target 1.0  # verified by the real decoder
 
+uv sync --group plots                     # matplotlib, only needed for the charts
 uv run python -m neural_compression benchmark --dataset data/benchmark.jsonl --out results
 uv run python -m neural_compression plot --results results     # redraw charts
 ```
@@ -257,7 +258,8 @@ explicit safeguard, not a mechanism that prevents repeated test-set tuning.
 
 **Compute:** the repository's uv configuration installs CPU PyTorch. A full run
 is intended for a GPU environment with CUDA-enabled PyTorch, `transformers`,
-`peft`, `accelerate`, `numpy` and `zstandard`; invoke `python -m ...` there rather
+`peft`, `accelerate` and `numpy` on Python 3.14 (zstd comes from the standard
+library's `compression.zstd`); invoke `python -m ...` there rather
 than syncing this CPU-only uv environment over it. On CPU use `--cpu`; `--max-steps 1`
 and a separately prepared small corpus provide a wiring check, not evidence of
 quality improvement.
@@ -719,7 +721,7 @@ neural_compression/
   adaptive.py     decoder-in-the-loop adaptive prefix lengths
   benchmark.py    metrics (word/sentence accuracy, CER, WER), runs, CSV/JSON export
   devlog.py       dev-loop run log: entries, comparison with the previous run
-  plots.py        matplotlib charts
+  plots.py        matplotlib charts (optional `plots` group)
   cli.py          python -m neural_compression {compress,decompress,benchmark,plot}
   student.py      single-pass student decoder: vocabulary, encoder, candidate scoring, n-gram fallback
   student_train.py  student training data, training loop, validation evaluation

@@ -33,9 +33,8 @@ Payload layout (all integers unsigned)::
 from __future__ import annotations
 
 import re
+from compression import zstd
 from dataclasses import dataclass, field
-
-import zstandard
 
 FORMAT_VERSION = 1
 FLAG_ADAPTIVE = 1
@@ -145,7 +144,7 @@ class Compressed:
         section += self.body_text().encode("utf-8")
         if use_zstd:
             flags |= FLAG_ZSTD
-            section = zstandard.ZstdCompressor(level=ZSTD_LEVEL).compress(section)
+            section = zstd.compress(section, level=ZSTD_LEVEL)
         return bytes([FORMAT_VERSION, flags, self.retention_pct]) + section
 
     @classmethod
@@ -155,7 +154,7 @@ class Compressed:
         flags, pct = payload[1], payload[2]
         section = payload[HEADER_BYTES:]
         if flags & FLAG_ZSTD:
-            section = zstandard.ZstdDecompressor().decompress(section)
+            section = zstd.decompress(section)
         complete: list[bool] = []
         if flags & FLAG_ADAPTIVE:
             count, pos = _read_varint(section, 0)

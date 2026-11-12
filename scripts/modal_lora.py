@@ -38,13 +38,12 @@ def timeout_for(budget_usd: float) -> int:
 
 
 image = (
-    modal.Image.debian_slim(python_version="3.12")
+    modal.Image.debian_slim(python_version="3.14")
     .pip_install(
         "torch==2.15.0",
         "transformers==5.22.2",
         "peft==0.19.1",
         "accelerate==1.15.0",
-        "zstandard>=0.23",
         "numpy",
     )
     .env(

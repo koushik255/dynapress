@@ -14,10 +14,9 @@ import csv
 import gzip
 import json
 import time
+from compression import zstd
 from dataclasses import dataclass
 from pathlib import Path
-
-import zstandard
 
 from .adaptive import compress_adaptive_many
 from .compressor import WORD_RE, Compressed, compress, compress_with_lengths, split_text
@@ -62,7 +61,7 @@ def gzip_size(data: bytes) -> int:
 
 
 def zstd_size(data: bytes) -> int:
-    return len(zstandard.ZstdCompressor(level=19).compress(data))
+    return len(zstd.compress(data, level=19))
 
 
 # ---------------------------------------------------------------- data

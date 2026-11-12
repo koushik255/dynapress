@@ -28,8 +28,8 @@ TIMEOUT_SECONDS = 3 * 3600
 BATCH_UNITS = 64
 
 image = (
-    modal.Image.debian_slim(python_version="3.12")
-    .pip_install("torch==2.15.0", "transformers==5.22.2", "zstandard>=0.23", "numpy")
+    modal.Image.debian_slim(python_version="3.14")
+    .pip_install("torch==2.15.0", "transformers==5.22.2", "numpy")
     .env({"HF_HOME": "/cache/hf", "TOKENIZERS_PARALLELISM": "false", "OMP_NUM_THREADS": "2"})
     .add_local_dir(ROOT / "neural_compression", "/root/neural_compression")
 )
@@ -79,7 +79,7 @@ def run_book(run_id: str, body: bytes, book: dict) -> dict:
 
     import torch
     import transformers
-    import zstandard
+    from compression import zstd
 
     from neural_compression.adaptive import compress_adaptive_many
     from neural_compression.benchmark import merge_payloads
@@ -104,10 +104,10 @@ def run_book(run_id: str, body: bytes, book: dict) -> dict:
     }
     (root / "original.txt").write_bytes(body)
     t0 = time.perf_counter()
-    baseline = zstandard.ZstdCompressor(level=19).compress(body)
+    baseline = zstd.compress(body, level=19)
     encode_seconds = time.perf_counter() - t0
     t0 = time.perf_counter()
-    assert zstandard.ZstdDecompressor().decompress(baseline) == body
+    assert zstd.decompress(baseline) == body
     summary["zstd"] = {
         "bytes": len(baseline), "encode_seconds": encode_seconds,
         "decode_seconds": time.perf_counter() - t0, "exact": True,

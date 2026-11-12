@@ -31,13 +31,12 @@ GEN_TIMEOUT = 50 * 60
 GEN_SECONDS = 36 * 60  # stop sampling here; the rest is startup, model load, and writing
 
 image = (
-    modal.Image.debian_slim(python_version="3.12")
+    modal.Image.debian_slim(python_version="3.14")
     .pip_install(
         "torch==2.15.0",
         "transformers==5.22.2",
         "peft==0.19.1",
         "accelerate==1.15.0",
-        "zstandard>=0.23",
         "numpy",
     )
     .env({"HF_HOME": "/cache/hf", "TOKENIZERS_PARALLELISM": "false", "OMP_NUM_THREADS": "4"})

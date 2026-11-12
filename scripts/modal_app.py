@@ -27,8 +27,8 @@ ROOT = Path(__file__).resolve().parent.parent
 GPUS = ["L4", "A10G", "L40S", "T4"]
 
 image = (
-    modal.Image.debian_slim(python_version="3.12")
-    .pip_install("torch==2.15.0", "transformers==5.22.2", "zstandard>=0.23", "numpy")
+    modal.Image.debian_slim(python_version="3.14")
+    .pip_install("torch==2.15.0", "transformers==5.22.2", "numpy")
     .env({"HF_HOME": "/cache/hf", "TOKENIZERS_PARALLELISM": "false"})
     .add_local_dir(ROOT / "neural_compression", "/root/neural_compression")
 )

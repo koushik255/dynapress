@@ -1,14 +1,24 @@
-"""Charts for benchmark summaries (static PNGs via matplotlib)."""
+"""Charts for benchmark summaries (static PNGs via matplotlib).
+
+matplotlib is optional (``uv sync --group plots``). Without it, benchmarks still
+write their results and skip the charts; ``plot`` redraws them later.
+"""
 
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
-import matplotlib
+try:
+    import matplotlib
 
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+except ImportError:
+    plt = None
+
+INSTALL_HINT = "matplotlib is not installed: run `uv sync --group plots`"
 
 # Categorical slots in fixed order (validated palette, light mode).
 SERIES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#6250d6", "#e34948"]
@@ -53,6 +63,9 @@ def _fixed(summary):
 
 
 def plot_all(summary: list[dict], out_dir: str | Path, corpus: dict | None = None, device: str = "") -> list[Path]:
+    if plt is None:
+        print(f"{INSTALL_HINT}, then `python -m neural_compression plot --results {out_dir}` to draw the charts", file=sys.stderr)
+        return []
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     fixed = _fixed(summary)
@@ -137,6 +150,8 @@ def plot_all(summary: list[dict], out_dir: str | Path, corpus: dict | None = Non
 
 
 def plot_from_results(results_dir: str | Path) -> list[Path]:
+    if plt is None:
+        raise SystemExit(INSTALL_HINT)
     data = json.loads((Path(results_dir) / "results.json").read_text())
     meta = data["meta"]
     return plot_all(data["summary"], results_dir, meta.get("corpus"), device_label(meta))
