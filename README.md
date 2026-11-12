@@ -134,7 +134,7 @@ shows the same thing: hard text needs longer prefixes.
 ## Quick start
 
 ```bash
-uv sync                                   # Python 3.14, CPU-only PyTorch
+uv sync                                   # Python 3.14, NumPy + tokenizers (no PyTorch)
 uv run pytest                             # decoder-guarantee tests (a few seconds)
 
 echo "The programmer discovered an unexpected problem in the application." > input.txt
@@ -150,15 +150,17 @@ uv run python -m neural_compression plot --results results     # redraw charts
 
 The first model call downloads `HuggingFaceTB/SmolLM2-360M` (~720 MB, pinned
 revision) into the Hugging Face cache. A plain `.txt` file with one sample per
-line also works as `--dataset`. Use `--device cuda` / `--batch-size 64` on a GPU.
+line also works as `--dataset`.
 
-**CPU inference:** on PyTorch >= 2.15 with the Transformers custom-attention
-registry, Llama models (including SmolLM2) automatically use native masked
-grouped-query attention, avoiding copies of repeated key/value heads. Older
-versions and other architectures keep their existing backend; CUDA is unchanged.
-The beam search also skips cache copies when beam rows have not changed.
-The selected attention backend is recorded in benchmark metadata. This keeps
-fp32 weights and the same search constraints; it is not quantization or retraining.
+**Inference backend:** the decoder runs Llama-architecture models (including
+SmolLM2) with a pure NumPy fp32 forward pass (`models.LlamaModel`): weights are
+memory-mapped from `model.safetensors` (BF16 widened to fp32 exactly),
+tokenization uses `tokenizers`, and matrix products go to NumPy's BLAS
+(`--threads` sets its thread count). The shared few-shot prefix is attended by
+every beam row without being copied into the per-row KV cache. It is CPU-only;
+PyTorch is an optional group (`uv sync --group torch`), needed only for the
+student decoder, LoRA training (`--group training` includes it) and the
+Transformers parity test.
 
 **On Modal GPUs** (each configuration runs in its own container, in parallel;
 finished configurations are cached in `results/_parts/`, so reruns resume):
@@ -826,8 +828,8 @@ share. Loading takes ~2 s from a warm cache.
 
 * Fixed model revision, greedy-deterministic beam search (no sampling), seeds set
   (`--seed`), fixed few-shot examples (in `decoder.py`), fixed dataset file.
-* `results/*/results.json` records the model, revision, parameter count, torch /
-  transformers / Python versions, and platform.
+* `results/*/results.json` records the model, revision, parameter count, NumPy /
+  tokenizers / Python versions, and platform.
 * Decoding is deterministic on a given machine (tested). Batched and unbatched
   decoding give identical outputs (tested). Rerunning the adaptive benchmark on
   a different GPU type (A10 vs A10G) gave identical results, and CPU and GPU

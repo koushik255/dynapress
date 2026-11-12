@@ -27,7 +27,7 @@ def _model_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--beam", type=int, default=4)
     p.add_argument("--threads", type=int, default=None)
     p.add_argument("--seed", type=int, default=0)
-    p.add_argument("--device", default=None, help="cpu or cuda (default: cuda if available)")
+    p.add_argument("--device", default=None, help="cpu (the NumPy backend is CPU-only)")
     p.add_argument("--batch-size", type=int, default=16, help="decoder requests per model batch")
 
 
@@ -82,8 +82,8 @@ def cmd_decompress(args) -> None:
 
 
 def cmd_benchmark(args) -> None:
-    import torch
-    import transformers
+    import numpy
+    import tokenizers
 
     from .benchmark import corpus_baselines, export, load_samples, run_adaptive, run_fixed, summarize
     from .plots import device_label, plot_all
@@ -124,8 +124,8 @@ def cmd_benchmark(args) -> None:
         "samples": len(samples),
         "beam": args.beam,
         "seed": args.seed,
-        "torch": torch.__version__,
-        "transformers": transformers.__version__,
+        "numpy": numpy.__version__,
+        "tokenizers": tokenizers.__version__,
         "python": platform.python_version(),
         "platform": platform.platform(),
         "corpus": corpus_baselines(samples, args.retentions),

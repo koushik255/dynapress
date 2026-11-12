@@ -4,15 +4,18 @@ version = "0.1.0"
 description = "Experimental lossy text compression: store word prefixes, reconstruct with a small pretrained LM."
 requires-python = ">=3.14"
 dependencies = [
-    "torch>=2.4",
-    "transformers>=4.46",
     "numpy>=1.26",
+    "tokenizers>=0.20",
+    "huggingface-hub>=0.24",
+    "threadpoolctl>=3.5",
 ]
 
 [dependency-groups]
-dev = ["pytest>=8"]
+dev = ["pytest>=8", "safetensors>=0.4"]
 plots = ["matplotlib>=3.9"]
-training = ["peft>=0.18,<0.20", "accelerate>=1.10,<2"]
+# PyTorch is only needed for the student decoder, LoRA training and the reference test.
+torch = ["torch>=2.4", "transformers>=4.46"]
+training = [{ include-group = "torch" }, "peft>=0.18,<0.20", "accelerate>=1.10,<2"]
 
 [tool.uv]
 python-preference = "managed"

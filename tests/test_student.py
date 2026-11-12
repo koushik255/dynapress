@@ -10,7 +10,8 @@ import subprocess
 import sys
 
 import pytest
-import torch
+
+torch = pytest.importorskip("torch")  # the student decoder is PyTorch-only
 
 from neural_compression.adaptive import compress_adaptive_many
 from neural_compression.benchmark import merge_payloads

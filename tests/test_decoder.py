@@ -1,16 +1,20 @@
-"""Decoder guarantees, checked with a tiny random-weight model (fast; needs a one-time download).
+"""Decoder guarantees, checked with a tiny random-weight Llama (fast; needs a one-time tokenizer download).
 
 A random model reconstructs nothing correctly, which is the point. Whatever the
 model prefers, the output must keep every stored prefix and separator and
 respect the length range implied by the payload.
 """
 
+import json
+import shutil
+
+import numpy as np
 import pytest
 
 from neural_compression.compressor import WORD_RE, Compressed, compress, compress_with_lengths
 from neural_compression.decoder import Decoder, sentence_units
 
-TINY = "hf-internal-testing/tiny-random-gpt2"
+TINY_TOKENIZER = "hf-internal-testing/tiny-random-gpt2"  # small byte-level BPE vocabulary
 
 TEXTS = [
     "The programmer discovered an unexpected problem in the application.",
@@ -20,13 +24,40 @@ TEXTS = [
 
 
 @pytest.fixture(scope="module")
-def lm():
-    from neural_compression.models import load_model
+def tokenizer_file():
+    from huggingface_hub import hf_hub_download
 
     try:
-        return load_model(TINY, threads=2)
+        return hf_hub_download(TINY_TOKENIZER, "tokenizer.json")
     except Exception as exc:  # offline
-        pytest.skip(f"cannot load {TINY}: {exc}")
+        pytest.skip(f"cannot download {TINY_TOKENIZER}: {exc}")
+
+
+@pytest.fixture(scope="module")
+def lm(tokenizer_file, tmp_path_factory):
+    """A 2-layer grouped-attention Llama with random weights, written as safetensors."""
+    from safetensors.numpy import save_file
+    from tokenizers import Tokenizer
+
+    from neural_compression.models import load_model
+
+    path = tmp_path_factory.mktemp("tiny-llama")
+    shutil.copy(tokenizer_file, path / "tokenizer.json")
+    vocab, dim, ffn, kv_dim = Tokenizer.from_file(tokenizer_file).get_vocab_size(), 32, 64, 16
+    config = {"model_type": "llama", "vocab_size": vocab, "hidden_size": dim, "intermediate_size": ffn,
+              "num_hidden_layers": 2, "num_attention_heads": 4, "num_key_value_heads": 2, "rms_norm_eps": 1e-6}
+    (path / "config.json").write_text(json.dumps(config))
+    rng = np.random.default_rng(9)
+    shapes = {"model.embed_tokens.weight": (vocab, dim), "model.norm.weight": (dim,)}
+    for i in range(2):
+        layer = f"model.layers.{i}."
+        shapes |= {layer + "input_layernorm.weight": (dim,), layer + "post_attention_layernorm.weight": (dim,),
+                   layer + "self_attn.q_proj.weight": (dim, dim), layer + "self_attn.k_proj.weight": (kv_dim, dim),
+                   layer + "self_attn.v_proj.weight": (kv_dim, dim), layer + "self_attn.o_proj.weight": (dim, dim),
+                   layer + "mlp.gate_proj.weight": (ffn, dim), layer + "mlp.up_proj.weight": (ffn, dim),
+                   layer + "mlp.down_proj.weight": (dim, ffn)}
+    save_file({k: rng.normal(0, 0.5, s).astype(np.float32) for k, s in shapes.items()}, path / "model.safetensors")
+    return load_model(str(path), threads=2)
 
 
 @pytest.mark.parametrize("context", [0, 2, "full"])
@@ -75,44 +106,44 @@ def test_sentence_units_split_on_sentence_ends():
     assert [len(u) for u in units] == [3, 3, 4]
 
 
-def test_cpu_grouped_attention_preserves_masked_cached_and_batched_inference(lm, tmp_path):
-    import torch
-    from transformers import LlamaConfig, LlamaForCausalLM
+def test_numpy_forward_matches_transformers(tokenizer_file, tmp_path):
+    """Padding, the shared prefix, the KV cache and beam reordering must not change any logits.
+
+    The reference runs each final sequence on its own, unpadded and uncached. The weights are
+    saved in bf16, like SmolLM2, so the BF16 reader is checked too.
+    """
+    torch = pytest.importorskip("torch")
+    transformers = pytest.importorskip("transformers")
 
     from neural_compression.models import load_model
 
-    if tuple(map(int, torch.__version__.split(".")[:2])) < (2, 15):
-        pytest.skip("native CPU grouped attention needs PyTorch >= 2.15")
-    # Real, small grouped-attention model; no pretrained Llama download needed.
-    config = LlamaConfig(
-        vocab_size=len(lm.tokenizer), hidden_size=32, intermediate_size=64,
-        num_hidden_layers=2, num_attention_heads=4, num_key_value_heads=2,
+    shutil.copy(tokenizer_file, tmp_path / "tokenizer.json")
+    config = transformers.LlamaConfig(
+        vocab_size=1000, hidden_size=64, intermediate_size=96, num_hidden_layers=2,
+        num_attention_heads=4, num_key_value_heads=2, tie_word_embeddings=True,
     )
     torch.manual_seed(9)
-    LlamaForCausalLM(config).save_pretrained(tmp_path)
-    lm.tokenizer.save_pretrained(tmp_path)
-    fast = load_model(str(tmp_path), threads=2, device="cpu")
-    reference = load_model(str(tmp_path), threads=2, device="cpu")
-    reference.model.set_attn_implementation("sdpa")
-    ids = torch.tensor([[0, 0, 17, 31, 42], [7, 13, 29, 41, 53]])
-    mask = torch.tensor([[0, 0, 1, 1, 1], [1, 1, 1, 1, 1]])
-    positions = (mask.cumsum(1) - 1).clamp(min=0)
-    with torch.no_grad():
-        # Without padding, causality still has to stop future-token attention.
-        a = fast.model(input_ids=ids[1:], use_cache=False)
-        b = reference.model(input_ids=ids[1:], use_cache=False)
-        torch.testing.assert_close(a.logits, b.logits, rtol=1e-5, atol=1e-6)
-        a = fast.model(input_ids=ids, attention_mask=mask, position_ids=positions, use_cache=True)
-        b = reference.model(input_ids=ids, attention_mask=mask, position_ids=positions, use_cache=True)
-        torch.testing.assert_close(a.logits[:, -1], b.logits[:, -1], rtol=1e-5, atol=1e-6)
-        # A one-token cached step must see the entire earlier, non-padding context.
-        next_mask = torch.cat([mask, torch.ones(2, 1, dtype=mask.dtype)], dim=1)
-        extra = {"input_ids": torch.tensor([[23], [61]]), "attention_mask": next_mask,
-                     "position_ids": positions[:, -1:] + 1, "use_cache": True}
-        a = fast.model(**extra, past_key_values=a.past_key_values)
-        b = reference.model(**extra, past_key_values=b.past_key_values)
-        torch.testing.assert_close(a.logits, b.logits, rtol=1e-5, atol=1e-6)
-    payloads = [compress(t, 0.5).to_bytes() for t in TEXTS]
-    expected = [r.text for r in Decoder(reference, "full", beam_size=2).decode_many(payloads)]
-    actual = [r.text for r in Decoder(fast, "full", beam_size=2).decode_many(payloads)]
-    assert actual == expected
+    transformers.LlamaForCausalLM(config).to(torch.bfloat16).save_pretrained(tmp_path)
+    reference = transformers.LlamaForCausalLM.from_pretrained(tmp_path, dtype=torch.float32).eval()
+    model = load_model(str(tmp_path), threads=2).model
+
+    def expected(sequence):
+        with torch.no_grad():
+            return reference(input_ids=torch.tensor([sequence])).logits[0, -1].numpy()
+
+    prefix, prompts, steps = [5, 9, 400, 77], [[17, 31, 42], [7, 13, 29, 41, 53]], [23, 61, 999]
+    cache = model.new_cache(1)
+    model.forward(np.array([prefix]), np.arange(len(prefix))[None], cache)
+    cache = model.new_cache(2, model.prefix_states(cache))
+    ids, valid = np.zeros((2, 5), dtype=np.int64), np.zeros((2, 5), dtype=bool)
+    for row, p in enumerate(prompts):
+        ids[row, 5 - len(p) :], valid[row, 5 - len(p) :] = p, True
+    positions = np.maximum(len(prefix) + valid.cumsum(1) - 1, 0)
+    logits = model.forward(ids, positions, cache, valid)
+    for row, p in enumerate(prompts):
+        np.testing.assert_allclose(logits[row], expected(prefix + p), rtol=1e-4, atol=1e-5)
+    beams = [1, 1, 0]  # row 1 splits in two, row 0 moves last
+    cache.reorder(np.array(beams))
+    logits = model.forward(np.array(steps)[:, None], positions[beams, -1:] + 1, cache)
+    for row, (src, token) in enumerate(zip(beams, steps)):
+        np.testing.assert_allclose(logits[row], expected(prefix + prompts[src] + [token]), rtol=1e-4, atol=1e-5)
