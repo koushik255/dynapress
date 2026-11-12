@@ -41,8 +41,18 @@ image = (
     )
     .env({"HF_HOME": "/cache/hf", "TOKENIZERS_PARALLELISM": "false", "OMP_NUM_THREADS": "4"})
     .add_local_dir(ROOT / "neural_compression", "/root/neural_compression")
-    .add_local_file(ROOT / "data/lora/train.jsonl", "/data/lora/train.jsonl")
 )
+
+
+def with_files(img: modal.Image, files: dict[Path, str]) -> modal.Image:
+    """Add the local files that exist; runs that read their data from the volume need none of them."""
+    for local, remote in files.items():
+        if local.exists():
+            img = img.add_local_file(local, remote)
+    return img
+
+
+image = with_files(image, {ROOT / "data/lora/train.jsonl": "/data/lora/train.jsonl"})
 cache = modal.Volume.from_name("neural-compression-hf-cache")
 app = modal.App("neural-compression-student", image=image)
 
@@ -140,11 +150,11 @@ TRAIN_HOURLY_USD = 1.10 + 8 * 0.0473 + 16 * 0.008  # A10G + 8 cores (data worker
 TRAIN_SECONDS = 62 * 60  # training stops here (best dev checkpoint kept); then GPU evaluation
 
 TRAIN_DATA = Path(os.environ.get("STUDENT_DATA", ROOT / "data/student/books_all"))
-train_image = image.add_local_file(TRAIN_DATA / "train.jsonl", "/data/books_all/train.jsonl").add_local_file(
-    TRAIN_DATA / "validation.jsonl", "/data/books_all/validation.jsonl"
-).add_local_file(
-    ROOT / "data/lora/validation.jsonl", "/data/lora/validation.jsonl"
-)
+train_image = with_files(image, {
+    TRAIN_DATA / "train.jsonl": "/data/books_all/train.jsonl",
+    TRAIN_DATA / "validation.jsonl": "/data/books_all/validation.jsonl",
+    ROOT / "data/lora/validation.jsonl": "/data/lora/validation.jsonl",
+})
 
 
 @app.function(
@@ -189,6 +199,9 @@ def train_remote(run_id: str, teacher: str, options: dict) -> dict:
         seed=0,
     )
     vars(args).update(options)
+    # Options can point at data on the volume, such as {"data": "/cache/data/fiction-v1", "pilot_data": "/cache/data/fiction-v1"}.
+    args.data = Path(args.data)
+    pilot_data = Path(getattr(args, "pilot_data", "/data/lora"))
     error = None
     lines: list[str] = []
 
@@ -207,7 +220,7 @@ def train_remote(run_id: str, teacher: str, options: dict) -> dict:
         cache.commit()
         for device in ("cuda", "cpu"):
             student_train.evaluate(
-                SimpleNamespace(model=root / "model", data=Path("/data/lora"), out=root / f"eval-{device}", start=0, per_book=25, device=device, threads=4)
+                SimpleNamespace(model=root / "model", data=pilot_data, out=root / f"eval-{device}", start=0, per_book=25, device=device, threads=4)
             )
             if args.init_model:
                 student_train.evaluate(

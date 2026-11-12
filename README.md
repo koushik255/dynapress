@@ -594,6 +594,51 @@ models are unchanged, and all 20 tests passed. No new training or Modal jobs
 were launched. Plain zstd remains much faster; the student trades runtime and
 shared model storage for smaller payloads, not for beating zstd's speed.
 
+### Larger fiction corpus (prepared, not yet trained)
+
+`data/fiction_books.json` keeps the ten books of `data/lora_books.json` first, in
+the same order and splits, and adds 294 English fiction training books from the
+Project Gutenberg catalog (300 training books in total). `scripts/build_fiction_books.py`
+built it: seeded random order, a fiction subject but no poetry or drama, one edition
+per title, at most two books per author, at least 500 sentence units, and no books
+by the validation, test or dev authors (Wells, Carroll, Wilde, Stoker, Phillips).
+Gutenberg blocks automated downloads from its main site, so files come from the
+PGLAF mirror (byte-identical to the pinned checksums of the original ten), one
+request per second. Checksums are pinned.
+
+```bash
+uv run --frozen python scripts/build_fiction_books.py --train-books 300
+uv run --frozen python -m neural_compression.finetune prepare --manifest data/fiction_books.json --out data/fiction --per-book 5000
+```
+
+With at most 5,000 sentences per book this gives **920,380 training sentences**
+(the student so far saw 20,610 real ones plus 327,774 teacher sentences). Validation
+has 3,855 sentences: five shared with new training books were removed, which shifts
+row positions after the first 25 per book, so the pilot 50 are unchanged but later
+rows are not. `results/student/fiction/data_manifest.json` records every source and
+split hash. Prepared train/validation files and the raw training and validation books,
+never test, are on the Modal volume at `/data/fiction-v1/`;
+`scripts/modal_student.py::train` reads them with
+`--options '{"data": "/cache/data/fiction-v1", "pilot_data": "/cache/data/fiction-v1"}'`.
+
+A larger word list follows from the data: on the dev set below, 2.49% of words are
+outside a teacher-text list of 25k words (count >= 2), against 1.03% for 57k words
+from teacher text plus the first ~200 downloaded books. At count >= 10 the list stays
+at 27k words and the out-of-vocabulary rate is 1.78%. A fresh model is needed: continuation keeps
+the old vocabulary.
+
+**Dev set:** validation rows 125–375 per book of `data/fiction/validation.jsonl`,
+500 sentences and 9,110 words, disjoint from the pilot 50 (rows 0–25) and the
+training-time selection rows (25–125). Baseline, original student, orb CPU,
+two threads (`results/student/fiction/baseline_dev500_orb_cpu2.json`): **88.12%**
+fixed-50 word accuracy; adaptive-100 merged payload **16,592 B after zstd** against
+19,174 B for zstd of the originals; all 500 payloads and the merged corpus decode
+exactly; 4.78 mean rounds. The pilot 50 reproduce 87.35% and 1,937 B.
+
+**Word weighting:** `student_train train --word-weight missing-chars` weights each
+truncated word's loss by its missing characters (at least 1), roughly what a wrong
+guess costs in adaptive mode. The default `none` keeps the original equal weighting.
+
 ## How it works
 
 ### 1. Compression (`compressor.py`)

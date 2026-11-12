@@ -89,7 +89,8 @@ def sample_payload(text: str, rng: random.Random) -> Compressed:
     return compress_with_lengths(text, lengths, 25)
 
 
-def example(text: str, rng: random.Random, vocab: Vocab) -> tuple[dict, list[int]]:
+def example(text: str, rng: random.Random, vocab: Vocab) -> tuple[dict, list[int], list[int]]:
+    """Features, the gold candidate of each truncated word (-100 if complete), and its missing characters."""
     doc = sample_payload(text, rng)
     slots = doc.slots()
     f = unit_features(doc, slots, range(len(slots)), vocab)
@@ -100,24 +101,26 @@ def example(text: str, rng: random.Random, vocab: Vocab) -> tuple[dict, list[int
             gold.append(-100)
         else:
             gold.append(vocab.index.get(w.lower(), len(vocab)))  # in vocab => among the candidates
-    return f, gold
+    return f, gold, [len(w) - len(s.prefix) for s, w in zip(slots, words)]
 
 
-def collate(batch: list[tuple[dict, list[int]]]) -> dict:
+def collate(batch: list[tuple[dict, list[int], list[int]]]) -> dict:
     B = len(batch)
-    L = max(len(g) for _, g in batch)
+    L = max(len(g) for _, g, _ in batch)
     t = {k: torch.zeros(B, L, dtype=torch.long) for k in INT_KEYS}
     pad = torch.ones(B, L, dtype=torch.bool)
     spans = torch.zeros(B, L, 4, dtype=torch.long)
     gold = torch.full((B, L), -100, dtype=torch.long)
+    missing = torch.zeros(B, L, dtype=torch.long)
     char_ids, offsets = [], []
-    for b, (f, g) in enumerate(batch):
+    for b, (f, g, m) in enumerate(batch):
         n = len(g)
         for k in INT_KEYS:
             t[k][b, :n] = torch.tensor(f[k])
         pad[b, :n] = False
         spans[b, :n] = torch.tensor(f["spans"])
         gold[b, :n] = torch.tensor(g)
+        missing[b, :n] = torch.tensor(m)
         ends = f["char_offsets"][1:] + [len(f["char_ids"])]
         for j in range(L):
             offsets.append(len(char_ids))
@@ -128,6 +131,7 @@ def collate(batch: list[tuple[dict, list[int]]]) -> dict:
     t["char_offsets"] = torch.tensor(offsets)
     t["spans"] = spans.view(B * L, 4)
     t["gold"] = gold.view(B * L)
+    t["missing"] = missing.view(B * L)
     return t
 
 
@@ -147,8 +151,12 @@ class Batches(torch.utils.data.IterableDataset):
                 yield collate([example(s, rng, self.vocab) for s in chunk])
 
 
-def train_loss(model: StudentModel, t: dict, vlen: torch.Tensor) -> tuple[torch.Tensor, int, int]:
-    """Cross-entropy over each truncated word's candidate set plus OOV; the same scores the decoder uses."""
+def train_loss(model: StudentModel, t: dict, vlen: torch.Tensor, word_weight: str = "none") -> tuple[torch.Tensor, int, int]:
+    """Cross-entropy over each truncated word's candidate set plus OOV; the same scores the decoder uses.
+
+    ``word_weight="missing-chars"`` weights each word by its missing characters (at least 1),
+    roughly what a wrong guess costs in adaptive mode, where wrong words get longer prefixes.
+    """
     B, L = t["case"].shape
     V, d = model.word.weight.shape
     E = model.word.weight
@@ -166,7 +174,11 @@ def train_loss(model: StudentModel, t: dict, vlen: torch.Tensor) -> tuple[torch.
     logits = (model.out(hs) @ E.T + model.bias).float().masked_fill(~mask, -math.inf)
     logits = torch.cat([logits, model.oov(hs).float()], 1)
     gold = t["gold"][sel]
-    loss = torch.nn.functional.cross_entropy(logits, gold)
+    if word_weight == "missing-chars":
+        w = t["missing"][sel].clamp(min=1).to(logits.device, logits.dtype)  # fixed payloads can hide nothing
+        loss = (torch.nn.functional.cross_entropy(logits, gold, reduction="none") * w).sum() / w.sum()
+    else:
+        loss = torch.nn.functional.cross_entropy(logits, gold)
     correct = int((logits.argmax(1) == gold).sum())
     return loss, correct, int(sel.sum())
 
@@ -324,7 +336,7 @@ def train(args, deadline: float | None = None, log=lambda s: print(s, flush=True
             group["lr"] = lr
         batch = {k: v.to(device, non_blocking=True) for k, v in batch.items()}
         with torch.autocast(device.type, dtype=torch.bfloat16, enabled=use_amp):
-            loss, correct, total = train_loss(model, batch, vlen)
+            loss, correct, total = train_loss(model, batch, vlen, getattr(args, "word_weight", "none"))
         opt.zero_grad(set_to_none=True)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -381,6 +393,7 @@ def main() -> None:
     p.add_argument("--dev-per-book", type=int, default=100)
     p.add_argument("--dev-start", type=int, default=25)
     p.add_argument("--select-by", choices=["fixed50", "adaptive-bytes"], default="fixed50")
+    p.add_argument("--word-weight", choices=["none", "missing-chars"], default="none", help="Loss weight of each truncated word")
     p.add_argument("--workers", type=int, default=1)
     p.add_argument("--threads", type=int, default=2)
     p.add_argument("--device", default="cpu")

@@ -9,4 +9,5 @@ results/lora/
 *.pem
 .amp/portals/*
 data/student/
+data/fiction/
 results/student/runs/

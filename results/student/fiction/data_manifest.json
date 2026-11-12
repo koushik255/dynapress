@@ -1,0 +1,2452 @@
+{
+  "seed": 0,
+  "per_book": 5000,
+  "books": [
+    {
+      "id": "gutenberg-120",
+      "title": "Treasure Island",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/120/pg120.txt",
+      "sha256": "5bc08275eacea8640b1aa185c645283bb8c564d7b23df6b03437d229b4fc6ebd",
+      "available_sentences": 3076
+    },
+    {
+      "id": "gutenberg-35",
+      "title": "The Time Machine",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/35/pg35.txt",
+      "sha256": "2892e919000e17c83e1dac51b30f4675db50536b644d7579fe8a89bb399a9bdc",
+      "available_sentences": 1714
+    },
+    {
+      "id": "gutenberg-1661",
+      "title": "The Adventures of Sherlock Holmes",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/1661/pg1661.txt",
+      "sha256": "922e2a12ccb43a4c9544c260b2166c6ad2097aeb5957faeee113f173bb857cd0",
+      "available_sentences": 5359
+    },
+    {
+      "id": "gutenberg-76",
+      "title": "Adventures of Huckleberry Finn",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/76/pg76.txt",
+      "sha256": "d617a37aa7ae1e1a93dcde2634db2bccb86824e31e29a55230bdbf77d6872d59",
+      "available_sentences": 4937
+    },
+    {
+      "id": "gutenberg-84",
+      "title": "Frankenstein",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/84/pg84.txt",
+      "sha256": "2b97b7f8aad508649481d8dd4f6b54f9b965ddb3ba634e9151c815f537b49e42",
+      "available_sentences": 2997
+    },
+    {
+      "id": "gutenberg-64317",
+      "title": "The Great Gatsby",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/64317/pg64317.txt",
+      "sha256": "ce760ec377accd352b41bb8f64504a72d7aa18ab3afb42ded2b56cecacf29e35",
+      "available_sentences": 2528
+    },
+    {
+      "id": "gutenberg-36",
+      "title": "The War of the Worlds",
+      "split": "validation",
+      "url": "https://gutenberg.pglaf.org/cache/epub/36/pg36.txt",
+      "sha256": "8417469e3ab664749f7b36ebb85799075818207b0380b54c27d07d592a44117d",
+      "available_sentences": 2860
+    },
+    {
+      "id": "gutenberg-11",
+      "title": "Alice's Adventures in Wonderland",
+      "split": "validation",
+      "url": "https://gutenberg.pglaf.org/cache/epub/11/pg11.txt",
+      "sha256": "01b38ea4c710a84bc18d0bd41271a5a1a92b94e97b2812f4dece97d4a694725e",
+      "available_sentences": 1000
+    },
+    {
+      "id": "gutenberg-174",
+      "title": "The Picture of Dorian Gray",
+      "split": "test",
+      "url": "https://gutenberg.pglaf.org/cache/epub/174/pg174.txt",
+      "sha256": "38f36b510417177aa87a6a24c968e3ec63a447b7df36a9c1a7c5a3f2d9e51547",
+      "available_sentences": 5181
+    },
+    {
+      "id": "gutenberg-345",
+      "title": "Dracula",
+      "split": "test",
+      "url": "https://gutenberg.pglaf.org/cache/epub/345/pg345.txt",
+      "sha256": "96cd16eacdbfebae8fdda5591f66e0cc8ee76be18e0cd1aca02bc00615782d28",
+      "available_sentences": 7214
+    },
+    {
+      "id": "gutenberg-36829",
+      "title": "Throckmorton: A Novel",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/36829/pg36829.txt",
+      "sha256": "3b6cba9ddd2f16378451652e98bbb3d2b517221ea82219a65adbe16766b6cf7b",
+      "available_sentences": 3608
+    },
+    {
+      "id": "gutenberg-34650",
+      "title": "A Gentleman Player; His Adventures on a Secret Mission for Queen Elizabeth",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/34650/pg34650.txt",
+      "sha256": "2745447ec1028932b21b949c60ccb2f6c77d2539f82909d33657c70612f52009",
+      "available_sentences": 4373
+    },
+    {
+      "id": "gutenberg-43381",
+      "title": "The Story of Rolf and the Viking's Bow",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/43381/pg43381.txt",
+      "sha256": "7583a20cbf6872b93147215f6e1acb43ee978f4b70d63d2472ab7d34c25be81b",
+      "available_sentences": 3103
+    },
+    {
+      "id": "gutenberg-19928",
+      "title": "Sunset Pass; or, Running the Gauntlet Through Apache Land",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/19928/pg19928.txt",
+      "sha256": "2ddc1fe74bdf965ad16df0ad238c98e1e8de7c4eb9f0b8d8b5964f468f7c5d80",
+      "available_sentences": 1205
+    },
+    {
+      "id": "gutenberg-18150",
+      "title": "The Hidden Places",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/18150/pg18150.txt",
+      "sha256": "bcb7900b3b63b7cf625f572488e635a849225ec9f4a128bd3551cb9a0bf18ec7",
+      "available_sentences": 4393
+    },
+    {
+      "id": "gutenberg-21871",
+      "title": "Adventures in the Far West",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/21871/pg21871.txt",
+      "sha256": "1cdbcb0c1be46e2affd83a6c21ed966c86d099e88a518376c2905473a0bf21a3",
+      "available_sentences": 1508
+    },
+    {
+      "id": "gutenberg-79541",
+      "title": "The Mayor of New York",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/79541/pg79541.txt",
+      "sha256": "b4182d2886e15c402a973a0fbb9ed4b8cc35d031638e052ed77f522d7d7a8284",
+      "available_sentences": 5334
+    },
+    {
+      "id": "gutenberg-67195",
+      "title": "The Poor Man",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/67195/pg67195.txt",
+      "sha256": "246f21c6a272bdb0645d69fb8ab40e75bbc27ce8a5b634e95cb00c490495c4cd",
+      "available_sentences": 3770
+    },
+    {
+      "id": "gutenberg-30840",
+      "title": "The Girls of Central High on Lake Luna; Or, The Crew That Won",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/30840/pg30840.txt",
+      "sha256": "c04b159a7dabf62d6adb85a37a4a5a9bcb967432562019261d34b84cce40c5bb",
+      "available_sentences": 2395
+    },
+    {
+      "id": "gutenberg-1701",
+      "title": "The Story of Waitstill Baxter",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/1701/pg1701.txt",
+      "sha256": "caaa4737796c4c4d2f4263c4b3f2a8e6f3a554d7c7e8cc64f24590b717fbb789",
+      "available_sentences": 3008
+    },
+    {
+      "id": "gutenberg-3793",
+      "title": "Joseph II. and His Court: An Historical Novel",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/3793/pg3793.txt",
+      "sha256": "9c205ec532b6b125c096ef0ed627ccfd1bc2597093e0d7d72c1f79178735a3c1",
+      "available_sentences": 18604
+    },
+    {
+      "id": "gutenberg-21387",
+      "title": "In the Eastern Seas",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/21387/pg21387.txt",
+      "sha256": "afc3ef7d717f51fecd85a21e418bcdca125ea524c18b9e9b3f4c99922ab17b1f",
+      "available_sentences": 7520
+    },
+    {
+      "id": "gutenberg-7303",
+      "title": "Equality",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/7303/pg7303.txt",
+      "sha256": "ae93d2ce4afbc4c9c5a00a0e90e551062e913e1aa3e41d1fbd91a1a52d0a162f",
+      "available_sentences": 4871
+    },
+    {
+      "id": "gutenberg-27903",
+      "title": "The Magic World",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/27903/pg27903.txt",
+      "sha256": "2b8dbf831dcdd46e6079b847da20f787503b7cbd27d64436b78a8080eb5fa7e6",
+      "available_sentences": 3266
+    },
+    {
+      "id": "gutenberg-46675",
+      "title": "Oliver Twist; or, The Parish Boy's Progress. Illustrated",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/46675/pg46675.txt",
+      "sha256": "36ea31d510a142c2adfdce22dcb6010ec7475398772270c5ae61a1bea58c9677",
+      "available_sentences": 6716
+    },
+    {
+      "id": "gutenberg-74753",
+      "title": "The well in the wood",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/74753/pg74753.txt",
+      "sha256": "f3bd33f6d8d65c2b8c88f0b4304d56f96855d9f6a30d2ee6885eedc84f2cef13",
+      "available_sentences": 1298
+    },
+    {
+      "id": "gutenberg-7045",
+      "title": "Marching Men",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/7045/pg7045.txt",
+      "sha256": "c1875928afc548621b0e451268938f451d5c5762bc8509e4f99fece342edc9d1",
+      "available_sentences": 3490
+    },
+    {
+      "id": "gutenberg-47769",
+      "title": "Saragossa: A Story of Spanish Valor",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/47769/pg47769.txt",
+      "sha256": "c80bd49745f3b0dded03f2461001b6612d6e328ae25f9c10992c11830e395789",
+      "available_sentences": 3669
+    },
+    {
+      "id": "gutenberg-16540",
+      "title": "Melchior's Dream and Other Tales",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/16540/pg16540.txt",
+      "sha256": "544e20c639aab78eb4a7835744854d2e0fc2f83234fb1917d45e98c812d90953",
+      "available_sentences": 2578
+    },
+    {
+      "id": "gutenberg-76077",
+      "title": "Probation",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/76077/pg76077.txt",
+      "sha256": "299905da7090c027f44fe64711d0d3b2d66478d65837df0e39b7c2457685a834",
+      "available_sentences": 6896
+    },
+    {
+      "id": "gutenberg-33390",
+      "title": "Bosom Friends: A Seaside Story",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/33390/pg33390.txt",
+      "sha256": "85374fa1d1815f98df5dc28e57e07f7b942e5d260f4acf667283bb489b98aa57",
+      "available_sentences": 2227
+    },
+    {
+      "id": "gutenberg-26310",
+      "title": "My New Home",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/26310/pg26310.txt",
+      "sha256": "0d1d791a26cbdce563f369965daecaf19043113801acec98811618326aa7c35c",
+      "available_sentences": 2031
+    },
+    {
+      "id": "gutenberg-401",
+      "title": "Blix",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/401/pg401.txt",
+      "sha256": "92a8a7b43741afc057a55b534d7df97c991e457114e9bf3b89da5a74ad3180d0",
+      "available_sentences": 2851
+    },
+    {
+      "id": "gutenberg-30647",
+      "title": "Mystery at Geneva: An Improbable Tale of Singular Happenings",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/30647/pg30647.txt",
+      "sha256": "c4d219eb70a81bc0375314968087c50ef5f892e9490994133ee3333edcf739e9",
+      "available_sentences": 2458
+    },
+    {
+      "id": "gutenberg-23781",
+      "title": "A Little Girl of Long Ago; Or, Hannah Ann A Sequel to a Little Girl in Old New York",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/23781/pg23781.txt",
+      "sha256": "89329e122039ea74cbf2fc4e71a9d0ab676c4fa0cc4874245642e1cc13fa5c3e",
+      "available_sentences": 5944
+    },
+    {
+      "id": "gutenberg-10977",
+      "title": "The grizzly king",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/10977/pg10977.txt",
+      "sha256": "e0f87e4e32ce3c1144a0ef5f6a915674cc707afe6023599d06667feaedd6e8a6",
+      "available_sentences": 2969
+    },
+    {
+      "id": "gutenberg-6055",
+      "title": "The Bobbsey Twins at Snow Lodge",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/6055/pg6055.txt",
+      "sha256": "e729c1886ce8835e46af565954c36ba2dd35fe09ea9755f672487278ea03bbe6",
+      "available_sentences": 2318
+    },
+    {
+      "id": "gutenberg-72719",
+      "title": "The Greene murder case",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/72719/pg72719.txt",
+      "sha256": "ed2192c1c73f91477f34d107601fe1999de59020604dc55549ebc04d64310681",
+      "available_sentences": 5433
+    },
+    {
+      "id": "gutenberg-217",
+      "title": "Sons and Lovers",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/217/pg217.txt",
+      "sha256": "1801179983c48e1fa1e5f77b068d2c77e61d3b9cad839c841c809397f022a1d6",
+      "available_sentences": 12533
+    },
+    {
+      "id": "gutenberg-28301",
+      "title": "The Beloved Woman",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/28301/pg28301.txt",
+      "sha256": "5136f37fe847603550a6bf03eb0ac91318790dd5b72dea11f364e93a0f0cedda",
+      "available_sentences": 4495
+    },
+    {
+      "id": "gutenberg-26986",
+      "title": "The Ghost Girl",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/26986/pg26986.txt",
+      "sha256": "33ee5b5c8d21fee0b53a749e081215c5a124f5acb9d0980a69dc1988ff2cf16c",
+      "available_sentences": 3315
+    },
+    {
+      "id": "gutenberg-54919",
+      "title": "The Romance of War; or, The Highlanders in Spain, Volume 2 (of 3)",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/54919/pg54919.txt",
+      "sha256": "f0c0090582c386b545e5787a20dcb9ec0583c0043142967ed33c8a43ea0cb550",
+      "available_sentences": 2730
+    },
+    {
+      "id": "gutenberg-57407",
+      "title": "\"My Merry Rockhurst\" Being Some Episodes in the Life of Viscount Rockhurst, a Friend of King Charles the Second, and at One Time Constable of His Majesty's Tower of London",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/57407/pg57407.txt",
+      "sha256": "256ec341621521564cec26cf83578735f1a3f1eb70cdf06884aa09bf151e0680",
+      "available_sentences": 3476
+    },
+    {
+      "id": "gutenberg-50169",
+      "title": "Hermia Suydam",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/50169/pg50169.txt",
+      "sha256": "71c0b54f601f359396b7d9da138a7a8fd70355b130102af53a652a438f7db106",
+      "available_sentences": 2430
+    },
+    {
+      "id": "gutenberg-350",
+      "title": "Fanny Herself",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/350/pg350.txt",
+      "sha256": "c0427a8755af73df948cb775ed3793a70c78413580368aec627b9bdc72484670",
+      "available_sentences": 6243
+    },
+    {
+      "id": "gutenberg-44151",
+      "title": "Perkins of Portland: Perkins The Great",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/44151/pg44151.txt",
+      "sha256": "283524dfdaf1d1ecf2e3056215fa1d506a4dbf1098aae55df7fe31351503ba83",
+      "available_sentences": 1348
+    },
+    {
+      "id": "gutenberg-47165",
+      "title": "Fighting the Sea; Or, Winter at the Life-Saving Station",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/47165/pg47165.txt",
+      "sha256": "bc58f19eec2f7154e0802196c2b1b3c08c7bde1ed2838990738ab4bcdb0bc20e",
+      "available_sentences": 3614
+    },
+    {
+      "id": "gutenberg-31343",
+      "title": "The Invaders",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/31343/pg31343.txt",
+      "sha256": "cbf660bf93218642f19b42d36c2f0d2106c40dfd4b2f0bc0e951af0f2847fe85",
+      "available_sentences": 1657
+    },
+    {
+      "id": "gutenberg-45963",
+      "title": "Mildred at Home: With Something About Her Relatives and Friends. A sequel to Mildred's married life.",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/45963/pg45963.txt",
+      "sha256": "b6b3bb89995aff2fa97008dfb90eda45df0eb5e168dbf1ce04751cf315fb8900",
+      "available_sentences": 2653
+    },
+    {
+      "id": "gutenberg-11534",
+      "title": "The Lions of the Lord: A Tale of the Old West",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/11534/pg11534.txt",
+      "sha256": "01d6d28f0a2e2f0b960d24a3b19f7b1c425005d07b1c4a4673a8c77c2ed2f2c6",
+      "available_sentences": 5636
+    },
+    {
+      "id": "gutenberg-69250",
+      "title": "The power of sympathy: or, The triumph of nature. Founded in truth.",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/69250/pg69250.txt",
+      "sha256": "e882941e1196bcc1d3ab427563e0bf3455dee7c73b6bcd467c0ed27c64605244",
+      "available_sentences": 1081
+    },
+    {
+      "id": "gutenberg-6023",
+      "title": "Catharine Furze",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/6023/pg6023.txt",
+      "sha256": "aef1c1c64a43f1129a5a3abf4cd458fc56ac7c8d8ea3363583360d98337c8451",
+      "available_sentences": 3525
+    },
+    {
+      "id": "gutenberg-16207",
+      "title": "Ad\u00e8le Dubois",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/16207/pg16207.txt",
+      "sha256": "d7907ccbc452b9266617377ddbd622d641e6d5b49fa96c80fd3a78a52fa767c8",
+      "available_sentences": 2985
+    },
+    {
+      "id": "gutenberg-34168",
+      "title": "Zula",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/34168/pg34168.txt",
+      "sha256": "9844210137068662ce1fedf5100316a1392234fa9a97b61fb62616c12c685d0d",
+      "available_sentences": 4540
+    },
+    {
+      "id": "gutenberg-57046",
+      "title": "The Pool of Stars",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/57046/pg57046.txt",
+      "sha256": "bb996f037a4a035dfeedd4427cafe7fd017ead53d8a912dc195acea375189f57",
+      "available_sentences": 1960
+    },
+    {
+      "id": "gutenberg-17854",
+      "title": "The Sport of the Gods",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/17854/pg17854.txt",
+      "sha256": "7dca361cb97fd030b48ccd64648e31c037849dd75ff325388c8cf99acbc09de0",
+      "available_sentences": 2481
+    },
+    {
+      "id": "gutenberg-71629",
+      "title": "I'll dream of you",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/71629/pg71629.txt",
+      "sha256": "8a7961b283da29769f353ba52c5c3f2c2dad14b9a04cf560c567de0199aef341",
+      "available_sentences": 619
+    },
+    {
+      "id": "gutenberg-29561",
+      "title": "In a Little Town",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/29561/pg29561.txt",
+      "sha256": "6ecd764f3bd11b50edcc67c2e0aa4d3c1009d30e3a4a92774d0e738323bd764f",
+      "available_sentences": 5476
+    },
+    {
+      "id": "gutenberg-1623",
+      "title": "The New Magdalen",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/1623/pg1623.txt",
+      "sha256": "4a0c4c9c02c11e7f3082697441637e9073cdae8d111037e87ff2d86d293971de",
+      "available_sentences": 5759
+    },
+    {
+      "id": "gutenberg-24593",
+      "title": "The oriental story book",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/24593/pg24593.txt",
+      "sha256": "7cd80a43aa2450e4ba217b567aff801f1cd46ed2b2182ad6906229dfa97ec812",
+      "available_sentences": 1608
+    },
+    {
+      "id": "gutenberg-9150",
+      "title": "Dick Sands, the Boy Captain",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/9150/pg9150.txt",
+      "sha256": "dd18a5b5384ec1207502ee0dc7c630dafa590626a69d818da8e837ebedd79d22",
+      "available_sentences": 3913
+    },
+    {
+      "id": "gutenberg-3831",
+      "title": "The Secret Power",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/3831/pg3831.txt",
+      "sha256": "9d868106dc29237c4220279352f5374825604bf4399239172b639dc6891604a3",
+      "available_sentences": 4495
+    },
+    {
+      "id": "gutenberg-10942",
+      "title": "The Claim Jumpers: A Romance",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/10942/pg10942.txt",
+      "sha256": "a455c97bbd29d42f198a4d7123aa34bbd4f61727627732dd0ffc48b066de0795",
+      "available_sentences": 2912
+    },
+    {
+      "id": "gutenberg-26011",
+      "title": "The Prairie Mother",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/26011/pg26011.txt",
+      "sha256": "a7c164694b8cc9d72a21e42cb318132519f9b5bc10f4fe1050e9d690d0620731",
+      "available_sentences": 3690
+    },
+    {
+      "id": "gutenberg-56562",
+      "title": "Kidnapped (Illustrated) Being Memoirs of the Adventures of David Balfour in the Year 1751",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/56562/pg56562.txt",
+      "sha256": "0726ea99601080c2850df1ba938c306e514eec19a009d73fb219fb84385a9aa2",
+      "available_sentences": 3089
+    },
+    {
+      "id": "gutenberg-56799",
+      "title": "The Downfall (La D\u00e9b\u00e2cle): A Story of the Horrors of War",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/56799/pg56799.txt",
+      "sha256": "602527b053781cdfcb907d5339c614d6c196a96fad51f287701852626ec5c61c",
+      "available_sentences": 8667
+    },
+    {
+      "id": "gutenberg-36329",
+      "title": "The Old Blood",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/36329/pg36329.txt",
+      "sha256": "6db8804c218da93c7fbda38824ad964def0e4f2e43ccc73555fb20a5df16aa1b",
+      "available_sentences": 4709
+    },
+    {
+      "id": "gutenberg-76920",
+      "title": "Expelled",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/76920/pg76920.txt",
+      "sha256": "b118253e77a1288b86c85695b8ff47527464f5cd1ea7d1fe05d0ba42ade842bb",
+      "available_sentences": 4431
+    },
+    {
+      "id": "gutenberg-54523",
+      "title": "Tor, a Street Boy of Jerusalem",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/54523/pg54523.txt",
+      "sha256": "772b22395799b02d3d7420c4c261737f00a7161177159007ffaea7d117b948ba",
+      "available_sentences": 1025
+    },
+    {
+      "id": "gutenberg-35195",
+      "title": "The Fatal Cord, and The Falcon Rover",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/35195/pg35195.txt",
+      "sha256": "683ee0676b3f4b427ece6232a9bdd5d7ca8810cc7382916f63584bdc3badef41",
+      "available_sentences": 3348
+    },
+    {
+      "id": "gutenberg-72740",
+      "title": "Miles Lawson",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/72740/pg72740.txt",
+      "sha256": "1539115e712b04fe70f32f1672136ff5df9a7951d821e669d9db655437d8c193",
+      "available_sentences": 849
+    },
+    {
+      "id": "gutenberg-1976",
+      "title": "Peter Ruff and the Double Four",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/1976/pg1976.txt",
+      "sha256": "872d064c704944ea7884d49110e2f1ad00f0c1167ee7ea0048be018a7eb5d8f1",
+      "available_sentences": 7638
+    },
+    {
+      "id": "gutenberg-57638",
+      "title": "The Chartreuse of Parma Translated from the French of Stendhal (Henri Beyle)",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/57638/pg57638.txt",
+      "sha256": "9736795d6d580c57ef390a0f14192e56f93f91911bd01c377d1518f83ad19070",
+      "available_sentences": 8034
+    },
+    {
+      "id": "gutenberg-8462",
+      "title": "The Man in Gray: A Romance of North and South",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/8462/pg8462.txt",
+      "sha256": "82c20dc133bd977df0f31b716ed10d315953894e6a433bbf123990c23c7896fb",
+      "available_sentences": 7954
+    },
+    {
+      "id": "gutenberg-33380",
+      "title": "Love's Usuries",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/33380/pg33380.txt",
+      "sha256": "ca5e347e7f77a00e0316830114ae46d5c9a4a361e1a03e81c2b61fb9a994f655",
+      "available_sentences": 2216
+    },
+    {
+      "id": "gutenberg-72869",
+      "title": "Meet the Tiger",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/72869/pg72869.txt",
+      "sha256": "b3cf630cdebc6967e13630d53e8f86ca7385f61999629e0771cccf3a7b36c8e0",
+      "available_sentences": 4051
+    },
+    {
+      "id": "gutenberg-50002",
+      "title": "The Hand-Made Gentleman: A Tale of the Battles of Peace",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/50002/pg50002.txt",
+      "sha256": "6c67f935be3c77570f0de2a355409cdd259020e2441ef431008c978a2457c1ce",
+      "available_sentences": 3988
+    },
+    {
+      "id": "gutenberg-41456",
+      "title": "Guilty Bonds",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/41456/pg41456.txt",
+      "sha256": "ae1b355e7d33f2569e46a872cb0228e0a3d55b0e470cebbe50cf66946557f471",
+      "available_sentences": 2914
+    },
+    {
+      "id": "gutenberg-9940",
+      "title": "Life in London",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/9940/pg9940.txt",
+      "sha256": "279a612a56766f8c20011d3bcf3ca950d38caf6c4a9c85530384703c1e6e13ce",
+      "available_sentences": 1819
+    },
+    {
+      "id": "gutenberg-45866",
+      "title": "The Spider's Web",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/45866/pg45866.txt",
+      "sha256": "cb9f7fbfbd4eefae252385e83dc63c15ab7add0a9d943fe6058ee40b2eb48c51",
+      "available_sentences": 4681
+    },
+    {
+      "id": "gutenberg-1588",
+      "title": "A Rogue's Life",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/1588/pg1588.txt",
+      "sha256": "92918741997a0d88a862d8df1482d0e2ecfdc39135a737ad11df843e5fea1f43",
+      "available_sentences": 2063
+    },
+    {
+      "id": "gutenberg-32820",
+      "title": "World Beyond Pluto",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/32820/pg32820.txt",
+      "sha256": "51522b424cd7cc9610adb37d828a5ed6ad6027393480fbc9655aa4df1387521f",
+      "available_sentences": 516
+    },
+    {
+      "id": "gutenberg-58762",
+      "title": "The New-Year's Bargain",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/58762/pg58762.txt",
+      "sha256": "e8a0103091e40d389c0f539b134dd40f294d05d89e80a0f5a24d73ea68578475",
+      "available_sentences": 1998
+    },
+    {
+      "id": "gutenberg-32524",
+      "title": "A Fourth Form Friendship: A School Story",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/32524/pg32524.txt",
+      "sha256": "05f219dca5389d848025ae647b530dfef62155abed01a904e50d2fcd0b9d6f48",
+      "available_sentences": 3344
+    },
+    {
+      "id": "gutenberg-4051",
+      "title": "Lady Bridget in the Never-Never Land: a story of Australian life",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/4051/pg4051.txt",
+      "sha256": "e8064e7fd88cf6097ee3112c1d7abb1c44874f220e8c056b89d0e80bc5e0148d",
+      "available_sentences": 5753
+    },
+    {
+      "id": "gutenberg-74461",
+      "title": "Suspense, Volume 2 (of 3)",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/74461/pg74461.txt",
+      "sha256": "e8646ea0668c81a29a420895e6dd8d266db3318f6290bdb8a498a2a514495fe1",
+      "available_sentences": 2089
+    },
+    {
+      "id": "gutenberg-31174",
+      "title": "The Planet with No Nightmare",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/31174/pg31174.txt",
+      "sha256": "aad6b57dc616e5b2b8e40cbd992096f0b8a166f23d7f22faa4507a0820a46b2c",
+      "available_sentences": 521
+    },
+    {
+      "id": "gutenberg-62246",
+      "title": "Colossus of Chaos",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/62246/pg62246.txt",
+      "sha256": "2dde935b89977623f6dc9c22ddbbbe67831d1ce506e145334402d97fe85d6c99",
+      "available_sentences": 1155
+    },
+    {
+      "id": "gutenberg-4946",
+      "title": "Madame Midas",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/4946/pg4946.txt",
+      "sha256": "5387202235f67a4ae2092a90d9b8bace30ad51909f1ffaef653d1acc41fd64a3",
+      "available_sentences": 4006
+    },
+    {
+      "id": "gutenberg-19202",
+      "title": "Cicely and Other Stories",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/19202/pg19202.txt",
+      "sha256": "32706dd2648740329aad4f74118d3a78686d9e2d96fc061732e6b830b5c884da",
+      "available_sentences": 935
+    },
+    {
+      "id": "gutenberg-27575",
+      "title": "Madame Bovary: A Tale of Provincial Life, Vol. 1 (of 2)",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/27575/pg27575.txt",
+      "sha256": "ea35e74b7dc7c6acacc47ea7c65325b4b1e209ade3eba175779ea7e328da0580",
+      "available_sentences": 3692
+    },
+    {
+      "id": "gutenberg-55080",
+      "title": "The Worst Boy in Town",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/55080/pg55080.txt",
+      "sha256": "8d9ff97300a9c44f65539d6a3de62553f261617fcfda1d43b238c0e017efc7a3",
+      "available_sentences": 1270
+    },
+    {
+      "id": "gutenberg-73472",
+      "title": "The Bishop's purse",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/73472/pg73472.txt",
+      "sha256": "af97dfab23e11336b730cc74130813b10cd1ef1ae09088a8ebafa068a7f2068d",
+      "available_sentences": 5045
+    },
+    {
+      "id": "gutenberg-76826",
+      "title": "Jock with Mousie",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/76826/pg76826.txt",
+      "sha256": "7a739ada1fd5148d0283ead05bd13a924de2e536daa71dbeb3ba0cd3a3fc37e9",
+      "available_sentences": 1953
+    },
+    {
+      "id": "gutenberg-45573",
+      "title": "Out with Garibaldi: A story of the liberation of Italy",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/45573/pg45573.txt",
+      "sha256": "8627a49c7af0498b531f0a2849d9762e43f97929fafb5b75979ca7799de66e23",
+      "available_sentences": 3712
+    },
+    {
+      "id": "gutenberg-77930",
+      "title": "Mop Fair",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/77930/pg77930.txt",
+      "sha256": "db9c034b894bef3a84297d22ba8a777f92e73c704ae3556cf5cafd1aa83b87cb",
+      "available_sentences": 1152
+    },
+    {
+      "id": "gutenberg-54333",
+      "title": "Miriam: A Tale of Pole Moor and the Greenfield Hills",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/54333/pg54333.txt",
+      "sha256": "e82fb1a7225afc32228015ee06d5af62ac558831d7d60a53f6a16cdd0f86fbf4",
+      "available_sentences": 3759
+    },
+    {
+      "id": "gutenberg-41690",
+      "title": "Trading Jeff and His Dog",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/41690/pg41690.txt",
+      "sha256": "92ef50380e32ec5a91378901b96f0141389e6a5b29afdc1a5691a780db2743cb",
+      "available_sentences": 3095
+    },
+    {
+      "id": "gutenberg-79478",
+      "title": "The wife's secret",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/79478/pg79478.txt",
+      "sha256": "1313aa0c9769a1e1eb9850f573895c6517ed6d45b42068b076097c3060f4c5ee",
+      "available_sentences": 6582
+    },
+    {
+      "id": "gutenberg-346",
+      "title": "The Troll Garden, and Selected Stories",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/346/pg346.txt",
+      "sha256": "926b042528d42a6e8b0e062dfee1987fbbb4ddbe1ea6601d2b61fc77b452f521",
+      "available_sentences": 3927
+    },
+    {
+      "id": "gutenberg-40102",
+      "title": "The Passion for Life",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/40102/pg40102.txt",
+      "sha256": "d67064323d5b0e8fa5f37dbf765aa4e5da7037e3f4d774768674e894314c452b",
+      "available_sentences": 6438
+    },
+    {
+      "id": "gutenberg-76391",
+      "title": "Fairy dreams",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/76391/pg76391.txt",
+      "sha256": "1ff1658f0d6d8c0d78d98d5c2010a3cb5eacc152a6cfd33c1383972cbd15bba0",
+      "available_sentences": 748
+    },
+    {
+      "id": "gutenberg-16733",
+      "title": "Montlivet",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/16733/pg16733.txt",
+      "sha256": "129ed4e6b2ecafa3081e92443140c19d26a0a6bf66167dace19966f211c343b3",
+      "available_sentences": 6460
+    },
+    {
+      "id": "gutenberg-43083",
+      "title": "A Young Man's Year",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/43083/pg43083.txt",
+      "sha256": "fde28607c7eef276f2139e4a5e6fdc44f615ac38e7aee0f84f904e121a2fb239",
+      "available_sentences": 6786
+    },
+    {
+      "id": "gutenberg-65759",
+      "title": "The Devil's Dooryard",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/65759/pg65759.txt",
+      "sha256": "101f6c5aef370563e32438ad5f10b5206141d6e80fa40e1d74a7842ee6fb1fad",
+      "available_sentences": 1048
+    },
+    {
+      "id": "gutenberg-61750",
+      "title": "Round the Galley Fire",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/61750/pg61750.txt",
+      "sha256": "4ba000e35a904a1643131f27169029f8d1d1d14536ac5e63bc3ad78a75efbc63",
+      "available_sentences": 2797
+    },
+    {
+      "id": "gutenberg-72132",
+      "title": "Daddy Joe's fiddle",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/72132/pg72132.txt",
+      "sha256": "942d33a5965fca836d5cecb90f3cf426b15304c0226aa8e1605f2f0ee8016cef",
+      "available_sentences": 938
+    },
+    {
+      "id": "gutenberg-5537",
+      "title": "A Thorny Path \u2014 Volume 08",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/5537/pg5537.txt",
+      "sha256": "5f9e1eb3cca26de3561c7e71485f0057da0cbcfa97c9dc54d92e24eb81d792a2",
+      "available_sentences": 809
+    },
+    {
+      "id": "gutenberg-34347",
+      "title": "Dave Porter in the South Seas; or, The Strange Cruise of the Stormy Petrel",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/34347/pg34347.txt",
+      "sha256": "9c0278ffbd346ef42b3be1e96f193928e99f026cab986105a32c2f7458a60adc",
+      "available_sentences": 3710
+    },
+    {
+      "id": "gutenberg-20152",
+      "title": "The Winning Clue",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/20152/pg20152.txt",
+      "sha256": "fa66b72ac8c4f2d099261b787ed34d2cc4c377f28990159e67eaddb46efbadb4",
+      "available_sentences": 4589
+    },
+    {
+      "id": "gutenberg-44293",
+      "title": "Tom Fairfield in Camp; or, The Secret of the Old Mill",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/44293/pg44293.txt",
+      "sha256": "3bc301754bf7a2a94bd75df94d769ccbf6cae3ecee4e4a9d229774fe6d3cd3b5",
+      "available_sentences": 2499
+    },
+    {
+      "id": "gutenberg-54673",
+      "title": "Sir Harry: A Love Story",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/54673/pg54673.txt",
+      "sha256": "442e9ea64f8526d71860e6f172cb4fcc7abc4e83abdbd57e5420112808fdb01b",
+      "available_sentences": 5308
+    },
+    {
+      "id": "gutenberg-26853",
+      "title": "Vice Versa; or, A Lesson to Fathers",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/26853/pg26853.txt",
+      "sha256": "3e9b7dbf1d12c278e562d3bdbc39fbe463734e441f0b9b19bd2310bb4880d265",
+      "available_sentences": 4320
+    },
+    {
+      "id": "gutenberg-28008",
+      "title": "Under the Southern Cross",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/28008/pg28008.txt",
+      "sha256": "4d57e61b848776b92bf9add74563248a41ac2fc4d783f0f0490c909dfa78101d",
+      "available_sentences": 1336
+    },
+    {
+      "id": "gutenberg-21867",
+      "title": "Afterwards",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/21867/pg21867.txt",
+      "sha256": "823867beb2eaa730e82f26e051f1074dac3b3ee69b7fb797a86ca3c63aaf564d",
+      "available_sentences": 4487
+    },
+    {
+      "id": "gutenberg-28728",
+      "title": "Bert Wilson on the Gridiron",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/28728/pg28728.txt",
+      "sha256": "f4c422ec76c2aad895abb3632ff9159af98562efc05425a97386702c19a21d61",
+      "available_sentences": 2529
+    },
+    {
+      "id": "gutenberg-78542",
+      "title": "Precious bane",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/78542/pg78542.txt",
+      "sha256": "069ad3172ac9399512d57215ec0360cd0a70e73102d5665b15692a86d41c54f8",
+      "available_sentences": 4981
+    },
+    {
+      "id": "gutenberg-5757",
+      "title": "The Maid of Maiden Lane",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/5757/pg5757.txt",
+      "sha256": "1e285d25f5a0924277e038edc6995e30486e9e8af87445018902c1cd7b63ee6a",
+      "available_sentences": 4296
+    },
+    {
+      "id": "gutenberg-66981",
+      "title": "Law Rustlers",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/66981/pg66981.txt",
+      "sha256": "86bc19c1a660c5d4fc02dd5c8e6ff624a6b6f7ea23cbde3788fbe8e32335289d",
+      "available_sentences": 898
+    },
+    {
+      "id": "gutenberg-3985",
+      "title": "Gerfaut \u2014 Complete",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/3985/pg3985.txt",
+      "sha256": "514b23d4c29033b8dcd0d20d1c840a9b2e90a65b3d65d6f5e663dd4277deb8e1",
+      "available_sentences": 4235
+    },
+    {
+      "id": "gutenberg-8410",
+      "title": "Jack of the Pony Express; Or, The Young Rider of the Mountain Trails",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/8410/pg8410.txt",
+      "sha256": "dac6d60be6cf679f1e416a9f77714404f430014835e723f43e03dc894b2cc889",
+      "available_sentences": 2663
+    },
+    {
+      "id": "gutenberg-23491",
+      "title": "The Castaways",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/23491/pg23491.txt",
+      "sha256": "1e07aabb1e328bf0b441535fd945e84743d69100316c58f89794198ac2de03b1",
+      "available_sentences": 1977
+    },
+    {
+      "id": "gutenberg-34317",
+      "title": "Caribbee",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/34317/pg34317.txt",
+      "sha256": "7dc6fe051ad3cc05f84dc5582c36de93a5a6daba6daa4ab6d31c8ef70b1848eb",
+      "available_sentences": 10475
+    },
+    {
+      "id": "gutenberg-19781",
+      "title": "Sketches",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/19781/pg19781.txt",
+      "sha256": "27c25f6dda680548dc4228f450d3389cd7d7bc6bb2397be6842d6657b3173f02",
+      "available_sentences": 1795
+    },
+    {
+      "id": "gutenberg-59169",
+      "title": "Baseball Joe Saving the League; or, Breaking Up a Great Conspiracy",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/59169/pg59169.txt",
+      "sha256": "f5e9638ae71d80e38cfc29e71d5c0db9abc12b83b3f8666bc9a2fafc3889859c",
+      "available_sentences": 2579
+    },
+    {
+      "id": "gutenberg-25771",
+      "title": "A Nobleman's Nest",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/25771/pg25771.txt",
+      "sha256": "2270f3f8e060277783ccf4119cc3ab919d7b43417a652f89692eafd3f37e4117",
+      "available_sentences": 2590
+    },
+    {
+      "id": "gutenberg-70152",
+      "title": "The Hungry Tiger of Oz",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/70152/pg70152.txt",
+      "sha256": "5932462debe1f3cdc87d0458308cb0ea6e38b2b85d92e8e72f2c5633469a7ab3",
+      "available_sentences": 1918
+    },
+    {
+      "id": "gutenberg-69369",
+      "title": "Deep channel",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/69369/pg69369.txt",
+      "sha256": "85874adfa9a88e3d27a6b57ddd43e73f38d7b0f71053cf39116d9d4794528ec2",
+      "available_sentences": 2870
+    },
+    {
+      "id": "gutenberg-32988",
+      "title": "Ewing's Lady",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/32988/pg32988.txt",
+      "sha256": "2c155dbbbcf1af05cf6e6ea3fb38c9a7658560f086293f0624fff4c8b74c23e7",
+      "available_sentences": 5083
+    },
+    {
+      "id": "gutenberg-45201",
+      "title": "Fallen Fortunes",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/45201/pg45201.txt",
+      "sha256": "ec4aeac052cd6fe13f5fa04243753870934edf654eb84f3f0f61a16840c3d832",
+      "available_sentences": 3550
+    },
+    {
+      "id": "gutenberg-5545",
+      "title": "In the Fire of the Forge: A Romance of Old Nuremberg \u2014 Volume 03",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/5545/pg5545.txt",
+      "sha256": "49772cb02a79a56c464596319b150d508ba920602d6f5787cafb9fd20a197a54",
+      "available_sentences": 710
+    },
+    {
+      "id": "gutenberg-66210",
+      "title": "Repeat Performance",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/66210/pg66210.txt",
+      "sha256": "8269083b2546240ae6fc95d3b5ce84f973a3dbd169e4aea5ae32de7a3f5fbb9a",
+      "available_sentences": 663
+    },
+    {
+      "id": "gutenberg-62860",
+      "title": "Hidden Foes; Or, A Fatal Miscalculation",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/62860/pg62860.txt",
+      "sha256": "2bb26a341564734103a0c603fa8d222586b171cc5ad259d32bba2b678885b320",
+      "available_sentences": 2971
+    },
+    {
+      "id": "gutenberg-15426",
+      "title": "Pixy's Holiday Journey",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/15426/pg15426.txt",
+      "sha256": "c3d7407763ae6919bc012e28f9683578b49bd8eadc273379d3c8b722e94622e2",
+      "available_sentences": 2521
+    },
+    {
+      "id": "gutenberg-47168",
+      "title": "The Forest Schoolmaster",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/47168/pg47168.txt",
+      "sha256": "7070ac16b08eb88d34a8a5b06503459f311e48694108745f2e2cd9ca78a18210",
+      "available_sentences": 4462
+    },
+    {
+      "id": "gutenberg-63709",
+      "title": "Prisoner of the Brain-Mistress",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/63709/pg63709.txt",
+      "sha256": "483c803f0487fbe6935af3e9c6e8f305c5229d7ad3902d505a53aba6cddd7aa8",
+      "available_sentences": 548
+    },
+    {
+      "id": "gutenberg-4448",
+      "title": "The Adventures of Harry Richmond \u2014 Volume 5",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/4448/pg4448.txt",
+      "sha256": "81adfdd6e2e45a8c21358685196f012be678748cc113aa651d46b552024eb3c5",
+      "available_sentences": 1535
+    },
+    {
+      "id": "gutenberg-56594",
+      "title": "Head of the Lower School",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/56594/pg56594.txt",
+      "sha256": "ab86cbd4fde0b96f7c8f152e6d54b75d8dd7e11321c04865b6f467747e4d9005",
+      "available_sentences": 2867
+    },
+    {
+      "id": "gutenberg-43393",
+      "title": "At the Councillor's; or, A Nameless History",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/43393/pg43393.txt",
+      "sha256": "99ae30095c6d20a3122455ccfa0b69008a76e1a1e957e18806ec545c2abcc94b",
+      "available_sentences": 4344
+    },
+    {
+      "id": "gutenberg-76502",
+      "title": "The lady's mile",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/76502/pg76502.txt",
+      "sha256": "3036bf028d32c59ba4130214ecec03d93a54ec7acefc7aae4e9bde08c82e7428",
+      "available_sentences": 6599
+    },
+    {
+      "id": "gutenberg-37591",
+      "title": "Chance in Chains: A Story of Monte Carlo",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/37591/pg37591.txt",
+      "sha256": "95e6e8c9d3cb3c837a6f0d3a0b8ec0d0d0bb9f5e0e5cd5731b41cdbd90bcab22",
+      "available_sentences": 1560
+    },
+    {
+      "id": "gutenberg-49537",
+      "title": "The spider and the fly",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/49537/pg49537.txt",
+      "sha256": "bb6a85379ab190292f0e12cd24736f145170e558e339e6cd38cf2dee727fe145",
+      "available_sentences": 6157
+    },
+    {
+      "id": "gutenberg-68699",
+      "title": "Dusky Dick: or, Old Toby Castor's great campaign A story of the last Sioux outbreak",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/68699/pg68699.txt",
+      "sha256": "27d6689fb14a8e697f8345f610550598f941227c0f030222da5cccee622b8f28",
+      "available_sentences": 1805
+    },
+    {
+      "id": "gutenberg-67475",
+      "title": "Where Stillwater Runs Deep",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/67475/pg67475.txt",
+      "sha256": "afa9dc41f89a7e15ae5bdc73a50f3c83c1b9d734e8741f718938c890e6254c80",
+      "available_sentences": 590
+    },
+    {
+      "id": "gutenberg-4670",
+      "title": "Lightfoot the Deer",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/4670/pg4670.txt",
+      "sha256": "978ac14fbbf3f776a93c3063bc8033a20b5fad3ad3acbc6882e31f820acdf3bd",
+      "available_sentences": 1235
+    },
+    {
+      "id": "gutenberg-30365",
+      "title": "In Desert and Wilderness",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/30365/pg30365.txt",
+      "sha256": "0011b7410ef650db03a5c7e60bcc7d84c6077345cef7661570040c3474417f0b",
+      "available_sentences": 5388
+    },
+    {
+      "id": "gutenberg-34541",
+      "title": "John Marchmont's Legacy, Volume 3 (of 3)",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/34541/pg34541.txt",
+      "sha256": "6f428d719e4a1f3f4ce77b68a39ce920d54fa5d102656d9900779f810d6ad9e6",
+      "available_sentences": 2773
+    },
+    {
+      "id": "gutenberg-39295",
+      "title": "The man in black",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/39295/pg39295.txt",
+      "sha256": "7e2a5ae62cf36bb600dbe1eb678e7c283b094c5a1fd96e08089a3a79e44ffc38",
+      "available_sentences": 1663
+    },
+    {
+      "id": "gutenberg-69654",
+      "title": "The Rambler Club's ball nine",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/69654/pg69654.txt",
+      "sha256": "390f94dff4f9f28500d79859ace331a3705fe35223a32ec4d0676ebca3d0a5f0",
+      "available_sentences": 3111
+    },
+    {
+      "id": "gutenberg-28098",
+      "title": "Holiday Tales: Christmas in the Adirondacks",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/28098/pg28098.txt",
+      "sha256": "907de309e4be48aff801b15d6645711f8d52b9b59094b0667db27694ac67012d",
+      "available_sentences": 989
+    },
+    {
+      "id": "gutenberg-55622",
+      "title": "Red Wagon Stories; or, Tales Told Under the Tent",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/55622/pg55622.txt",
+      "sha256": "563c68c790c0bc04d71d74d7f835e5aa2cbf064f794d2ec0d58118c5c811963f",
+      "available_sentences": 710
+    },
+    {
+      "id": "gutenberg-63779",
+      "title": "The Blue Venus",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/63779/pg63779.txt",
+      "sha256": "e50db09ff9d59bbb5cd930a0d272493d7878cbf2cdc84d732f300a7c0724aca7",
+      "available_sentences": 1546
+    },
+    {
+      "id": "gutenberg-50654",
+      "title": "In the Wonderful Land of Hez; or, The Mystery of the Fountain of Youth",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/50654/pg50654.txt",
+      "sha256": "d9a11a99cc34012a96ac1deff0fb844eff214d8f3a70ab7c157b402100ff1a02",
+      "available_sentences": 1736
+    },
+    {
+      "id": "gutenberg-12259",
+      "title": "Memoirs of a Cavalier A Military Journal of the Wars in Germany, and the Wars in England. From the Year 1632 to the Year 1648.",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/12259/pg12259.txt",
+      "sha256": "6be6a0124511c2f2fe74341d9d78338e43ebc7d5855b977d7ffaf8e918d3f76d",
+      "available_sentences": 2498
+    },
+    {
+      "id": "gutenberg-9608",
+      "title": "The Cords of Vanity: A Comedy of Shirking",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/9608/pg9608.txt",
+      "sha256": "2909ad79dc236d3473f4c8e8fa1f9cc1e27f099e2038c0d582fd62688281b913",
+      "available_sentences": 4055
+    },
+    {
+      "id": "gutenberg-41058",
+      "title": "The Wizard of West Penwith: A Tale of the Land's-End",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/41058/pg41058.txt",
+      "sha256": "74541bbf97fafb4c68062a9270c9d1b620a4801461d78deb6bb44af71340212d",
+      "available_sentences": 4406
+    },
+    {
+      "id": "gutenberg-55213",
+      "title": "The Girl Scouts at Miss Allen's School",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/55213/pg55213.txt",
+      "sha256": "7e2ced448603f4f331cc83899df83c4305a2fae2a5b1b7e4e435d8a91339116e",
+      "available_sentences": 2625
+    },
+    {
+      "id": "gutenberg-65170",
+      "title": "Antonia",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/65170/pg65170.txt",
+      "sha256": "a794ee6ec89a69959eb0c27e92278cec2eb896229954762f9aad79bc8214d4d6",
+      "available_sentences": 4005
+    },
+    {
+      "id": "gutenberg-20618",
+      "title": "The Boy Land Boomer; Or, Dick Arbuckle's Adventures in Oklahoma",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/20618/pg20618.txt",
+      "sha256": "e6a99f200068955f6c3497a321795d00d1a69091f1bb86307de3279fdcf09b9d",
+      "available_sentences": 2688
+    },
+    {
+      "id": "gutenberg-24608",
+      "title": "The tale of Kiddie Katydid",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/24608/pg24608.txt",
+      "sha256": "28ed87a8f7406098a4b1ca516e360dc80872246916819460d4f066a27994e568",
+      "available_sentences": 944
+    },
+    {
+      "id": "gutenberg-66280",
+      "title": "An Uncrowned King: A Romance of High Politics",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/66280/pg66280.txt",
+      "sha256": "79552fab3c1fd4f2621fc0c283662e43f6c03170ff57097e0d7e9feef6caf2b2",
+      "available_sentences": 5611
+    },
+    {
+      "id": "gutenberg-57165",
+      "title": "Mark Tidd: His Adventures and Strategies",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/57165/pg57165.txt",
+      "sha256": "20b539ba28e05cfb45fcad3222f93b5ad57e4a60d57f8624272af4c2c813ce55",
+      "available_sentences": 3456
+    },
+    {
+      "id": "gutenberg-26015",
+      "title": "A Christmas Posy",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/26015/pg26015.txt",
+      "sha256": "698fea849f6384c6d7536eeeba4194a387cfe74e705e35bc8afbe6a963d239b1",
+      "available_sentences": 2210
+    },
+    {
+      "id": "gutenberg-60120",
+      "title": "The House of Baltazar",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/60120/pg60120.txt",
+      "sha256": "b572a7b110696227b58c3ab8035af67d67a16c500a5ee0f948a63ba346eddc7c",
+      "available_sentences": 6226
+    },
+    {
+      "id": "gutenberg-58629",
+      "title": "The Magic Makers and the Bramble Bush Man",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/58629/pg58629.txt",
+      "sha256": "147b15c16ecf10aa4ea5491d9e25b56be94b17e1e4cd9e33667b6a6cd4ee2c5e",
+      "available_sentences": 1630
+    },
+    {
+      "id": "gutenberg-15099",
+      "title": "The Hoosier Schoolmaster: A Story of Backwoods Life in Indiana",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/15099/pg15099.txt",
+      "sha256": "238bf51305c8e82809eb6bc238fb304d9a906411e33bd8a51a918abe7e1e29b5",
+      "available_sentences": 2972
+    },
+    {
+      "id": "gutenberg-35851",
+      "title": "An Old Story of My Farming Days Vol. 3 (of 3). (Ut Mine Stromtid)",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/35851/pg35851.txt",
+      "sha256": "1e53e878ce28e32ac1e3beda6cf98d0bd139f1daaa7857f2bb5864216a92ef79",
+      "available_sentences": 3425
+    },
+    {
+      "id": "gutenberg-14697",
+      "title": "Lewis Rand",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/14697/pg14697.txt",
+      "sha256": "a8b53aa2db96e9e011e8faf60670c8e030f60230392e67b21714f0c0a37bec74",
+      "available_sentences": 8587
+    },
+    {
+      "id": "gutenberg-58947",
+      "title": "Doctor Dolittle's Post Office",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/58947/pg58947.txt",
+      "sha256": "bdc6a9f458190c30e59786f92ec1c943c2eba35d5a0d88b3a6fee1cf0b5366a1",
+      "available_sentences": 3414
+    },
+    {
+      "id": "gutenberg-46436",
+      "title": "The Rising of the Tide: The Story of Sabinsport",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/46436/pg46436.txt",
+      "sha256": "6900893bd4ee5f2621b817ecc9a646861c3641c49a1609d42d0eb33663e581d3",
+      "available_sentences": 4415
+    },
+    {
+      "id": "gutenberg-19196",
+      "title": "Homeburg Memories",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/19196/pg19196.txt",
+      "sha256": "7893e75f5c784bb5099225bdd9daf5c863735368ae17235c1ecedbc513bee6cc",
+      "available_sentences": 2328
+    },
+    {
+      "id": "gutenberg-30339",
+      "title": "Status Quo",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/30339/pg30339.txt",
+      "sha256": "3ad5f2ab084673725a34591bc6583ba3e76864af3628400d05693753d34836ac",
+      "available_sentences": 1713
+    },
+    {
+      "id": "gutenberg-22667",
+      "title": "Joan of Arc of the North Woods",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/22667/pg22667.txt",
+      "sha256": "e59523e1605ebb80eba46120d5e8344c855e6b4fdb7b4192d00ccae49f0457bd",
+      "available_sentences": 4923
+    },
+    {
+      "id": "gutenberg-8694",
+      "title": "The Abbot's Ghost, or Maurice Treherne's Temptation: A Christmas Story",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/8694/pg8694.txt",
+      "sha256": "e3c50a7a900068e05e88c608d7ebc010d8d2245aa8edeca9d8561389de9b97ff",
+      "available_sentences": 1265
+    },
+    {
+      "id": "gutenberg-47832",
+      "title": "Perpetua. A Tale of Nimes in A.D. 213",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/47832/pg47832.txt",
+      "sha256": "f7cb7a19fd07b8bc4a574d33a37cf19cfed812ad925749a6fb5c4461a325eb4b",
+      "available_sentences": 2987
+    },
+    {
+      "id": "gutenberg-78010",
+      "title": "The unknown seven",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/78010/pg78010.txt",
+      "sha256": "2eab1fdaefdc08eb6b0f925d8f440574b86b20d36242233588f35cef142af6a7",
+      "available_sentences": 4859
+    },
+    {
+      "id": "gutenberg-41828",
+      "title": "General Bounce; Or, The Lady and the Locusts",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/41828/pg41828.txt",
+      "sha256": "85a12de766a806356287cfe06a1aa1556681a413010a12ca38c352ec634f4560",
+      "available_sentences": 3809
+    },
+    {
+      "id": "gutenberg-47426",
+      "title": "Blood Royal: A Novel",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/47426/pg47426.txt",
+      "sha256": "49f4b910478977fa17c7ef37649456e03a432dae4d612883052944ea83569699",
+      "available_sentences": 2236
+    },
+    {
+      "id": "gutenberg-79888",
+      "title": "Lying lips",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/79888/pg79888.txt",
+      "sha256": "7f6fc6c4a66f728ecbc92a1e9797af4d2fcc184f051fc5953eff5d81fc84fa9e",
+      "available_sentences": 3309
+    },
+    {
+      "id": "gutenberg-36919",
+      "title": "The Heart's Country",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/36919/pg36919.txt",
+      "sha256": "4c0f9605975e0945958fcd344e419e7233e95c3d8a7a58d79f25850a5508036f",
+      "available_sentences": 2327
+    },
+    {
+      "id": "gutenberg-8076",
+      "title": "The History of David Grieve",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/8076/pg8076.txt",
+      "sha256": "7c190cbddeecb3964efd84f7153b2a48220cc393abc9e292e641ca53af4b6b61",
+      "available_sentences": 14361
+    },
+    {
+      "id": "gutenberg-63572",
+      "title": "The Gold Thread; and, Wee Davie: Two Stories for the Young",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/63572/pg63572.txt",
+      "sha256": "f9d0520e781cae1684a5fec8ce06e85dd4c33e9552c374ff98b26866e2ea3c71",
+      "available_sentences": 962
+    },
+    {
+      "id": "gutenberg-36107",
+      "title": "Trevethlan: A Cornish Story. Volume 2 (of 3)",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/36107/pg36107.txt",
+      "sha256": "b7b4d603e21de4468b798089aea50b08c77d1eb78e00b4626af9d912e967ebf0",
+      "available_sentences": 2103
+    },
+    {
+      "id": "gutenberg-45135",
+      "title": "The Thick of the Fray at Zeebrugge, April 1918",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/45135/pg45135.txt",
+      "sha256": "e6072752288795bc96a7d229ceb313862f729c32f32a9a507444b959a229579f",
+      "available_sentences": 2172
+    },
+    {
+      "id": "gutenberg-40501",
+      "title": "The Blower of Bubbles",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/40501/pg40501.txt",
+      "sha256": "81b8c345e18b4ee644d67176a3c212ba2c1237e763ef212841a0a5f6f6a14ccd",
+      "available_sentences": 2973
+    },
+    {
+      "id": "gutenberg-23584",
+      "title": "The Gold of Chickaree",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/23584/pg23584.txt",
+      "sha256": "72bf314dc425b49d9e493a6e2156a1d8d44479f8e74f361db8875212fc4cce7a",
+      "available_sentences": 7087
+    },
+    {
+      "id": "gutenberg-61017",
+      "title": "Tales of a Vanishing River",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/61017/pg61017.txt",
+      "sha256": "21e88a72019dc53a87d8fae803f330e8025fc8959d454720f6151699cdeb92d2",
+      "available_sentences": 3101
+    },
+    {
+      "id": "gutenberg-7465",
+      "title": "Richard of Jamestown : a Story of the Virginia Colony",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/7465/pg7465.txt",
+      "sha256": "d1cd784604b6149494e0864d4098813962b9a6272f1fa7a59659a04dbdf1fdf1",
+      "available_sentences": 661
+    },
+    {
+      "id": "gutenberg-6214",
+      "title": "The Translation of a Savage, Complete",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/6214/pg6214.txt",
+      "sha256": "92389dc2b920ef343ee88fb76b04b363b78d4efa9c2af95eaafd0986e142d7d4",
+      "available_sentences": 2539
+    },
+    {
+      "id": "gutenberg-21577",
+      "title": "Peter Simple",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/21577/pg21577.txt",
+      "sha256": "613c244b82d0d528b829a1425d59fb29870c0b800f6e7c255683ca71e4039594",
+      "available_sentences": 6645
+    },
+    {
+      "id": "gutenberg-73330",
+      "title": "Good men and true, and Hit the line hard",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/73330/pg73330.txt",
+      "sha256": "e1d98249f91504e4971c928ac76738517b96e045b1027085ee8826cff4e914bb",
+      "available_sentences": 2509
+    },
+    {
+      "id": "gutenberg-41549",
+      "title": "\"God Wills It!\" A Tale of the First Crusade.",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/41549/pg41549.txt",
+      "sha256": "09676ebc3ff813b3ebe8e62db552bc7c0088cd8b7982da4c69ed5acec749032d",
+      "available_sentences": 10142
+    },
+    {
+      "id": "gutenberg-1298",
+      "title": "The Virginian: A Horseman of the Plains",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/1298/pg1298.txt",
+      "sha256": "4090aaf433dec0eaed7186010ff393f7b3305435c2771d58b09880b5bb97d12b",
+      "available_sentences": 7442
+    },
+    {
+      "id": "gutenberg-44433",
+      "title": "Jaufry the Knight and the Fair Brunissende: A Tale of the Times of King Arthur",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/44433/pg44433.txt",
+      "sha256": "f7c24b0f1e97dab49e2e8c57774d40530c4e5f76d40b40a7e8be56f3384170d4",
+      "available_sentences": 1107
+    },
+    {
+      "id": "gutenberg-45802",
+      "title": "Knock Three Times!",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/45802/pg45802.txt",
+      "sha256": "8726243ce591fc8293661d9bb4c6b34d969c8a722ed169729a22fda465fd50ff",
+      "available_sentences": 2388
+    },
+    {
+      "id": "gutenberg-14332",
+      "title": "Cleek: the Man of the Forty Faces",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/14332/pg14332.txt",
+      "sha256": "282883386728b5b650d5228d8eca89b2ee3c5b38fa3cdf321920ba9009a1f5c4",
+      "available_sentences": 4669
+    },
+    {
+      "id": "gutenberg-27455",
+      "title": "The Radio Boys at the Sending Station; Or, Making Good in the Wireless Room",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/27455/pg27455.txt",
+      "sha256": "c6adc56511cead830ee8552525f9f0f5e22e74811c8a70b6889899a4058f2113",
+      "available_sentences": 2179
+    },
+    {
+      "id": "gutenberg-26044",
+      "title": "Peter and Jane; Or, The Missing Heir",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/26044/pg26044.txt",
+      "sha256": "4782e801ee74b961fce7de75193bbf5b357c435026f425ddb9dbca94232d754f",
+      "available_sentences": 3223
+    },
+    {
+      "id": "gutenberg-76546",
+      "title": "The Corbin necklace",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/76546/pg76546.txt",
+      "sha256": "3eaa2e981c763302997dde783ed42e2a5435eab1561f8fe29885a0b441331aac",
+      "available_sentences": 3724
+    },
+    {
+      "id": "gutenberg-20418",
+      "title": "Lords of the North",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/20418/pg20418.txt",
+      "sha256": "598b36847171b53556206d0b626aa4483494859782765e142839cc75f5bdacb9",
+      "available_sentences": 5292
+    },
+    {
+      "id": "gutenberg-43675",
+      "title": "Ned in the Block-House: A Tale of Early Days in the West",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/43675/pg43675.txt",
+      "sha256": "cef0e96b799ad9b2eb94f257844438e6afbe1d4963e5a2960933214a21e0ba69",
+      "available_sentences": 2226
+    },
+    {
+      "id": "gutenberg-49282",
+      "title": "The Chronicles of the Imp: A Romance",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/49282/pg49282.txt",
+      "sha256": "42f4cddcc1926a83aaac30aaa8babbb5d506d22f13def87a04694ad4c832759d",
+      "available_sentences": 2016
+    },
+    {
+      "id": "gutenberg-10476",
+      "title": "The Vanishing Man: A Detective Romance",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/10476/pg10476.txt",
+      "sha256": "a72d04c86edf90f1559dcf07b6f04569e3acbd6a7d45b96d1a139dc72e6cda81",
+      "available_sentences": 4687
+    },
+    {
+      "id": "gutenberg-3824",
+      "title": "The Lamp of Fate",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/3824/pg3824.txt",
+      "sha256": "50e1d6446d56fd240720534ba808255e6ae94ac9ff92d73d6023944e7f67874f",
+      "available_sentences": 5136
+    },
+    {
+      "id": "gutenberg-73295",
+      "title": "Lord Peter views the body",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/73295/pg73295.txt",
+      "sha256": "8832725243017cf00a0bfd45dcea570f5147e711e3143f6e4ba405ee2d409347",
+      "available_sentences": 5875
+    },
+    {
+      "id": "gutenberg-6094",
+      "title": "The Scouts of Stonewall: The Story of the Great Valley Campaign",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/6094/pg6094.txt",
+      "sha256": "ac9234c2ac8ed066390d0b2353538b222e9c339c7395fef516ce6fb1bd70fd55",
+      "available_sentences": 5148
+    },
+    {
+      "id": "gutenberg-20708",
+      "title": "A son of the city",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/20708/pg20708.txt",
+      "sha256": "3850aa7a32e4f3b992f180ab9cc165cf82554e59904299f4d30f439e0afe038c",
+      "available_sentences": 4180
+    },
+    {
+      "id": "gutenberg-75955",
+      "title": "Lolla",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/75955/pg75955.txt",
+      "sha256": "b1a0d8c5374cf96d4d5a2c8647f32c0fca308d56c030263d7a6311204df417da",
+      "available_sentences": 652
+    },
+    {
+      "id": "gutenberg-32093",
+      "title": "Loyal to the School",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/32093/pg32093.txt",
+      "sha256": "5470500212ec6972cd25a7f5f801940a0489bb056b27e50b27b5d018e9df5232",
+      "available_sentences": 3531
+    },
+    {
+      "id": "gutenberg-44041",
+      "title": "The Mystery of Arnold Hall",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/44041/pg44041.txt",
+      "sha256": "9e824c711d74a6d83b75a4e30162bfed969451d4229120a6196fe9f88c770a83",
+      "available_sentences": 2808
+    },
+    {
+      "id": "gutenberg-5259",
+      "title": "Hildegarde's Neighbors",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/5259/pg5259.txt",
+      "sha256": "fe35d2cb2d35fb1500a64a789b09ec28dfc4a18d513f14717166fb96b6b116a8",
+      "available_sentences": 2180
+    },
+    {
+      "id": "gutenberg-69768",
+      "title": "The bridge of San Luis Rey",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/69768/pg69768.txt",
+      "sha256": "0f5a9b76799dd6928c97f763281666272cc1c5b2ba501b9ebee9945957566416",
+      "available_sentences": 1654
+    },
+    {
+      "id": "gutenberg-54371",
+      "title": "With Force and Arms: A Tale of Love and Salem Witchcraft",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/54371/pg54371.txt",
+      "sha256": "fe9447e2f6c590e2bffb0a60d1b4adabe988433f3b7abfd4d8e32337024fd8cd",
+      "available_sentences": 4619
+    },
+    {
+      "id": "gutenberg-23730",
+      "title": "The Promise A Tale of the Great Northwest",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/23730/pg23730.txt",
+      "sha256": "b4bfeff24cd1398e50c0e9420a734ab2a9888d0a8374c9840d7d6f97077feb05",
+      "available_sentences": 4450
+    },
+    {
+      "id": "gutenberg-36771",
+      "title": "The Phantoms of the Foot-Bridge, and Other Stories",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/36771/pg36771.txt",
+      "sha256": "e014c1f9c6e448e5c7366377118aad1cdc741a45292252af305a7a2d269150be",
+      "available_sentences": 3687
+    },
+    {
+      "id": "gutenberg-30108",
+      "title": "The Quality of Mercy",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/30108/pg30108.txt",
+      "sha256": "0f748d1c006a6fddc6504a75f99f7a239f0e6d18934425898d8fdc0f99d0e622",
+      "available_sentences": 5370
+    },
+    {
+      "id": "gutenberg-5670",
+      "title": "Jacob's Room",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/5670/pg5670.txt",
+      "sha256": "93f13deb8192cd13edf5f71ee3aba6a6947da00ebf60a0b785a688bebcf6241d",
+      "available_sentences": 2866
+    },
+    {
+      "id": "gutenberg-19874",
+      "title": "Bubbles of the Foam",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/19874/pg19874.txt",
+      "sha256": "9a3945329eaf53e57a506702c8a55cc1d9e108e136a31ef0842b533b994916d2",
+      "available_sentences": 1057
+    },
+    {
+      "id": "gutenberg-24198",
+      "title": "A Spaceship Named McGuire",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/24198/pg24198.txt",
+      "sha256": "a6aa13a1a516e91f9494142cea31031dd410365db844f429cf547732f0e8b2d0",
+      "available_sentences": 986
+    },
+    {
+      "id": "gutenberg-11869",
+      "title": "Venetia",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/11869/pg11869.txt",
+      "sha256": "f5c00f35081410c6691e38bce10c5767ad724c24894d0fc82abe8ac65fc99114",
+      "available_sentences": 6980
+    },
+    {
+      "id": "gutenberg-7708",
+      "title": "\"My Novel\" \u2014 Volume 07",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/7708/pg7708.txt",
+      "sha256": "d9f4afc8609247beb55d103b787b217b002bd97f3319ff2245d9ebe89b0cbcc5",
+      "available_sentences": 1438
+    },
+    {
+      "id": "gutenberg-52136",
+      "title": "Wanda, Vol. 2 (of 3)",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/52136/pg52136.txt",
+      "sha256": "25a34e10c60325db0bee981205281c6bdbaa1ae74a9a3c6de18d8c181e11228f",
+      "available_sentences": 3367
+    },
+    {
+      "id": "gutenberg-8385",
+      "title": "The Short Line War",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/8385/pg8385.txt",
+      "sha256": "1ce9fccd0a1c9cddfab467c04585a03cde746198d08f58ecd5643681df632810",
+      "available_sentences": 3414
+    },
+    {
+      "id": "gutenberg-60010",
+      "title": "The Up Grade",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/60010/pg60010.txt",
+      "sha256": "d6d1cedad83555d14eae28d6e3e282c98c7cd566c1871c5a6290f7d9f8ffe9f8",
+      "available_sentences": 3347
+    },
+    {
+      "id": "gutenberg-36642",
+      "title": "Eli's Children: The Chronicles of an Unhappy Family",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/36642/pg36642.txt",
+      "sha256": "19a4e7b6fb87d202c6665a4fa040226eebe3c729f7379b6c697846da63a683dd",
+      "available_sentences": 6795
+    },
+    {
+      "id": "gutenberg-35548",
+      "title": "Doctor Cupid: A Novel",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/35548/pg35548.txt",
+      "sha256": "4c84b1cb6e30788e2771138a53deee715c1cdbe46be331e3f196b8a8608e4818",
+      "available_sentences": 5715
+    },
+    {
+      "id": "gutenberg-60227",
+      "title": "Three Sailor Boys; or, Adrift in the Pacific",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/60227/pg60227.txt",
+      "sha256": "372205827f068443825ce37b8b62ed5de521a5718ab3e445cb750a80d311d83d",
+      "available_sentences": 1284
+    },
+    {
+      "id": "gutenberg-33312",
+      "title": "Faith and Unfaith: A Novel",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/33312/pg33312.txt",
+      "sha256": "75ec92a844dac0f3acc306e21dde215c358a187f034fb757a8d21ac79bfdd7a6",
+      "available_sentences": 5824
+    },
+    {
+      "id": "gutenberg-43904",
+      "title": "Mystery Wings A Mystery Story for Boys",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/43904/pg43904.txt",
+      "sha256": "4152baad3af113abf92409512bb5b0864a053e0a57fe19317ee43a0d67f68f2a",
+      "available_sentences": 2569
+    },
+    {
+      "id": "gutenberg-77450",
+      "title": "Upward and onward",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/77450/pg77450.txt",
+      "sha256": "ec5eb5f08fccf431767150007ff8260d17c5bb60ee15ed09ab6e1f98d4e015ac",
+      "available_sentences": 2313
+    },
+    {
+      "id": "gutenberg-15550",
+      "title": "Ethel Morton at Rose House",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/15550/pg15550.txt",
+      "sha256": "0e2571b723420e3fe07eec0b5ec51bb52210ae5c7b82a41700fae32f8a98c4f6",
+      "available_sentences": 1443
+    },
+    {
+      "id": "gutenberg-71672",
+      "title": "A Virginia cavalier",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/71672/pg71672.txt",
+      "sha256": "ffab6fe9fc7691fd55633291089241b88b20855fd24f6698af566e67b6b97acc",
+      "available_sentences": 2976
+    },
+    {
+      "id": "gutenberg-35291",
+      "title": "Mattie:\u2014A Stray (Vol 2 of 3)",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/35291/pg35291.txt",
+      "sha256": "d2e61963b917a24645d50ce350acb9ba8305b156bfec9450ae0529396b3b6a3b",
+      "available_sentences": 2525
+    },
+    {
+      "id": "gutenberg-29069",
+      "title": "Poisoned Air",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/29069/pg29069.txt",
+      "sha256": "dfd5634398d2d5d3c43f708cda7ffb88c37cb9de790e0b4b285de305a572c54c",
+      "available_sentences": 698
+    },
+    {
+      "id": "gutenberg-31598",
+      "title": "The Egyptian Cat Mystery: A Rick Brant Science-Adventure Story",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/31598/pg31598.txt",
+      "sha256": "971c20391debc0bf3d99cc929f5310e233c4f361bb40b3d6265461678d76bb80",
+      "available_sentences": 2782
+    },
+    {
+      "id": "gutenberg-12527",
+      "title": "Kimono",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/12527/pg12527.txt",
+      "sha256": "931d33aa390b2d981c33e98e5af02b655ade98e3d98f30eef87559edfb596b4b",
+      "available_sentences": 5875
+    },
+    {
+      "id": "gutenberg-26010",
+      "title": "Valley of the Croen",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/26010/pg26010.txt",
+      "sha256": "8e74bd5f83b66d831707a4d532baae7bdbf80aca3ba4eafd312a724674c336d3",
+      "available_sentences": 2023
+    },
+    {
+      "id": "gutenberg-4540",
+      "title": "In His Steps",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/4540/pg4540.txt",
+      "sha256": "8e293f9e03312766bf00afaabb54ddea93ac25c562e6404f1a072c1d28fff139",
+      "available_sentences": 4402
+    },
+    {
+      "id": "gutenberg-29862",
+      "title": "The Old Countess; or, The Two Proposals",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/29862/pg29862.txt",
+      "sha256": "2f1cac73ae1a74b9652d3016232fa73d781ad33bb57c507bbf301650dd39bfb8",
+      "available_sentences": 4345
+    },
+    {
+      "id": "gutenberg-30907",
+      "title": "Rosemary in Search of a Father",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/30907/pg30907.txt",
+      "sha256": "d4388f228fab879b3ce04ebfe16c663016749970acd26af974c5f28276474cbb",
+      "available_sentences": 958
+    },
+    {
+      "id": "gutenberg-68836",
+      "title": "And we sailed the mighty dark",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/68836/pg68836.txt",
+      "sha256": "2343b8ae457be180c5a1e73a6f9720fe1a0d34e9a429df42eef34f91a2c578fd",
+      "available_sentences": 685
+    },
+    {
+      "id": "gutenberg-6174",
+      "title": "Pierre and His People: Tales of the Far North. Volume 1.",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/6174/pg6174.txt",
+      "sha256": "951dfe230476ebc83fd5868e2413c9c8c8beffea2ed7b3a09213b78dfee06444",
+      "available_sentences": 1003
+    },
+    {
+      "id": "gutenberg-65252",
+      "title": "Captures",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/65252/pg65252.txt",
+      "sha256": "0aaf239bc8d4571ac604ba5eba510ab43599cfda376e4177fd94e4be181f23f4",
+      "available_sentences": 3693
+    },
+    {
+      "id": "gutenberg-63076",
+      "title": "The Yarn of Old Harbour Town",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/63076/pg63076.txt",
+      "sha256": "5f7eac29da2818f4b2dbb73fc8ca383df1c35d8c0d7f72bb91c7aeb759b132a7",
+      "available_sentences": 3521
+    },
+    {
+      "id": "gutenberg-75493",
+      "title": "The lazy detective",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/75493/pg75493.txt",
+      "sha256": "df0491489bdef59f505646aa67f2dd519326d3e8d820638846e2371d6ec1af69",
+      "available_sentences": 4362
+    },
+    {
+      "id": "gutenberg-49401",
+      "title": "Eventful Narratives The Thirteenth Book of the Faith Promoting Series. Designed for the Instruction and Encouragement of Young Latter-day Saints",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/49401/pg49401.txt",
+      "sha256": "6fff98eee59e1d31476f944e3d8f6a693d51073a7e3c9326722fb0f1648c2f00",
+      "available_sentences": 1356
+    },
+    {
+      "id": "gutenberg-63580",
+      "title": "The Loot of Cities Being the Adventures of a Millionaire in Search of Joy (a Fantasia); and Other Stories",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/63580/pg63580.txt",
+      "sha256": "ad427f348c67c765d3c08cb5c52d135c84bce35918d7c6f2fc17ce0f7b55df69",
+      "available_sentences": 2910
+    },
+    {
+      "id": "gutenberg-8558",
+      "title": "L'Assommoir",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/8558/pg8558.txt",
+      "sha256": "e2e487e5f9a5f2b4818e710d6c2a2801942b5fd04417ad6b173f67c7934aa28d",
+      "available_sentences": 5032
+    },
+    {
+      "id": "gutenberg-45462",
+      "title": "The Wonder of War on Land",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/45462/pg45462.txt",
+      "sha256": "7b6e283fde94ff033c4989fdb3f7b072e77391d4f46cce780c0cd551ca0ec54b",
+      "available_sentences": 4076
+    },
+    {
+      "id": "gutenberg-48315",
+      "title": "David Blaize",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/48315/pg48315.txt",
+      "sha256": "e82dc354fb7c6129ef70801fb1ccbfbc4ac64abb3d5aaf90f33687a4c428d47c",
+      "available_sentences": 4649
+    },
+    {
+      "id": "gutenberg-5353",
+      "title": "Guy Mannering, Or, the Astrologer \u2014 Volume 01",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/5353/pg5353.txt",
+      "sha256": "e835793681dc6688735d2fb342a7f188a0b81d5d65bc65f9144e4f06cd10f1b2",
+      "available_sentences": 3070
+    },
+    {
+      "id": "gutenberg-42972",
+      "title": "Aaron the Jew: A Novel",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/42972/pg42972.txt",
+      "sha256": "23d64d6e748f31aa83e5c34fc9a4d48ccb2bb46eb4e7c23a4c533b20fac38771",
+      "available_sentences": 6518
+    },
+    {
+      "id": "gutenberg-77686",
+      "title": "My tussle with the devil, and other stories",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/77686/pg77686.txt",
+      "sha256": "d061395446b5acecce2691fe4a98cbe2ee7cb783d8169b3eea4d1a173c7d02b8",
+      "available_sentences": 795
+    },
+    {
+      "id": "gutenberg-77432",
+      "title": "Desolate splendour",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/77432/pg77432.txt",
+      "sha256": "f3cd2fdfe60e11832daf9095bae1c74fbd73db4cbda8de650bc24a3e001a3a5e",
+      "available_sentences": 5906
+    },
+    {
+      "id": "gutenberg-72455",
+      "title": "The oak staircase",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/72455/pg72455.txt",
+      "sha256": "51f370fce90f97f0687d06f42cd16ff5f7724c5f5e1cf1a5e7e395ce484c7368",
+      "available_sentences": 3131
+    },
+    {
+      "id": "gutenberg-68059",
+      "title": "The man among the monkeys; or, Ninety days in apeland To which are added: The philosopher and his monkeys, The professor and the crocodile, and other strange stories of men and animals",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/68059/pg68059.txt",
+      "sha256": "e581156b9cda19fa531be9700fe8ee74abb22d0f2c56d96aec1afa9fc24b8146",
+      "available_sentences": 3398
+    },
+    {
+      "id": "gutenberg-38175",
+      "title": "Perils in the Transvaal and Zululand",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/38175/pg38175.txt",
+      "sha256": "941db70a7968b23d79334e7d9fd9d6ad4ed8708ba61201727b3fe558c6285dd6",
+      "available_sentences": 5364
+    },
+    {
+      "id": "gutenberg-15179",
+      "title": "The Inner Sisterhood A Social Study in High Colors",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/15179/pg15179.txt",
+      "sha256": "cfda8babc688b315cb72e2ddccbdebdeca66715ae01ef348f3fd39c471b5e0ea",
+      "available_sentences": 1076
+    },
+    {
+      "id": "gutenberg-61014",
+      "title": "Zarah the Cruel",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/61014/pg61014.txt",
+      "sha256": "3b999d9011394e73952227b3f829df76fdf9c2ee1bcdf1c5ce1752ecb21b282c",
+      "available_sentences": 3073
+    },
+    {
+      "id": "gutenberg-26207",
+      "title": "In Our Town",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/26207/pg26207.txt",
+      "sha256": "ceccf8f0250b476a24814e5e24f4358206b0171aa8911577dd44a77ca890af88",
+      "available_sentences": 2426
+    },
+    {
+      "id": "gutenberg-78535",
+      "title": "The paper dragon",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/78535/pg78535.txt",
+      "sha256": "e7179a965f169553b2d8598a9135e34c02087a037c09f8bc14e91f40c1545047",
+      "available_sentences": 1085
+    },
+    {
+      "id": "gutenberg-73829",
+      "title": "Elsie's scholarship",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/73829/pg73829.txt",
+      "sha256": "74ee01ca22cc7af9506e6c1b98fa806ce404c3014da516669305e862f2d79eec",
+      "available_sentences": 2211
+    },
+    {
+      "id": "gutenberg-13753",
+      "title": "Dorothy Dainty's Gay Times",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/13753/pg13753.txt",
+      "sha256": "f4095a9f88b1896d69186ead48dff9923880aab488ea939530095c6e8461ebc5",
+      "available_sentences": 1529
+    },
+    {
+      "id": "gutenberg-47417",
+      "title": "The Motor Boys After a Fortune; or, The Hut on Snake Island",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/47417/pg47417.txt",
+      "sha256": "afb1b29a27c55b0bab8e4e9d14cf657123779ceb09079949e1b89204cefc5677",
+      "available_sentences": 2829
+    },
+    {
+      "id": "gutenberg-55831",
+      "title": "The Spider",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/55831/pg55831.txt",
+      "sha256": "d17639929db09ca8e4e57cc95530fac51433d11ee9083034609d3c6b6e7d450c",
+      "available_sentences": 5230
+    },
+    {
+      "id": "gutenberg-41331",
+      "title": "Mrs. Dorriman: A Novel. Volume 3 of 3",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/41331/pg41331.txt",
+      "sha256": "2fa9f5e4bf377e076a84cac136a9dec192f75d7076a08160b61df36821d7043c",
+      "available_sentences": 2858
+    },
+    {
+      "id": "gutenberg-14176",
+      "title": "The Dweller on the Threshold",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/14176/pg14176.txt",
+      "sha256": "17bcc262640bfa19937bb34b227a73aca152c4fbbc269c50a0b5f83212c0a56c",
+      "available_sentences": 3394
+    },
+    {
+      "id": "gutenberg-3969",
+      "title": "Jacqueline \u2014 Volume 2",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/3969/pg3969.txt",
+      "sha256": "57c6ea50a689e0135dd5853900005d4d4b7588a3641d430cee18d1a7a882ce03",
+      "available_sentences": 1263
+    },
+    {
+      "id": "gutenberg-69636",
+      "title": "Salome Shepard, reformer",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/69636/pg69636.txt",
+      "sha256": "c845ac5f3f7ca20bf004b3b6d4aaaa0e534d52dd5bd0b269dbb87262fb0fac13",
+      "available_sentences": 2286
+    },
+    {
+      "id": "gutenberg-1218",
+      "title": "The Adventures of Jimmie Dale",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/1218/pg1218.txt",
+      "sha256": "dab358e743d7bfa0cacfb9b8b9df3ad1f920b73e8b40b27ba05b6b8c5640edeb",
+      "available_sentences": 7327
+    },
+    {
+      "id": "gutenberg-1086",
+      "title": "A Horse's Tale",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/1086/pg1086.txt",
+      "sha256": "7b6db30e6eb0f24a53734c46528d5b7a660d4c2fb11d7f89b38ed13438dc60db",
+      "available_sentences": 792
+    },
+    {
+      "id": "gutenberg-72967",
+      "title": "Chalk face",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/72967/pg72967.txt",
+      "sha256": "8fdbac2fb381f629a4d985adbb47bd713340335469035503c45f2f89ae9334da",
+      "available_sentences": 2605
+    },
+    {
+      "id": "gutenberg-32272",
+      "title": "Insidekick",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/32272/pg32272.txt",
+      "sha256": "b031bdefb12a81f60857d55f4dcaa6a5ce562d648690e97ce43a0cfca1dd821b",
+      "available_sentences": 728
+    },
+    {
+      "id": "gutenberg-3983",
+      "title": "Gerfaut \u2014 Volume 3",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/3983/pg3983.txt",
+      "sha256": "107ad2a0c8033d0fc31062b3a1255bcf1abf29c13ab13ccba2330813bc94fa9c",
+      "available_sentences": 791
+    },
+    {
+      "id": "gutenberg-28662",
+      "title": "The Squirrel Inn",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/28662/pg28662.txt",
+      "sha256": "becf760dff9791169bae6523e5d4cb045325bb28c3e1f454b377bd0eb20af6c9",
+      "available_sentences": 2400
+    },
+    {
+      "id": "gutenberg-66106",
+      "title": "Tales of the Wild and the Wonderful [1867]",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/66106/pg66106.txt",
+      "sha256": "65dac4d050d1a6e2d348b568fb7b2f28c0739b6848c3ffda007f2da19a0b6bc8",
+      "available_sentences": 2002
+    },
+    {
+      "id": "gutenberg-580",
+      "title": "The Pickwick Papers",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/580/pg580.txt",
+      "sha256": "b44980181ef76e3879d5864a5f6cc4073c12eb940bc6db7a32632e9bb2f4bbd9",
+      "available_sentences": 14072
+    },
+    {
+      "id": "gutenberg-11974",
+      "title": "Dialstone Lane, Part 4.",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/11974/pg11974.txt",
+      "sha256": "ea2b59838aad369108865f6d1c40362c09e8c81ef7b126ee9b590f68b7c67b22",
+      "available_sentences": 562
+    },
+    {
+      "id": "gutenberg-26233",
+      "title": "The Indifference of Juliet",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/26233/pg26233.txt",
+      "sha256": "165b17135a465f78e4d70f6a917f0595b796269827c0175a431e5527e16ece70",
+      "available_sentences": 3063
+    },
+    {
+      "id": "gutenberg-18318",
+      "title": "Crittenden: A Kentucky Story of Love and War",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/18318/pg18318.txt",
+      "sha256": "ebf37bf3e4d899f9677431a87f6ce563e6e25573b0a0706180f559dd8cad01f7",
+      "available_sentences": 2009
+    },
+    {
+      "id": "gutenberg-2994",
+      "title": "A Spirit in Prison",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/2994/pg2994.txt",
+      "sha256": "8d2ace577b26bb717286809150b64ad7f7e246f6ec06017a4b88655a55fbfa05",
+      "available_sentences": 12310
+    },
+    {
+      "id": "gutenberg-34401",
+      "title": "The Pace That Kills: A Chronicle",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/34401/pg34401.txt",
+      "sha256": "3571da3aeb9335c482872c72e62f84df17507693cf4e968c1cada0babfea07cc",
+      "available_sentences": 1530
+    },
+    {
+      "id": "gutenberg-44185",
+      "title": "The Fighting Starkleys; or, The Test of Courage",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/44185/pg44185.txt",
+      "sha256": "34f26694e7428c76a0526a17ecb10d51fd4b5b804ae00f5dbc61e3afbcefb857",
+      "available_sentences": 1939
+    },
+    {
+      "id": "gutenberg-54256",
+      "title": "Frank Reade Jr.'s Air Wonder, The \"Kite\"; Or, A Six Weeks' Flight Over the Andes",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/54256/pg54256.txt",
+      "sha256": "b381acc7856d2bf23005e3b6d80da13eb2b6db0f39b6b752d9d0cdf39f4184b4",
+      "available_sentences": 1910
+    },
+    {
+      "id": "gutenberg-32191",
+      "title": "The Sentimental Vikings",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/32191/pg32191.txt",
+      "sha256": "d529f3c2c18fd9f6a0edce3f078e391bf236733cd7d756f30610e4a2cd728416",
+      "available_sentences": 990
+    },
+    {
+      "id": "gutenberg-65394",
+      "title": "Battle Out of Time",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/65394/pg65394.txt",
+      "sha256": "84e7fa17f425fc73d4f71cfdafdeb2cc481186240e21b7d683cf233fcab61ecb",
+      "available_sentences": 1479
+    },
+    {
+      "id": "gutenberg-35545",
+      "title": "Sanders of the river",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/35545/pg35545.txt",
+      "sha256": "aa48f121d02ad1002acc9d2c21cd04c9037f1f0d4b4f198e3622f5c8ec2b38d6",
+      "available_sentences": 2747
+    },
+    {
+      "id": "gutenberg-19167",
+      "title": "Billy Whiskers: The Autobiography of a Goat",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/19167/pg19167.txt",
+      "sha256": "6909d0a561bb5823871dcc1a78cc7a402056fe91b0e208c12257030594021316",
+      "available_sentences": 1109
+    },
+    {
+      "id": "gutenberg-4401",
+      "title": "The Shaving of Shagpat; an Arabian entertainment \u2014 Volume 1",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/4401/pg4401.txt",
+      "sha256": "d8f0c639e88335462c764210bddd00fdcecb9556adfd9f74ffd306359ffb7c28",
+      "available_sentences": 1169
+    },
+    {
+      "id": "gutenberg-70476",
+      "title": "India",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/70476/pg70476.txt",
+      "sha256": "f1c3f974c55ffca074666da0c006c6c261339f36638d174bd093b5af231b0938",
+      "available_sentences": 4672
+    },
+    {
+      "id": "gutenberg-30110",
+      "title": "Name and Fame: A Novel",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/30110/pg30110.txt",
+      "sha256": "391377c13bbbe6d50281b4e933741b26e3bfcaa99ab02f2ffbf148823dd3f61f",
+      "available_sentences": 6795
+    },
+    {
+      "id": "gutenberg-45740",
+      "title": "The Boy Scouts of Lakeville High",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/45740/pg45740.txt",
+      "sha256": "fda51cac576996d9f4e05b48215f682db25a3a3172bb3b34602ba9d3d26b18b7",
+      "available_sentences": 3924
+    },
+    {
+      "id": "gutenberg-53097",
+      "title": "The Murder of Delicia",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/53097/pg53097.txt",
+      "sha256": "1bf5c34b882644a4b3072e139f2a4112dd46d9393fc162fef8ef518e4d46e12c",
+      "available_sentences": 1994
+    },
+    {
+      "id": "gutenberg-31507",
+      "title": "Peggy Raymond's Vacation; Or, Friendly Terrace Transplanted",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/31507/pg31507.txt",
+      "sha256": "321a4d2397888aeec314e1f57ebf9cfc09eff276ff6a8257853146fb00759c2c",
+      "available_sentences": 3274
+    },
+    {
+      "id": "gutenberg-41260",
+      "title": "Dan Carter-- Cub Scout",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/41260/pg41260.txt",
+      "sha256": "0bbbdda0f03307983455c4992a3e1e70257987d10b1848081cacfe0fb1a50e7a",
+      "available_sentences": 2389
+    },
+    {
+      "id": "gutenberg-20458",
+      "title": "The Triflers",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/20458/pg20458.txt",
+      "sha256": "58c3cf1a449a43bfc6bcd8fed65af281f3cd8fdca8b8bcc736e580ea10670b84",
+      "available_sentences": 4947
+    },
+    {
+      "id": "gutenberg-68169",
+      "title": "Sir John Dering: A romantic comedy",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/68169/pg68169.txt",
+      "sha256": "a9bbd12ee436d74c3e1095e5ec8c9b0f12f4c5ec32081241f740a01e45549788",
+      "available_sentences": 5156
+    },
+    {
+      "id": "gutenberg-2637",
+      "title": "Youth",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/2637/pg2637.txt",
+      "sha256": "bd7f7921c66c9926ad034837a2b99e73b44beada6a0d99730a0d3bc5b4ef2424",
+      "available_sentences": 1907
+    },
+    {
+      "id": "gutenberg-60099",
+      "title": "Cecilia of the Pink Roses",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/60099/pg60099.txt",
+      "sha256": "c7aca3b57f1da297b9f5beb0e2ce9d91298dfa6003ee5071ee1f846941432806",
+      "available_sentences": 3478
+    },
+    {
+      "id": "gutenberg-5551",
+      "title": "In the Fire of the Forge: A Romance of Old Nuremberg \u2014 Complete",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/5551/pg5551.txt",
+      "sha256": "71c961446090d4003be34c60ae132fbdf4393cfa0462a8922bf591d1ec23bb70",
+      "available_sentences": 5256
+    },
+    {
+      "id": "gutenberg-68888",
+      "title": "How Jack Mackenzie won his epaulettes",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/68888/pg68888.txt",
+      "sha256": "e2edf1b1e41f0f919f513502b39ceaf44bcfb92441bcc077f05a73b97d60b5fc",
+      "available_sentences": 3636
+    },
+    {
+      "id": "gutenberg-40666",
+      "title": "Missing at Marshlands Arden Blake Mystery Series #3",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/40666/pg40666.txt",
+      "sha256": "fae56af396eb02662fc89c40e999c9b2b3ade6df95428cbfc8488038c61da634",
+      "available_sentences": 2823
+    },
+    {
+      "id": "gutenberg-75516",
+      "title": "A book of dear dead women",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/75516/pg75516.txt",
+      "sha256": "82150d0b08466b61a2a59ed5cd33dcbf96ad8fbe9fea75a70ee0e70a654be127",
+      "available_sentences": 3485
+    },
+    {
+      "id": "gutenberg-16517",
+      "title": "Liza of Lambeth",
+      "split": "train",
+      "url": "https://gutenberg.pglaf.org/cache/epub/16517/pg16517.txt",
+      "sha256": "3696f502da1529ca5d9f5b264d94355d8bd332af678b82cbcfbba2025bc5bd1f",
+      "available_sentences": 2124
+    }
+  ],
+  "splits": {
+    "train": {
+      "sentences": 920380,
+      "sha256": "797c2c1a6440eb333790457d7386cabb0048f69dbbf6844285a1663c8ef0a123"
+    },
+    "validation": {
+      "sentences": 3855,
+      "sha256": "6a6e94c59214fd159ef084aeb1eedd5af1495c8fc977b07211ec1fead7068b63"
+    },
+    "test": {
+      "sentences": 9973,
+      "sha256": "156e1e7e9aca0b418335f788e494fb276d0d22d4dbb1fd69bd9da5f19799be6c"
+    }
+  }
+}
