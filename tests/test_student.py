@@ -9,6 +9,7 @@ import json
 import subprocess
 import sys
 
+import pytest
 import torch
 
 from neural_compression.adaptive import compress_adaptive_many
@@ -30,6 +31,21 @@ def decoder() -> StudentDecoder:
     vocab = Vocab(words, list(range(1, len(words) + 1)))
     model = StudentModel(Config(len(vocab), dim=32, layers=1, heads=2, ff=64), vocab.logprior)
     return StudentDecoder(model, vocab, CharNgram(vocab.words, vocab.counts.tolist()))
+
+
+def test_char_ngram_keeps_predictions_and_ties_across_repeated_calls():
+    model = CharNgram(["alpha", "a1", "éclair", "東京", "ßeta"], [91, 2, 7, 3, 1])
+    # Captured from the original uncached decoder; a wider beam must not turn into greedy search.
+    cases = [("", 1, 4, 1, "a"), ("", 1, 4, 8, "東京"), ("a", 1, 4, 8, "lpha"),
+             ("écl", 3, 3, 8, "air"), ("東", 1, 1, 8, "京"), ("İ", 1, 2, 3, "a"), ("a", 0, 0, 8, "")]
+    for _ in range(2):
+        for prefix, lo, hi, beam, expected in cases:
+            assert model.complete(prefix, lo, hi, beam) == expected
+    tied = CharNgram(["a", "b"], [1, 1])
+    opposite = CharNgram(["a", "b"], [1, 19])
+    for _ in range(2):
+        assert tied.complete("", 1, 1) == "a"
+        assert opposite.complete("", 1, 1) == "b"
 
 
 def test_output_respects_payload():
@@ -62,13 +78,32 @@ def test_sentence_features_do_not_depend_on_neighbours():
         assert {k: v for k, v in alone.items() if k != "cand"} == {k: v for k, v in inside.items() if k != "cand"}
 
 
-def test_adaptive_is_exact_and_merges():
+@pytest.mark.parametrize("options", [{}, {"step": 2}, {"step": 2, "max_rounds": 3}, {"start_retention": 0.5}])
+def test_adaptive_is_exact_and_merges(options):
     dec = decoder()
-    results = compress_adaptive_many(TEXTS, dec)
+    results = compress_adaptive_many(TEXTS, dec, **options)
     assert [r.decoded_text for r in results] == TEXTS
     assert [r.text for r in dec.decode_many([r.payload for r in results])] == TEXTS
     merged = merge_payloads([Compressed.from_bytes(r.payload) for r in results])
     assert dec.decode(merged.to_bytes()).text == "\n".join(TEXTS)
+
+
+def test_evaluation_cli_uses_adaptive_options(tmp_path):
+    model, out = tmp_path / "model", tmp_path / "out"
+    decoder().save(model)
+    text = "Q" + "q" * 99  # Too long for any suffix prediction; forces full-word fallback.
+    (tmp_path / "validation.jsonl").write_text(json.dumps({"book_id": "sample", "text": text}) + "\n")
+    subprocess.run(
+        [sys.executable, "-m", "neural_compression.student_train", "evaluate", "--model", str(model),
+         "--data", str(tmp_path), "--out", str(out), "--threads", "1",
+         "--start-retention", "0.4", "--step", "2", "--max-rounds", "1"],
+        check=True, capture_output=True, text=True,
+    )
+    summary = json.loads((out / "summary.json").read_text())
+    assert summary["adaptive_options"] == {"start_retention": 0.4, "step": 2, "max_rounds": 1}
+    assert summary["adaptive100"]["mean_rounds"] == 2  # Default round limit would need seven.
+    row = json.loads((out / "adaptive_rows.jsonl").read_text())
+    assert StudentDecoder.load(model).decode(bytes.fromhex(row["payload_hex"])).text == text
 
 
 def test_continuation_keeps_checkpoint_and_vocabulary_on_tie(tmp_path):

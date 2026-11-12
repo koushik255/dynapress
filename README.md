@@ -533,6 +533,65 @@ of the additional $3 cap** (a billing snapshot, not a final invoice; storage
 separate). The app stopped with zero tasks. All 15 tests passed. These are
 checkpoint-selection development results, not a final held-out test result.
 
+### Student runtime speed pass
+
+The character fallback now caches at most 4,096 context probability rows per
+decoder, selects the best beam entries without sorting every expansion, and
+stops when no unfinished spelling can beat the best completed spelling.
+Probability arithmetic and tie ordering are unchanged; model weights,
+vocabulary, payload format and default adaptive search settings are unchanged.
+
+Paired CPU measurements against [058f1f4](https://github.com/koushik255/dynapress/commit/058f1f464246b89c71003e469a03d539d2be697a), two Torch threads, medians of three
+alternating old/new runs, with the probability cache cleared separately before
+compression and decompression:
+
+| checkpoint / development corpus | adaptive compression seconds, before → after | decompression seconds, before → after | merged zstd bytes, unchanged |
+|---|---:|---:|---:|
+| continued / broader 120 sentences | 19.020 → 9.499 | 2.026 → 1.542 | 3,974 |
+| original / broader 120 sentences | 16.860 → 9.321 | 2.113 → 1.562 | 4,163 |
+| continued / fiction pilot 50 sentences | 5.606 → 3.953 | 1.034 → 0.803 | 1,960 |
+| original / fiction pilot 50 sentences | 5.387 → 4.308 | 0.967 → 0.856 | 1,937 |
+
+The broader set contains 1,840 words; the pilot 941. Times exclude model loading
+and final merged zstd packaging. Every default adaptive payload was identical
+between implementations. These are CPU measurements, not a GPU speed claim;
+they reuse development text, not a newly accessed test split.
+
+**Fewer compression rounds are opt-in.** A separate six-setting sweep on the
+continued model's broader set measured these three useful choices (three-run
+medians, same cold-cache protocol):
+
+| adaptive settings | compression seconds | mean rounds | merged zstd bytes |
+|---|---:|---:|---:|
+| default: step 1, full-word fallback after round 6 | 10.634 | 5.250 | 3,974 |
+| step 2, fallback after round 6 | 7.211 | 3.825 | 4,087 |
+| step 2, fallback after round 3 | 6.687 | 3.342 | 4,108 |
+
+The last option is 1.59× faster at compression than the optimized default in
+that sweep, but stores 3.37% more bytes. It did not improve decompression
+(1.735 versus 1.694 seconds), so it is not the new default. Starting at 40% or
+50% retention and shortening the round limit alone were also tested. All
+settings still verify exact reconstruction; full-word fallback is followed by
+another verification round, so `--max-rounds 3` is not a hard limit of three
+decoder calls. Context changes can also break previously correct words.
+
+The existing `compress_adaptive_many` API accepts `step`, `max_rounds` and
+`start_retention`; the student evaluation CLI now exposes and records them:
+
+```bash
+uv run --frozen python -m neural_compression.student_train evaluate \
+  --model results/student/runs/train-20261112-000121/model \
+  --data data/student/continuation --per-book 40 --threads 2 \
+  --step 2 --max-rounds 3 --out results/student/runs/speed-fast
+```
+
+`results/student/speed/measurements.json` retains all three-run timings, source
+hashes and before/after profile counts; `verification.json` retains model hashes,
+cross-version CPU decoding, CLI checks and the plain-zstd control. Both saved
+models are unchanged, and all 20 tests passed. No new training or Modal jobs
+were launched. Plain zstd remains much faster; the student trades runtime and
+shared model storage for smaller payloads, not for beating zstd's speed.
+
 ## How it works
 
 ### 1. Compression (`compressor.py`)

@@ -185,9 +185,11 @@ def fixed_accuracy(decoder: StudentDecoder, texts: list[str], retention: float =
     return {"word_accuracy": correct / total, "words": total, "ms_per_word": 1000 * seconds / total, "sentence_exact": sum(r.text == t for r, t in zip(results, texts))}
 
 
-def adaptive_eval(decoder: StudentDecoder, texts: list[str]) -> tuple[dict, list[dict]]:
+def adaptive_eval(
+    decoder: StudentDecoder, texts: list[str], *, start_retention: float = 0.25, step: int = 1, max_rounds: int = 6,
+) -> tuple[dict, list[dict]]:
     t0 = time.perf_counter()
-    results = compress_adaptive_many(texts, decoder, 0.25, 1.0)
+    results = compress_adaptive_many(texts, decoder, start_retention, 1.0, step=step, max_rounds=max_rounds)
     compress_seconds = time.perf_counter() - t0
     # Independent check: a fresh decode of every final payload, then of the merged corpus payload.
     t0 = time.perf_counter()
@@ -233,7 +235,9 @@ def evaluate(args) -> None:
     texts = validation_samples(args.data / "validation.jsonl", args.start, args.per_book)
     decoder.decode_many([compress(texts[0], 0.5).to_bytes()])  # warm-up
     fixed = fixed_accuracy(decoder, texts)
-    summary, rows = adaptive_eval(decoder, texts)
+    options = {"start_retention": getattr(args, "start_retention", 0.25),
+               "step": getattr(args, "step", 1), "max_rounds": getattr(args, "max_rounds", 6)}
+    summary, rows = adaptive_eval(decoder, texts, **options)
     params = sum(p.numel() for p in decoder.model.parameters())
     files = [p for p in Path(args.model).iterdir() if p.is_file()]
     out = {
@@ -246,6 +250,7 @@ def evaluate(args) -> None:
         "vocab_size": len(decoder.vocab),
         "model_dir_bytes": sum(p.stat().st_size for p in files),
         "fixed50": fixed,
+        "adaptive_options": options,
         "adaptive100": summary,
         "ngram_fallbacks": decoder.fallbacks,
     }
@@ -388,6 +393,9 @@ def main() -> None:
     p.add_argument("--per-book", type=int, default=25)
     p.add_argument("--device", default="cpu")
     p.add_argument("--threads", type=int, default=2)
+    p.add_argument("--start-retention", type=float, default=0.25, help="Initial adaptive word-prefix fraction")
+    p.add_argument("--step", type=int, default=1, help="Characters added to each wrong word per adaptive round")
+    p.add_argument("--max-rounds", type=int, default=6, help="After this round, store remaining wrong words in full and verify again")
     args = parser.parse_args()
     if args.command == "train":
         if args.out.exists() and any(args.out.iterdir()):

@@ -1,0 +1,63 @@
+{
+  "ngram_differential_cases": 1440,
+  "models": {
+    "continued": {
+      "fixed_payloads": 704,
+      "adaptive_payloads_cross_decoded": 1360,
+      "model_hashes": {
+        "model.pt": "c74aad7b0fa36510100323087471cbad35f551080ba84c41d1c2d14e849fec85",
+        "config.json": "123f01a85a13a87392e1cd095c0b3b614b40363b803f46b0223d5fa47a4da8fd",
+        "vocab.tsv": "5b0e4661491f42b005260d2a77cba3e6169b0328b9aba8ebe370e3fa34569e6e"
+      },
+      "edge_cases": 6,
+      "all_checks_exact": true
+    },
+    "original": {
+      "fixed_payloads": 704,
+      "adaptive_payloads_cross_decoded": 1360,
+      "model_hashes": {
+        "model.pt": "f590272aa92470fbe40a47af7fd1d259b06a149618fefba72a65f3d29f8db0a0",
+        "config.json": "b61dff49f7b6fe303fb3efcef7a912768b7dd64be8fd8133791eb124e46b32fe",
+        "vocab.tsv": "5b0e4661491f42b005260d2a77cba3e6169b0328b9aba8ebe370e3fa34569e6e"
+      },
+      "edge_cases": 6,
+      "all_checks_exact": true
+    }
+  },
+  "plain_zstd_control": {
+    "broader": {
+      "original_bytes": 10981,
+      "zstd_bytes": 4729,
+      "trials": 30,
+      "median_compress_seconds": 0.0019596459997046622,
+      "median_decompress_seconds": 3.667999953904655e-05,
+      "exact": true
+    },
+    "pilot": {
+      "original_bytes": 5101,
+      "zstd_bytes": 2481,
+      "trials": 30,
+      "median_compress_seconds": 0.0007133830004022457,
+      "median_decompress_seconds": 2.8117499823565595e-05,
+      "exact": true
+    }
+  },
+  "cli_and_namespace_checks": {
+    "fast_cli_options": {
+      "start_retention": 0.25,
+      "step": 2,
+      "max_rounds": 3
+    },
+    "fast_cli_sentences": 120,
+    "fast_cli_old_decoder_exact": true,
+    "fast_cli_merged_zstd_bytes": 4108,
+    "legacy_namespace_defaults": {
+      "start_retention": 0.25,
+      "step": 1,
+      "max_rounds": 6
+    },
+    "legacy_namespace_exact": true,
+    "pytest_command": "uv run --frozen pytest -q",
+    "pytest_result": "....................                                                     [100%]\n20 passed in 10.16s"
+  }
+}

@@ -37,11 +37,13 @@ therefore decode to the same words.
 from __future__ import annotations
 
 import bisect
+import heapq
 import json
 import math
 import re
 import time
 import zlib
+from collections import OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -115,6 +117,7 @@ class CharNgram:
     """Witten-Bell interpolated character n-gram over vocabulary words (lower case), for OOV suffixes."""
 
     END = "\x03"
+    _LOG_CACHE_SIZE = 4096
 
     def __init__(self, words: list[str], counts: list[int], order: int = 5):
         self.order = order
@@ -130,6 +133,9 @@ class CharNgram:
                     d[s[i]] = d.get(s[i], 0) + c
         self.alphabet = sorted(alphabet)
         self.totals = {ctx: (sum(d.values()), len(d)) for ctx, d in self.table.items()}
+        # The fitted n-gram is immutable; keep only a bounded number of context rows,
+        # owned by this instance, rather than caching suffixes or model features.
+        self._log_cache: OrderedDict[str, tuple[float, tuple[float, ...]]] = OrderedDict()
 
     def prob(self, ctx: str, ch: str) -> float:
         p = 1.0 / (len(self.alphabet) + 1)
@@ -141,6 +147,18 @@ class CharNgram:
             p = (self.table[c].get(ch, 0) + types * p) / (total + types)
         return p
 
+    def _context_logs(self, ctx: str) -> tuple[float, tuple[float, ...]]:
+        row = self._log_cache.get(ctx)
+        if row is None:
+            row = (
+                math.log(self.prob(ctx, self.END)),
+                tuple(math.log(self.prob(ctx, ch)) for ch in self.alphabet),
+            )
+            if len(self._log_cache) >= self._LOG_CACHE_SIZE:
+                self._log_cache.popitem(last=False)
+            self._log_cache[ctx] = row
+        return row
+
     def complete(self, prefix: str, min_chars: int, max_chars: int, beam: int = 8) -> str:
         """Most likely suffix (``min_chars``..``max_chars`` letters, then end of word)."""
         start = "\x02" * (self.order - 1) + prefix.lower()
@@ -149,17 +167,22 @@ class CharNgram:
         for n in range(max_chars + 1):
             if n >= min_chars:
                 for score, suf in beams:
-                    total = score + math.log(self.prob((start + suf)[-(self.order - 1) :], self.END))
+                    total = score + self._context_logs((start + suf)[-(self.order - 1) :])[0]
                     if total > best[0]:
                         best = (total, suf)
-            if n == max_chars:
+            # Every future character adds a nonpositive log probability. Once even
+            # the best unfinished beam cannot beat the winner, longer searches cannot help.
+            if n == max_chars or not beams or beams[0][0] <= best[0]:
                 break
             nxt = []
             for score, suf in beams:
                 ctx = (start + suf)[-(self.order - 1) :]
-                nxt += [(score + math.log(self.prob(ctx, ch)), suf + ch) for ch in self.alphabet]
-            nxt.sort(key=lambda x: (-x[0], x[1]))
-            beams = nxt[:beam]
+                nxt += [(score + logp, suf + ch) for ch, logp in zip(self.alphabet, self._context_logs(ctx)[1])]
+            if beam >= 0:
+                beams = heapq.nsmallest(beam, nxt, key=lambda x: (-x[0], x[1]))
+            else:  # Preserve the original slice semantics even for negative widths.
+                nxt.sort(key=lambda x: (-x[0], x[1]))
+                beams = nxt[:beam]
         return best[1]
 
 

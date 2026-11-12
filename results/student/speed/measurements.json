@@ -1,0 +1,1166 @@
+{
+  "baseline_commit": "058f1f464246b89c71003e469a03d539d2be697a",
+  "hardware": "existing 2-vCPU Linux x86_64 orb, no concurrent benchmark/test jobs",
+  "threads": 2,
+  "python": "3.12.14",
+  "cache_state": "cleared separately before each compression and decompression stage",
+  "timing_scope": "adaptive search and sentence-payload decoding; excludes model loading and final merged zstd packaging",
+  "trials_per_case": 3,
+  "exact_comparison_order": "baseline/optimized, optimized/baseline, baseline/optimized",
+  "policy_comparison_order": "three trials per setting in listed order; a separate sweep, not interleaved",
+  "sources": {
+    "baseline_student": "e26a5e38c794ad4d5c9c919207c2ee96a3e415937ea686d29a6467380160714b",
+    "cache_heap_student": "72f502b037b4f827d80faee21739f124b7727f38769f6bf5a1c52c71c5a3c786",
+    "final_student": "5f45f507cd0896436854c2c9d79cdbd263032dc2dc5ae3cc92d1ae48497eac32",
+    "adaptive": "016b7d3442031260429a58b85e9ab841263d0b792d49e05f3e521dce230cdef3"
+  },
+  "experiments": {
+    "cache_heap_only": [
+      {
+        "model": "continued",
+        "dataset": "broader",
+        "variant": "baseline",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            18.898581059000207,
+            18.711663297000086,
+            19.369058127000244
+          ],
+          "decode": [
+            2.0877478000002156,
+            2.1637029749999783,
+            2.067009346999839
+          ]
+        },
+        "median_compress_seconds": 18.898581059000207,
+        "median_decode_seconds": 2.0877478000002156,
+        "median_decode_ms_per_word": 1.134645543478378,
+        "merged_zstd_bytes": 3974,
+        "mean_rounds": 5.25,
+        "payload_hash": "c2ce7398c2db2887a81e1b01c9e2fb5abbb2047ec99bf4d58fe758de0f1f065e",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            11.545376493000731,
+            11.809255126000608,
+            11.001257120000446
+          ],
+          "decode": [
+            1.7020821100004468,
+            1.7335113449998971,
+            1.621240374000081
+          ]
+        },
+        "median_compress_seconds": 11.545376493000731,
+        "median_decode_seconds": 1.7020821100004468,
+        "median_decode_ms_per_word": 0.9250446250002429,
+        "merged_zstd_bytes": 3974,
+        "mean_rounds": 5.25,
+        "payload_hash": "c2ce7398c2db2887a81e1b01c9e2fb5abbb2047ec99bf4d58fe758de0f1f065e",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "pilot",
+        "variant": "baseline",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            5.368448377000277,
+            5.494109762999869,
+            5.09328263200041
+          ],
+          "decode": [
+            0.9645533759994578,
+            0.9082641599998169,
+            0.9367181110001184
+          ]
+        },
+        "median_compress_seconds": 5.368448377000277,
+        "median_decode_seconds": 0.9367181110001184,
+        "median_decode_ms_per_word": 0.9954496397450779,
+        "merged_zstd_bytes": 1960,
+        "mean_rounds": 4.94,
+        "payload_hash": "965a1f3aa229656895305adba4537bb15ac72d02ee66695dca80d7c1fcd911e3",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            4.445472483000231,
+            4.376243355000042,
+            4.132599294999636
+          ],
+          "decode": [
+            0.8713586049998412,
+            0.8720058760000029,
+            0.8093333830001939
+          ]
+        },
+        "median_compress_seconds": 4.376243355000042,
+        "median_decode_seconds": 0.8713586049998412,
+        "median_decode_ms_per_word": 0.9259921413388323,
+        "merged_zstd_bytes": 1960,
+        "mean_rounds": 4.94,
+        "payload_hash": "965a1f3aa229656895305adba4537bb15ac72d02ee66695dca80d7c1fcd911e3",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "broader",
+        "variant": "baseline",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            15.23241395399964,
+            15.488045334000162,
+            15.266116073000376
+          ],
+          "decode": [
+            1.8739298149994283,
+            2.015564300000733,
+            2.107643351000661
+          ]
+        },
+        "median_compress_seconds": 15.266116073000376,
+        "median_decode_seconds": 2.015564300000733,
+        "median_decode_ms_per_word": 1.095415380435181,
+        "merged_zstd_bytes": 4163,
+        "mean_rounds": 5.4,
+        "payload_hash": "d1afb88627403b7f472b9252605721070851f5dcba8da8c12aedf6708629d410",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            9.776251195999976,
+            9.961061177999909,
+            10.113600817000588
+          ],
+          "decode": [
+            1.5805970840001464,
+            1.6457845089998955,
+            1.588959545999387
+          ]
+        },
+        "median_compress_seconds": 9.961061177999909,
+        "median_decode_seconds": 1.588959545999387,
+        "median_decode_ms_per_word": 0.8635649706518408,
+        "merged_zstd_bytes": 4163,
+        "mean_rounds": 5.4,
+        "payload_hash": "d1afb88627403b7f472b9252605721070851f5dcba8da8c12aedf6708629d410",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "pilot",
+        "variant": "baseline",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            5.088717906000056,
+            5.058326719999968,
+            4.948142629999893
+          ],
+          "decode": [
+            0.8935566420004761,
+            0.9100692150004761,
+            0.9640949209997416
+          ]
+        },
+        "median_compress_seconds": 5.058326719999968,
+        "median_decode_seconds": 0.9100692150004761,
+        "median_decode_ms_per_word": 0.9671298777900915,
+        "merged_zstd_bytes": 1937,
+        "mean_rounds": 4.92,
+        "payload_hash": "35b74cad9f787152576da139262a303e1a330cfc81e9f5d2ac2baad6a21bf11d",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            4.385148924000532,
+            4.499016146000031,
+            4.396161652000046
+          ],
+          "decode": [
+            0.8433187769996948,
+            0.8899432270000034,
+            0.7871230979999382
+          ]
+        },
+        "median_compress_seconds": 4.396161652000046,
+        "median_decode_seconds": 0.8433187769996948,
+        "median_decode_ms_per_word": 0.8961942369816098,
+        "merged_zstd_bytes": 1937,
+        "mean_rounds": 4.92,
+        "payload_hash": "35b74cad9f787152576da139262a303e1a330cfc81e9f5d2ac2baad6a21bf11d",
+        "all_exact": true
+      }
+    ],
+    "final_exact": [
+      {
+        "model": "continued",
+        "dataset": "broader",
+        "variant": "baseline",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            19.34551716399983,
+            18.753117745000054,
+            19.01990917799958
+          ],
+          "decode": [
+            2.098461245999715,
+            2.0088686979997874,
+            2.0257299949998924
+          ]
+        },
+        "median_compress_seconds": 19.01990917799958,
+        "median_decode_seconds": 2.0257299949998924,
+        "median_decode_ms_per_word": 1.1009402146738545,
+        "merged_zstd_bytes": 3974,
+        "mean_rounds": 5.25,
+        "payload_hash": "c2ce7398c2db2887a81e1b01c9e2fb5abbb2047ec99bf4d58fe758de0f1f065e",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            9.29407085999992,
+            9.498530697000206,
+            9.541528827000548
+          ],
+          "decode": [
+            1.5125107080002635,
+            1.5521315440000762,
+            1.5424429510003392
+          ]
+        },
+        "median_compress_seconds": 9.498530697000206,
+        "median_decode_seconds": 1.5424429510003392,
+        "median_decode_ms_per_word": 0.8382842125001844,
+        "merged_zstd_bytes": 3974,
+        "mean_rounds": 5.25,
+        "payload_hash": "c2ce7398c2db2887a81e1b01c9e2fb5abbb2047ec99bf4d58fe758de0f1f065e",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "pilot",
+        "variant": "baseline",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            5.606187869000678,
+            6.035475884000334,
+            5.415585740000097
+          ],
+          "decode": [
+            1.0344964229998368,
+            1.056447412000125,
+            0.8951299849995848
+          ]
+        },
+        "median_compress_seconds": 5.606187869000678,
+        "median_decode_seconds": 1.0344964229998368,
+        "median_decode_ms_per_word": 1.099358579170921,
+        "merged_zstd_bytes": 1960,
+        "mean_rounds": 4.94,
+        "payload_hash": "965a1f3aa229656895305adba4537bb15ac72d02ee66695dca80d7c1fcd911e3",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            4.572594123000272,
+            3.952998120000302,
+            3.9126989839996895
+          ],
+          "decode": [
+            0.8059087669998917,
+            0.7762827799997467,
+            0.80347373099994
+          ]
+        },
+        "median_compress_seconds": 3.952998120000302,
+        "median_decode_seconds": 0.80347373099994,
+        "median_decode_ms_per_word": 0.8538509362379809,
+        "merged_zstd_bytes": 1960,
+        "mean_rounds": 4.94,
+        "payload_hash": "965a1f3aa229656895305adba4537bb15ac72d02ee66695dca80d7c1fcd911e3",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "broader",
+        "variant": "baseline",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            15.203473311999915,
+            16.860256340999513,
+            17.47932577499978
+          ],
+          "decode": [
+            2.112618864999604,
+            2.0507755309999993,
+            2.1358499849993677
+          ]
+        },
+        "median_compress_seconds": 16.860256340999513,
+        "median_decode_seconds": 2.112618864999604,
+        "median_decode_ms_per_word": 1.1481624266302195,
+        "merged_zstd_bytes": 4163,
+        "mean_rounds": 5.4,
+        "payload_hash": "d1afb88627403b7f472b9252605721070851f5dcba8da8c12aedf6708629d410",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            8.873875446000056,
+            9.320625486999234,
+            9.736854282999957
+          ],
+          "decode": [
+            1.4125845830003527,
+            1.5619578269997874,
+            1.6343502310000986
+          ]
+        },
+        "median_compress_seconds": 9.320625486999234,
+        "median_decode_seconds": 1.5619578269997874,
+        "median_decode_ms_per_word": 0.8488901233694497,
+        "merged_zstd_bytes": 4163,
+        "mean_rounds": 5.4,
+        "payload_hash": "d1afb88627403b7f472b9252605721070851f5dcba8da8c12aedf6708629d410",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "pilot",
+        "variant": "baseline",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            5.293392101999416,
+            5.3870450120002715,
+            5.445017708000705
+          ],
+          "decode": [
+            0.9541129360004561,
+            0.9665722350000578,
+            0.979053689000466
+          ]
+        },
+        "median_compress_seconds": 5.3870450120002715,
+        "median_decode_seconds": 0.9665722350000578,
+        "median_decode_ms_per_word": 1.0271755951116448,
+        "merged_zstd_bytes": 1937,
+        "mean_rounds": 4.92,
+        "payload_hash": "35b74cad9f787152576da139262a303e1a330cfc81e9f5d2ac2baad6a21bf11d",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            4.3075097610008015,
+            4.532734241999606,
+            4.292794660999789
+          ],
+          "decode": [
+            0.8115569700003107,
+            0.9630103159997816,
+            0.8564494580004975
+          ]
+        },
+        "median_compress_seconds": 4.3075097610008015,
+        "median_decode_seconds": 0.8564494580004975,
+        "median_decode_ms_per_word": 0.9101482019133874,
+        "merged_zstd_bytes": 1937,
+        "mean_rounds": 4.92,
+        "payload_hash": "35b74cad9f787152576da139262a303e1a330cfc81e9f5d2ac2baad6a21bf11d",
+        "all_exact": true
+      }
+    ],
+    "adaptive_settings": [
+      {
+        "model": "continued",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            9.986461196999699,
+            10.645453940999687,
+            10.634490786999777
+          ],
+          "decode": [
+            1.666344511000716,
+            1.6939079039993885,
+            1.7255357139993066
+          ]
+        },
+        "median_compress_seconds": 10.634490786999777,
+        "median_decode_seconds": 1.6939079039993885,
+        "median_decode_ms_per_word": 0.9206021217387981,
+        "merged_zstd_bytes": 3974,
+        "mean_rounds": 5.25,
+        "payload_hash": "c2ce7398c2db2887a81e1b01c9e2fb5abbb2047ec99bf4d58fe758de0f1f065e",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "step2",
+        "options": {
+          "step": 2
+        },
+        "seconds": {
+          "compress": [
+            7.178423551999913,
+            7.210643475999859,
+            7.396334224999919
+          ],
+          "decode": [
+            1.6811857789998612,
+            1.6653820759993323,
+            1.7261842620000607
+          ]
+        },
+        "median_compress_seconds": 7.210643475999859,
+        "median_decode_seconds": 1.6811857789998612,
+        "median_decode_ms_per_word": 0.9136879233694898,
+        "merged_zstd_bytes": 4087,
+        "mean_rounds": 3.825,
+        "payload_hash": "baca9e93f54d8e1b830b82cd0b2747925a0b2c1e10759057acc9c91bd90d7223",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "rounds3",
+        "options": {
+          "max_rounds": 3
+        },
+        "seconds": {
+          "compress": [
+            7.456845114999851,
+            7.882406296000227,
+            7.492268764999608
+          ],
+          "decode": [
+            1.7077800960005334,
+            1.9073800549995212,
+            1.7429407820000051
+          ]
+        },
+        "median_compress_seconds": 7.492268764999608,
+        "median_decode_seconds": 1.7429407820000051,
+        "median_decode_ms_per_word": 0.9472504250000028,
+        "merged_zstd_bytes": 4088,
+        "mean_rounds": 3.7583333333333333,
+        "payload_hash": "7736bfdfa9b778be6ef9f83a0182560040cec7b89aa1de27d44764371db3e74c",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "step2_rounds3",
+        "options": {
+          "step": 2,
+          "max_rounds": 3
+        },
+        "seconds": {
+          "compress": [
+            6.686952779999956,
+            6.5669125129998065,
+            6.865889397000501
+          ],
+          "decode": [
+            1.734903344000486,
+            1.7593557899999723,
+            1.726593456000046
+          ]
+        },
+        "median_compress_seconds": 6.686952779999956,
+        "median_decode_seconds": 1.734903344000486,
+        "median_decode_ms_per_word": 0.9428822521741772,
+        "merged_zstd_bytes": 4108,
+        "mean_rounds": 3.341666666666667,
+        "payload_hash": "2784a666b8730c2c735f1642e7bea1baae78dcedc8b9b1d223d1b6f32f927b2c",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "start40",
+        "options": {
+          "start_retention": 0.4
+        },
+        "seconds": {
+          "compress": [
+            7.939470003000679,
+            8.085757804000423,
+            8.050001996999526
+          ],
+          "decode": [
+            1.6131060100005925,
+            1.5687976680001157,
+            1.6327194310006234
+          ]
+        },
+        "median_compress_seconds": 8.050001996999526,
+        "median_decode_seconds": 1.6131060100005925,
+        "median_decode_ms_per_word": 0.8766880489133655,
+        "merged_zstd_bytes": 4140,
+        "mean_rounds": 4.533333333333333,
+        "payload_hash": "726863c37bb27e6226fdd5cb16540b48330fcf7959005d203ce231d45d832fda",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "start50",
+        "options": {
+          "start_retention": 0.5
+        },
+        "seconds": {
+          "compress": [
+            7.1418401610008,
+            7.523452753999663,
+            7.344845349000025
+          ],
+          "decode": [
+            1.559463990999575,
+            1.6131497100004708,
+            1.6332801939997807
+          ]
+        },
+        "median_compress_seconds": 7.344845349000025,
+        "median_decode_seconds": 1.6131497100004708,
+        "median_decode_ms_per_word": 0.8767117989132993,
+        "merged_zstd_bytes": 4244,
+        "mean_rounds": 4.058333333333334,
+        "payload_hash": "2c0976bb30c455b54e4f8a889f12e46413b2befb5609b30d421ac7b75f30938f",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            4.633351723000487,
+            5.10326287099997,
+            4.955246180999893
+          ],
+          "decode": [
+            0.9449550479994286,
+            0.9295477819996449,
+            0.9441077530000257
+          ]
+        },
+        "median_compress_seconds": 4.955246180999893,
+        "median_decode_seconds": 0.9441077530000257,
+        "median_decode_ms_per_word": 1.0033026068013025,
+        "merged_zstd_bytes": 1960,
+        "mean_rounds": 4.94,
+        "payload_hash": "965a1f3aa229656895305adba4537bb15ac72d02ee66695dca80d7c1fcd911e3",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "step2",
+        "options": {
+          "step": 2
+        },
+        "seconds": {
+          "compress": [
+            3.4794748260001143,
+            3.6016862289998244,
+            3.7513585930000772
+          ],
+          "decode": [
+            0.9603548380000575,
+            0.924084782999671,
+            0.979256476000046
+          ]
+        },
+        "median_compress_seconds": 3.6016862289998244,
+        "median_decode_seconds": 0.9603548380000575,
+        "median_decode_ms_per_word": 1.0205683719448007,
+        "merged_zstd_bytes": 2048,
+        "mean_rounds": 3.32,
+        "payload_hash": "aa2a2995bb3ce30dda2e137cdcd6327d6a0f8611735d7576ccce0911482a9987",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "rounds3",
+        "options": {
+          "max_rounds": 3
+        },
+        "seconds": {
+          "compress": [
+            3.6452382990000842,
+            3.711616733000483,
+            3.7686407789997247
+          ],
+          "decode": [
+            0.8484130180004286,
+            0.8591547559999526,
+            0.8778742710001097
+          ]
+        },
+        "median_compress_seconds": 3.711616733000483,
+        "median_decode_seconds": 0.8591547559999526,
+        "median_decode_ms_per_word": 0.9130231200849656,
+        "merged_zstd_bytes": 2034,
+        "mean_rounds": 3.92,
+        "payload_hash": "cb86270cc63455dcd7b138f1135001891266ba544f949e897648e2d37a7e598d",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "step2_rounds3",
+        "options": {
+          "step": 2,
+          "max_rounds": 3
+        },
+        "seconds": {
+          "compress": [
+            3.269361370000297,
+            3.042559800000163,
+            3.1172644799999034
+          ],
+          "decode": [
+            0.8950988840006175,
+            0.8589419190002445,
+            0.8400749990005352
+          ]
+        },
+        "median_compress_seconds": 3.1172644799999034,
+        "median_decode_seconds": 0.8589419190002445,
+        "median_decode_ms_per_word": 0.912796938363703,
+        "merged_zstd_bytes": 2053,
+        "mean_rounds": 3.26,
+        "payload_hash": "71e7703ef69240c8eb30aaeba7dc610a323a899ea2d08ba1992584e30c15274f",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "start40",
+        "options": {
+          "start_retention": 0.4
+        },
+        "seconds": {
+          "compress": [
+            3.0487053269998796,
+            3.047531849999359,
+            3.0567739510006504
+          ],
+          "decode": [
+            0.7146081900000354,
+            0.7114264350002486,
+            0.7616796040001645
+          ]
+        },
+        "median_compress_seconds": 3.0487053269998796,
+        "median_decode_seconds": 0.7146081900000354,
+        "median_decode_ms_per_word": 0.7594135919235233,
+        "merged_zstd_bytes": 2091,
+        "mean_rounds": 4.04,
+        "payload_hash": "a67ce3e5dc00b2a807d5d850efce80a52937de918afbcb845586bd19e580a3d2",
+        "all_exact": true
+      },
+      {
+        "model": "continued",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "start50",
+        "options": {
+          "start_retention": 0.5
+        },
+        "seconds": {
+          "compress": [
+            2.8156534629997623,
+            2.6587298650001685,
+            2.828078328999254
+          ],
+          "decode": [
+            0.8823910179999075,
+            0.7407351560004827,
+            1.1571963989999858
+          ]
+        },
+        "median_compress_seconds": 2.8156534629997623,
+        "median_decode_seconds": 0.8823910179999075,
+        "median_decode_ms_per_word": 0.9377162784271068,
+        "merged_zstd_bytes": 2114,
+        "mean_rounds": 3.48,
+        "payload_hash": "5646ee3fd4815c728ef6d9d4efe1681535f369bd86e7496c10479c64449681f6",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            10.632004355999925,
+            10.652730867000173,
+            10.651488171999517
+          ],
+          "decode": [
+            1.6717690389996278,
+            1.8218542629992953,
+            1.8118989770000553
+          ]
+        },
+        "median_compress_seconds": 10.651488171999517,
+        "median_decode_seconds": 1.8118989770000553,
+        "median_decode_ms_per_word": 0.9847277048913344,
+        "merged_zstd_bytes": 4163,
+        "mean_rounds": 5.4,
+        "payload_hash": "d1afb88627403b7f472b9252605721070851f5dcba8da8c12aedf6708629d410",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "step2",
+        "options": {
+          "step": 2
+        },
+        "seconds": {
+          "compress": [
+            7.288110786999823,
+            7.581003305000195,
+            7.348053626000365
+          ],
+          "decode": [
+            1.6810677829998895,
+            1.632983618000253,
+            1.653454817000238
+          ]
+        },
+        "median_compress_seconds": 7.348053626000365,
+        "median_decode_seconds": 1.653454817000238,
+        "median_decode_ms_per_word": 0.8986167483696946,
+        "merged_zstd_bytes": 4290,
+        "mean_rounds": 3.8916666666666666,
+        "payload_hash": "593f650e7f239530f0e5ee561324798f27660010dd710e551fb4dc2f0d909292",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "rounds3",
+        "options": {
+          "max_rounds": 3
+        },
+        "seconds": {
+          "compress": [
+            7.249954218000312,
+            7.335976280000068,
+            7.215771830000449
+          ],
+          "decode": [
+            1.7475237600001492,
+            1.6490305799998168,
+            1.6083229559999381
+          ]
+        },
+        "median_compress_seconds": 7.249954218000312,
+        "median_decode_seconds": 1.6490305799998168,
+        "median_decode_ms_per_word": 0.8962122717390308,
+        "merged_zstd_bytes": 4275,
+        "mean_rounds": 3.783333333333333,
+        "payload_hash": "ffea65eac9624181469900ab5732b290ef0d9463bb8bbcef3c9188183baf3c39",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "step2_rounds3",
+        "options": {
+          "step": 2,
+          "max_rounds": 3
+        },
+        "seconds": {
+          "compress": [
+            6.491124622000825,
+            6.377094801000567,
+            6.461412088000543
+          ],
+          "decode": [
+            1.624140831000659,
+            1.650818733000051,
+            1.648718393999843
+          ]
+        },
+        "median_compress_seconds": 6.461412088000543,
+        "median_decode_seconds": 1.648718393999843,
+        "median_decode_ms_per_word": 0.8960426054346974,
+        "merged_zstd_bytes": 4317,
+        "mean_rounds": 3.3916666666666666,
+        "payload_hash": "890425b0c51dc86c373b4bde29cd1e039bc6bd21a07fb27d024c8bcdf2919244",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "start40",
+        "options": {
+          "start_retention": 0.4
+        },
+        "seconds": {
+          "compress": [
+            7.656809154999792,
+            8.11643922499934,
+            7.806166823999774
+          ],
+          "decode": [
+            1.5313631879998866,
+            1.57971408100002,
+            1.518364365000707
+          ]
+        },
+        "median_compress_seconds": 7.806166823999774,
+        "median_decode_seconds": 1.5313631879998866,
+        "median_decode_ms_per_word": 0.8322626021738514,
+        "merged_zstd_bytes": 4284,
+        "mean_rounds": 4.641666666666667,
+        "payload_hash": "48981753cc267813d640855cc6f094f93793dcdaa3a59084fc5f0592fb9bd0aa",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "broader",
+        "variant": "optimized",
+        "policy": "start50",
+        "options": {
+          "start_retention": 0.5
+        },
+        "seconds": {
+          "compress": [
+            6.877415468000436,
+            6.885649364000528,
+            6.833203277000393
+          ],
+          "decode": [
+            1.5507608609996169,
+            1.5275918930001353,
+            1.4428828740001336
+          ]
+        },
+        "median_compress_seconds": 6.877415468000436,
+        "median_decode_seconds": 1.5275918930001353,
+        "median_decode_ms_per_word": 0.8302129853261605,
+        "merged_zstd_bytes": 4363,
+        "mean_rounds": 4.2,
+        "payload_hash": "e664097589667cd44ee7ab661495f0d06b5531a45ff47a0737efadcc42480059",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "default",
+        "options": {},
+        "seconds": {
+          "compress": [
+            4.3149269679997815,
+            4.361740487999668,
+            4.435566281999854
+          ],
+          "decode": [
+            0.8288801200005764,
+            0.8501933380002811,
+            0.8671307710001201
+          ]
+        },
+        "median_compress_seconds": 4.361740487999668,
+        "median_decode_seconds": 0.8501933380002811,
+        "median_decode_ms_per_word": 0.9034998278430192,
+        "merged_zstd_bytes": 1937,
+        "mean_rounds": 4.92,
+        "payload_hash": "35b74cad9f787152576da139262a303e1a330cfc81e9f5d2ac2baad6a21bf11d",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "step2",
+        "options": {
+          "step": 2
+        },
+        "seconds": {
+          "compress": [
+            2.959289649999846,
+            2.955527414000244,
+            3.1088249750000614
+          ],
+          "decode": [
+            0.8241279570002007,
+            0.8398381880006127,
+            0.8836025579994384
+          ]
+        },
+        "median_compress_seconds": 2.959289649999846,
+        "median_decode_seconds": 0.8398381880006127,
+        "median_decode_ms_per_word": 0.8924954176414588,
+        "merged_zstd_bytes": 2041,
+        "mean_rounds": 3.26,
+        "payload_hash": "404beaf09caf765c8d591bfcbd17dda7f5f7a081ffa914c0a4033be09587f8ae",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "rounds3",
+        "options": {
+          "max_rounds": 3
+        },
+        "seconds": {
+          "compress": [
+            3.480079650999869,
+            3.6409021150002445,
+            3.7670683590004046
+          ],
+          "decode": [
+            0.9403138289999333,
+            0.8838180270004159,
+            0.8625285010002699
+          ]
+        },
+        "median_compress_seconds": 3.6409021150002445,
+        "median_decode_seconds": 0.8838180270004159,
+        "median_decode_ms_per_word": 0.9392327598304101,
+        "merged_zstd_bytes": 2025,
+        "mean_rounds": 3.88,
+        "payload_hash": "b2adbbbec32301be8c973027354cfddf9c20d96be2cb29b9467ecdee1fde16cb",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "step2_rounds3",
+        "options": {
+          "step": 2,
+          "max_rounds": 3
+        },
+        "seconds": {
+          "compress": [
+            2.937720175999857,
+            2.989714489999642,
+            2.9820520019993637
+          ],
+          "decode": [
+            0.8067109329995219,
+            0.9883454969995,
+            0.8887786380000762
+          ]
+        },
+        "median_compress_seconds": 2.9820520019993637,
+        "median_decode_seconds": 0.8887786380000762,
+        "median_decode_ms_per_word": 0.9445043974496027,
+        "merged_zstd_bytes": 2054,
+        "mean_rounds": 3.24,
+        "payload_hash": "f913aecc970118c9d66fd0c2747285336f27161bc4ad69031f3039994c3f769b",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "start40",
+        "options": {
+          "start_retention": 0.4
+        },
+        "seconds": {
+          "compress": [
+            2.992034689999855,
+            2.911494173000392,
+            2.8989056119999077
+          ],
+          "decode": [
+            0.7338762990002579,
+            0.7358780779995868,
+            0.7227820910002265
+          ]
+        },
+        "median_compress_seconds": 2.911494173000392,
+        "median_decode_seconds": 0.7338762990002579,
+        "median_decode_ms_per_word": 0.7798897970247161,
+        "merged_zstd_bytes": 2092,
+        "mean_rounds": 3.86,
+        "payload_hash": "3036f11d5863f15e1e3a26268467e82aff77421c315f04815ec1d023d329b435",
+        "all_exact": true
+      },
+      {
+        "model": "original",
+        "dataset": "pilot",
+        "variant": "optimized",
+        "policy": "start50",
+        "options": {
+          "start_retention": 0.5
+        },
+        "seconds": {
+          "compress": [
+            2.5642263009995077,
+            2.532084104000205,
+            2.4964774979998765
+          ],
+          "decode": [
+            0.6882062320000841,
+            0.797535071999846,
+            0.7043230250001216
+          ]
+        },
+        "median_compress_seconds": 2.532084104000205,
+        "median_decode_seconds": 0.7043230250001216,
+        "median_decode_ms_per_word": 0.7484835547291409,
+        "merged_zstd_bytes": 2121,
+        "mean_rounds": 3.42,
+        "payload_hash": "a9f8b040baf5087a9b10c97aa409b7337e604164b216c67d5dea7a3d62bb52ab",
+        "all_exact": true
+      }
+    ]
+  },
+  "gpu_tested": false,
+  "new_training_or_modal_jobs": 0,
+  "torch": "2.15.0+cpu",
+  "datasets": {
+    "broader": {
+      "sentences": 120,
+      "words": 1840,
+      "sha256": "f87acdce84c541d0537036463258cf8f05632a9b6c3c140b7ca563b46d55f635"
+    },
+    "pilot": {
+      "sentences": 50,
+      "words": 941,
+      "sha256": "ffb8f2d813e83bb04aa10b622dc2fcd8d78fd4083064f34ad89af2be4f817011"
+    }
+  },
+  "profiles": {
+    "before": {
+      "instrumented_seconds": 48.314221896999996,
+      "functions": {
+        "complete": {
+          "calls": 1064,
+          "self_seconds": 3.151159439,
+          "cumulative_seconds": 33.578392588
+        },
+        "encode": {
+          "calls": 884,
+          "self_seconds": 0.044826524,
+          "cumulative_seconds": 9.064748599000001
+        },
+        "prob": {
+          "calls": 8472632,
+          "self_seconds": 18.940079303,
+          "cumulative_seconds": 27.223992949000003
+        }
+      }
+    },
+    "after": {
+      "instrumented_seconds": 17.202639083999998,
+      "functions": {
+        "encode": {
+          "calls": 884,
+          "self_seconds": 0.046746846,
+          "cumulative_seconds": 9.002801528
+        },
+        "complete": {
+          "calls": 1064,
+          "self_seconds": 0.16503578400000002,
+          "cumulative_seconds": 2.6022408020000003
+        },
+        "prob": {
+          "calls": 504192,
+          "self_seconds": 1.2223522150000001,
+          "cumulative_seconds": 1.7677865780000002
+        }
+      }
+    }
+  }
+}
