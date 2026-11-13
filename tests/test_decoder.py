@@ -105,6 +105,22 @@ def test_batched_equals_single(lm):
     assert batched == single
 
 
+def test_explicit_onnx_cuda_does_not_silently_fall_back(tiny_llama):
+    import onnxruntime as ort
+
+    from neural_compression.adaptive import compress_adaptive_many
+    from neural_compression.models import load_model
+
+    if "CUDAExecutionProvider" not in ort.get_available_providers():
+        with pytest.raises(RuntimeError, match="ONNX CUDA requires"):
+            load_model(str(tiny_llama), backend="onnx", device="cuda", threads=2)
+        return
+    lm = load_model(str(tiny_llama), backend="onnx", device="cuda", threads=2)
+    payloads = [r.payload for r in compress_adaptive_many(TEXTS, Decoder(lm, "full", beam_size=2, batch_size=3))]
+    receiver = Decoder(lm, "full", beam_size=2, batch_size=1)
+    assert [r.text for r in receiver.decode_many(payloads)] == TEXTS
+
+
 def test_sentence_units_split_on_sentence_ends():
     c = compress(TEXTS[2], 0.5)
     units = sentence_units(c)

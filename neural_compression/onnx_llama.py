@@ -201,9 +201,13 @@ class OnnxLlama:
 
     attention_backend = "onnxruntime"
 
-    def __init__(self, config: dict, weights: dict[str, np.ndarray], threads: int):
+    def __init__(self, config: dict, weights: dict[str, np.ndarray], threads: int, device: str = "cpu"):
         import onnxruntime as ort
 
+        if device not in {"cpu", "cuda"}:
+            raise ValueError("ONNX device must be cpu or cuda")
+        if device == "cuda" and "CUDAExecutionProvider" not in ort.get_available_providers():
+            raise RuntimeError("ONNX CUDA requires onnxruntime-gpu and CUDA/cuDNN libraries")
         self.layers = config["num_hidden_layers"]
         H = config["num_attention_heads"]
         self.kv_heads = config.get("num_key_value_heads") or H
@@ -215,8 +219,12 @@ class OnnxLlama:
         options.inter_op_num_threads = 1
         options.log_severity_level = 3
         graph = build_graph(config, {k: v.shape for k, v in weights.items()})
-        self.session = ort.InferenceSession(graph, options, providers=["CPUExecutionProvider"])
-        self._weight_values = {k: ort.OrtValue.ortvalue_from_numpy(v) for k, v in weights.items()}
+        # Disable TF32's reduced mantissa: this path tests fp32 reconstruction.
+        providers = [("CUDAExecutionProvider", {"use_tf32": 0}), "CPUExecutionProvider"] if device == "cuda" else ["CPUExecutionProvider"]
+        self.session = ort.InferenceSession(graph, options, providers=providers)
+        if device == "cuda" and self.session.get_providers()[0] != "CUDAExecutionProvider":
+            raise RuntimeError("ONNX Runtime failed to initialize CUDA; refusing silent CPU fallback")
+        self._weight_values = {k: ort.OrtValue.ortvalue_from_numpy(v, device, 0) for k, v in weights.items()}
         self.output_names = [o.name for o in self.session.get_outputs()]
 
     def _empty(self, rows: int) -> list[np.ndarray]:

@@ -153,8 +153,10 @@ def load_model(
 ) -> LanguageModel:
     """Load a causal LM in fp32 (``name`` is a Hub id or a local directory).
 
-    ``backend`` is "onnx" (ONNX Runtime, CPU, Llama-architecture models; the default on
+    ``backend`` is "onnx" (ONNX Runtime, Llama-architecture models; the default on
     CPU) or "torch" (needs the ``torch`` dependency group; the default for CUDA).
+    Explicit ``backend="onnx", device="cuda"`` needs onnxruntime-gpu instead of
+    onnxruntime. Weights stay on the GPU; KV cache bookkeeping still uses NumPy.
     ``device`` defaults to CUDA if torch is installed and sees a GPU, else CPU.
     ``revision`` defaults to the pinned commit for the default model.
     """
@@ -175,15 +177,13 @@ def load_model(
     threads = threads or max(1, (os.cpu_count() or 2) // 2)
     tokenizer = Tokenizer.from_file(_model_file(name, revision, "tokenizer.json"))
     if backend == "onnx":
-        if device != "cpu":
-            raise ValueError("the onnx backend runs on CPU only; use backend='torch' for CUDA")
         from .onnx_llama import OnnxLlama, read_safetensors
 
         config = json.loads(Path(_model_file(name, revision, "config.json")).read_text())
         if config.get("model_type") != "llama":
             raise ValueError(f"the onnx backend supports Llama-architecture models, not {config.get('model_type')}; use backend='torch'")
         weights = read_safetensors(_model_file(name, revision, "model.safetensors"))
-        model = OnnxLlama(config, weights, threads)
+        model = OnnxLlama(config, weights, threads, device=device)
         vocab_rows = weights.get("lm_head.weight", weights["model.embed_tokens.weight"]).shape[0]
         parameters = sum(w.size for w in weights.values())
     else:
