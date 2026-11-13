@@ -4,6 +4,13 @@ The graph is written straight to ONNX protobuf from the model's ``config.json``.
 are not part of it: they are graph inputs read from the checkpoint's ``model.safetensors``
 (bf16/fp16 upcast to fp32 exactly as ``from_pretrained(dtype=float32)`` does).
 
+With int8 weights (``quantize_checkpoint``), every matrix is stored as 8-bit codes with one
+scale per block of 32 input columns and multiplied by ``MatMulNBits`` with int8 compute.
+These tensors are external initializers, which lets ONNX Runtime prepack them for its
+int8 kernels. This is experimental: row-local activation scales do NOT guarantee batch
+invariance. The full model's log-probabilities change substantially with left padding,
+so adaptive payloads must not be assumed lossless outside their compression batch.
+
 One forward pass attends over three key/value blocks instead of one concatenated cache:
 
 * ``prefix``: the shared prompt prefix, batch 1, broadcast to every row (never copied),
@@ -19,13 +26,15 @@ positions]``) so the attention matmuls read them without a transpose copy.
 from __future__ import annotations
 
 import json
+import mmap
 import struct
 from pathlib import Path
 
 import numpy as np
 
 NEG = -1e9  # additive mask value; finite so a fully masked (padding) row stays NaN-free
-_FLOAT, _INT64 = 1, 7
+INT8_BLOCK = 32  # input columns per int8 scale (as in llama.cpp's Q8_0)
+_FLOAT, _UINT8, _INT64 = 1, 2, 7
 
 
 # ---- minimal protobuf writer for the ONNX messages used here ------------------------
@@ -75,11 +84,11 @@ class _Graph:
         self.initializers: list[bytes] = []
         self.count = 0
 
-    def op(self, op_type: str, *inputs: str, outputs: int = 1, name: str | None = None, **attrs):
+    def op(self, op_type: str, *inputs: str, outputs: int = 1, name: str | None = None, domain: str = "", **attrs):
         self.count += 1
         outs = [name] if name else [f"t{self.count}_{i}" for i in range(outputs)]
         attributes = [_attribute(k, v) for k, v in attrs.items()]
-        self.nodes.append(_msg((1, list(inputs)), (2, outs), (4, op_type), (5, attributes)))
+        self.nodes.append(_msg((1, list(inputs)), (2, outs), (4, op_type), (5, attributes), *([(7, domain)] if domain else [])))
         return outs[0] if outputs == 1 else outs
 
     def const(self, values, dtype=np.int64) -> str:
@@ -91,8 +100,13 @@ class _Graph:
         return name
 
 
-def build_graph(config: dict, weight_shapes: dict[str, tuple]) -> bytes:
-    """ONNX model bytes for a Llama-style config. Weight names match the HF checkpoint."""
+def build_graph(config: dict, weight_shapes: dict[str, tuple], int8_shapes: dict[str, tuple] | None = None) -> bytes:
+    """ONNX model bytes for a Llama-style config. Weight names match the HF checkpoint.
+
+    ``weight_shapes`` become fp32 graph inputs. ``int8_shapes`` lists quantized matrices as
+    ``<weight>.q8`` / ``<weight>.scale`` pairs, which become external initializers.
+    """
+    int8_shapes = int8_shapes or {}
     E, layers = config["hidden_size"], config["num_hidden_layers"]
     H, Hkv = config["num_attention_heads"], config.get("num_key_value_heads") or config["num_attention_heads"]
     D = config.get("head_dim") or E // H
@@ -103,10 +117,21 @@ def build_graph(config: dict, weight_shapes: dict[str, tuple]) -> bytes:
         return g.op("RMSNormalization", x, weight, axis=-1, epsilon=eps)
 
     def linear(x, weight):
-        return g.op("Gemm", x, weight, transB=1)
+        if weight + ".q8" not in int8_shapes:
+            return g.op("Gemm", x, weight, transB=1)
+        rows, blocks, block = int8_shapes[weight + ".q8"]
+        return g.op("MatMulNBits", x, weight + ".q8", weight + ".scale", domain="com.microsoft",
+                    K=blocks * block, N=rows, bits=8, block_size=block, accuracy_level=4)
 
     ids, pos, bias = "input_ids", "position_ids", "bias"
-    x = g.op("Reshape", g.op("Gather", "model.embed_tokens.weight", ids), g.const([-1, E]))
+    emb = "model.embed_tokens.weight"
+    if emb + ".q8" in int8_shapes:  # dequantize just the looked-up rows
+        vocab, blocks, _ = int8_shapes[emb + ".q8"]
+        codes = g.op("Sub", g.op("Cast", g.op("Gather", emb + ".q8", ids), to=_FLOAT), g.const(128.0, np.float32))
+        scales = g.op("Gather", g.op("Reshape", emb + ".scale", g.const([vocab, blocks, 1])), ids)
+        x = g.op("Reshape", g.op("Mul", codes, scales), g.const([-1, E]))
+    else:
+        x = g.op("Reshape", g.op("Gather", emb, ids), g.const([-1, E]))
     rope_cfg = config.get("rope_parameters") or config.get("rope_scaling") or {}  # Transformers 5 moved rope_theta here
     if rope_cfg.get("rope_type", rope_cfg.get("type", "default")) != "default":
         raise ValueError(f"unsupported RoPE scaling {rope_cfg}")
@@ -153,7 +178,8 @@ def build_graph(config: dict, weight_shapes: dict[str, tuple]) -> bytes:
     last = g.op("Slice", g.op("Reshape", x, g.op("Concat", batch_time, g.const([E]), axis=0)),
                 g.const([-1]), g.const([2**62]), g.const([1]))
     last = norm(g.op("Reshape", last, g.const([-1, E])), "model.norm.weight")
-    head = "lm_head.weight" if "lm_head.weight" in weight_shapes else "model.embed_tokens.weight"
+    head = "lm_head.weight" if {"lm_head.weight", "lm_head.weight.q8"} & (weight_shapes.keys() | int8_shapes.keys()) else emb
+    vocab = (weight_shapes.get(head) or int8_shapes[head + ".q8"])[0]
     logprobs = g.op("LogSoftmax", linear(last, head), axis=-1, name="logprobs")
 
     inputs = [_value_info(ids, _INT64, ["B", "T"]), _value_info(pos, _INT64, ["B", "T"]),
@@ -162,39 +188,110 @@ def build_graph(config: dict, weight_shapes: dict[str, tuple]) -> bytes:
         inputs += [_value_info(f"prefix_kT.{i}", _FLOAT, [1, Hkv, D, "P"]), _value_info(f"prefix_v.{i}", _FLOAT, [1, Hkv, "P", D]),
                    _value_info(f"cache_kT.{i}", _FLOAT, ["B", Hkv, D, "C"]), _value_info(f"cache_v.{i}", _FLOAT, ["B", Hkv, "C", D])]
     inputs += [_value_info(name, _FLOAT, list(shape)) for name, shape in weight_shapes.items()]
-    outs = [_value_info(logprobs, _FLOAT, ["B", weight_shapes[head][0]])]
+    outs = [_value_info(logprobs, _FLOAT, ["B", vocab])]
     for i in range(layers):
         outs += [_value_info(f"new_kT.{i}", _FLOAT, ["B", Hkv, D, "T"]), _value_info(f"new_v.{i}", _FLOAT, ["B", Hkv, "T", D])]
-    graph = _msg((1, g.nodes), (2, "llama"), (5, g.initializers), (11, inputs), (12, outs))
-    return _msg((1, 11), (2, "neural_compression"), (7, graph), (8, _msg((1, ""), (2, 23))))
+    external = [_msg((1, list(shape)), (2, _UINT8 if name.endswith(".q8") else _FLOAT), (8, name),
+                     (13, [_msg((1, "location"), (2, "supplied-at-session-creation"))]), (14, 1))
+                for name, shape in int8_shapes.items()]
+    graph = _msg((1, g.nodes), (2, "llama"), (5, g.initializers + external), (11, inputs), (12, outs))
+    opsets = [_msg((1, ""), (2, 23)), _msg((1, "com.microsoft"), (2, 1))]
+    return _msg((1, 11), (2, "neural_compression"), (7, graph), (8, opsets))
 
 
 # ---- weights --------------------------------------------------------------------------
 
-def read_safetensors(path: str | Path) -> dict[str, np.ndarray]:
-    """All tensors of a .safetensors file as contiguous fp32 arrays (bf16/fp16 upcast exactly)."""
+def iter_safetensors(path: str | Path):
+    """(name, array) for each tensor of a .safetensors file: floats as contiguous fp32 arrays
+    (bf16/fp16 upcast exactly), U8 as read-only views of the memory-mapped file."""
     with open(path, "rb") as f:
         n = int.from_bytes(f.read(8), "little")
         header = json.loads(f.read(n))
     data = np.memmap(path, dtype=np.uint8, mode="r", offset=8 + n)
-    out = {}
     for name, info in header.items():
         if name == "__metadata__":
             continue
         start, end = info["data_offsets"]
         raw = data[start:end]
-        if info["dtype"] == "BF16":
+        if info["dtype"] == "U8":
+            a = raw
+        elif info["dtype"] == "BF16":
             a = raw.view(np.uint16).astype(np.uint32)
             a <<= 16
             a = a.view(np.float32)
         else:
             a = raw.view({"F32": np.float32, "F16": np.float16}[info["dtype"]]).astype(np.float32)
-        out[name] = a.reshape(info["shape"])
-    del data
-    return out
+        yield name, a.reshape(info["shape"])
+
+
+def read_safetensors(path: str | Path) -> dict[str, np.ndarray]:
+    return dict(iter_safetensors(path))
+
+
+def write_safetensors(path: str | Path, tensors: dict[str, np.ndarray], metadata: dict[str, str] | None = None) -> None:
+    """Write ``tensors`` atomically (F32, F16 and U8 only)."""
+    header, offset = {"__metadata__": metadata or {}}, 0
+    for name, a in tensors.items():
+        dtype = {np.dtype(np.float32): "F32", np.dtype(np.float16): "F16", np.dtype(np.uint8): "U8"}[a.dtype]
+        header[name] = {"dtype": dtype, "shape": list(a.shape), "data_offsets": [offset, offset + a.nbytes]}
+        offset += a.nbytes
+    head = json.dumps(header).encode()
+    head += b" " * (-len(head) % 8)
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".tmp")
+    with open(tmp, "wb") as f:
+        f.write(len(head).to_bytes(8, "little") + head)
+        for a in tensors.values():
+            f.write(np.ascontiguousarray(a).data)
+    tmp.replace(path)
+
+
+def quantize_int8(w: np.ndarray, block: int = INT8_BLOCK) -> tuple[np.ndarray, np.ndarray]:
+    """Symmetric 8-bit codes for a [rows, cols] matrix, one fp16 scale per ``block`` columns of a row.
+
+    Returns codes [rows, cols / block, block] as uint8 with zero point 128 (the MatMulNBits
+    layout) and scales [rows * cols / block]. A weight is (code - 128) * scale.
+    """
+    rows, cols = w.shape
+    if cols % block:
+        raise ValueError(f"{cols} columns are not a multiple of the int8 block size {block}")
+    blocks = w.reshape(rows, cols // block, block)
+    scale = (np.abs(blocks).max(axis=-1) / 127).astype(np.float16)  # codes use the stored (rounded) scale
+    s = scale.astype(np.float32)[..., None]
+    codes = np.rint(np.divide(blocks, s, out=np.zeros_like(blocks), where=s > 0))
+    return (np.clip(codes, -127, 127) + 128).astype(np.uint8), scale.reshape(-1)
+
+
+def quantize_checkpoint(src: str | Path, dst: str | Path, block: int = INT8_BLOCK) -> None:
+    """Write an int8 copy of a checkpoint: every matrix becomes ``<name>.q8`` and ``<name>.scale``
+    (see ``quantize_int8``); vectors (the norms) stay fp32."""
+    out = {}
+    for name, w in iter_safetensors(src):
+        if w.ndim == 2:
+            out[name + ".q8"], out[name + ".scale"] = quantize_int8(w, block)
+        else:
+            out[name] = w
+    write_safetensors(dst, out, {"quantization": f"int8, symmetric, block {block}", "source": str(Path(src).name)})
 
 
 # ---- runtime --------------------------------------------------------------------------
+
+def _drop_file_pages(arrays) -> None:
+    """ONNX Runtime keeps its own prepacked copy of the int8 tensors, so release the pages of the
+    memory-mapped file they came from (about 370 MB of RSS). The mapping stays valid: a later read
+    would just fault the pages back in from the file."""
+    if not hasattr(mmap, "MADV_DONTNEED"):  # Windows
+        return
+    maps = {}
+    for a in arrays:
+        while a is not None and not isinstance(a, mmap.mmap):
+            a = a.base
+        if a is not None:
+            maps[id(a)] = a
+    for m in maps.values():
+        m.madvise(mmap.MADV_DONTNEED)
+
 
 class OnnxLlama:
     """ONNX Runtime session plus the KV cache bookkeeping for constrained beam search."""
@@ -209,14 +306,19 @@ class OnnxLlama:
         self.kv_heads = config.get("num_key_value_heads") or H
         self.head_dim = config.get("head_dim") or config["hidden_size"] // H
         self.groups = H // self.kv_heads
-        self.weights = weights
+        int8 = {k: v for k, v in weights.items() if k.endswith((".q8", ".scale"))}
+        fp32 = {k: v for k, v in weights.items() if k not in int8}
         options = ort.SessionOptions()
         options.intra_op_num_threads = threads
         options.inter_op_num_threads = 1
         options.log_severity_level = 3
-        graph = build_graph(config, {k: v.shape for k, v in weights.items()})
+        self._int8_values = [ort.OrtValue.ortvalue_from_numpy(v) for v in int8.values()]  # must outlive the session
+        if int8:
+            options.add_external_initializers(list(int8), self._int8_values)
+        graph = build_graph(config, {k: v.shape for k, v in fp32.items()}, {k: v.shape for k, v in int8.items()})
         self.session = ort.InferenceSession(graph, options, providers=["CPUExecutionProvider"])
-        self._weight_values = {k: ort.OrtValue.ortvalue_from_numpy(v) for k, v in weights.items()}
+        self._weight_values = {k: ort.OrtValue.ortvalue_from_numpy(v) for k, v in fp32.items()}
+        _drop_file_pages(int8.values())
         self.output_names = [o.name for o in self.session.get_outputs()]
 
     def _empty(self, rows: int) -> list[np.ndarray]:

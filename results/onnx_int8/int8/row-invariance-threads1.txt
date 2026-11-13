@@ -1,0 +1,1 @@
+int8 threads=1: max |logprob(row in batch) - logprob(row alone)| = 0.909, argmax flips 0

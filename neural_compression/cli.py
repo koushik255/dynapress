@@ -30,16 +30,21 @@ def _model_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--device", default=None, help="cpu or cuda (default: cuda if torch is installed and sees a GPU)")
     p.add_argument("--backend", choices=["onnx", "torch"], default=None, help="default: onnx on CPU, torch on CUDA")
+    p.add_argument("--weights", choices=["fp32", "int8"], default="fp32",
+                   help="int8: experimental CPU ONNX weights/compute; padding-sensitive, not reliably lossless")
     p.add_argument("--batch-size", type=int, default=16, help="decoder requests per model batch")
 
 
 def _load(args):
     from .models import load_model
 
+    if args.weights == "int8":
+        print("warning: experimental int8 is padding-sensitive; adaptive payloads are not reliably lossless", file=sys.stderr)
     t0 = time.perf_counter()
-    lm = load_model(args.model, args.revision, threads=args.threads, seed=args.seed, device=args.device, backend=args.backend)
+    lm = load_model(args.model, args.revision, threads=args.threads, seed=args.seed, device=args.device, backend=args.backend,
+                    weights=args.weights)
     print(
-        f"loaded {args.model} ({lm.parameters / 1e6:.0f}M params, {lm.size_bytes / 1e6:.0f} MB) on {lm.device} in {time.perf_counter() - t0:.1f}s",
+        f"loaded {args.model} ({lm.parameters / 1e6:.0f}M params, {lm.weights}, {lm.size_bytes / 1e6:.0f} MB) on {lm.device} in {time.perf_counter() - t0:.1f}s",
         file=sys.stderr,
     )
     return lm

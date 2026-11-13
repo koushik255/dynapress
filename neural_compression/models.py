@@ -112,8 +112,9 @@ class LanguageModel:
     word_ids: np.ndarray  # tokens starting with a word character...
     word_lead: np.ndarray  # ...and how many word characters each starts with
     parameters: int
-    size_bytes: int  # fp32 weights in memory
+    size_bytes: int  # weights in memory
     device: str = "cpu"
+    weights: str = "fp32"  # or "int8"
     stats: InferenceStats = field(default_factory=InferenceStats)
     _prefix_cache: dict = field(default_factory=dict)
 
@@ -123,7 +124,7 @@ class LanguageModel:
     def describe(self) -> dict:
         return {
             "model": self.name, "revision": self.revision,
-            "parameters": self.parameters, "size_bytes": self.size_bytes,
+            "parameters": self.parameters, "size_bytes": self.size_bytes, "weights": self.weights,
             "attention_backend": self.backend.attention_backend,
         }
 
@@ -143,6 +144,27 @@ def _model_file(name: str, revision: str, filename: str) -> str:
     return hf_hub_download(name, filename, revision=revision)
 
 
+def _int8_checkpoint(name: str, revision: str) -> Path:
+    """An int8 copy of ``model.safetensors``, quantized on first use and cached locally.
+
+    Local model directories get it next to their checkpoint (redone when that is newer);
+    Hub models in ``~/.cache/neural_compression``, keyed by name and revision.
+    """
+    from .onnx_llama import quantize_checkpoint
+
+    if Path(name).is_dir():
+        src, path = Path(name) / "model.safetensors", Path(name) / "model.int8.safetensors"
+        stale = not path.exists() or path.stat().st_mtime < src.stat().st_mtime
+    else:
+        cache = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "neural_compression"
+        path = cache / f"{name.replace('/', '--')}@{revision}" / "model.int8.safetensors"
+        stale = not path.exists()
+    if stale:
+        print(f"quantizing {name} to int8 -> {path}", file=sys.stderr)
+        quantize_checkpoint(_model_file(name, revision, "model.safetensors"), path)
+    return path
+
+
 def load_model(
     name: str = DEFAULT_MODEL,
     revision: str | None = None,
@@ -150,11 +172,14 @@ def load_model(
     seed: int = 0,
     device: str | None = None,
     backend: str | None = None,
+    weights: str = "fp32",
 ) -> LanguageModel:
-    """Load a causal LM in fp32 (``name`` is a Hub id or a local directory).
+    """Load a causal LM (``name`` is a Hub id or a local directory).
 
     ``backend`` is "onnx" (ONNX Runtime, CPU, Llama-architecture models; the default on
     CPU) or "torch" (needs the ``torch`` dependency group; the default for CUDA).
+    ``weights`` is "fp32" or experimental CPU ONNX "int8" (see ``onnx_llama``).
+    Int8 outputs depend on padding; adaptive payloads are not reliably lossless.
     ``device`` defaults to CUDA if torch is installed and sees a GPU, else CPU.
     ``revision`` defaults to the pinned commit for the default model.
     """
@@ -169,6 +194,8 @@ def load_model(
         else:
             device = "cuda" if torch.cuda.is_available() else "cpu"
     backend = backend or ("torch" if device != "cpu" else "onnx")
+    if weights not in ("fp32", "int8") or (weights == "int8" and backend != "onnx"):
+        raise ValueError(f"weights={weights!r} is not supported on the {backend} backend")
     if backend == "torch":
         from .torch_backend import TorchBackend  # imports torch, so set_seed seeds it too
     set_seed(seed)
@@ -182,14 +209,18 @@ def load_model(
         config = json.loads(Path(_model_file(name, revision, "config.json")).read_text())
         if config.get("model_type") != "llama":
             raise ValueError(f"the onnx backend supports Llama-architecture models, not {config.get('model_type')}; use backend='torch'")
-        weights = read_safetensors(_model_file(name, revision, "model.safetensors"))
-        model = OnnxLlama(config, weights, threads)
-        vocab_rows = weights.get("lm_head.weight", weights["model.embed_tokens.weight"]).shape[0]
-        parameters = sum(w.size for w in weights.values())
+        path = _int8_checkpoint(name, revision) if weights == "int8" else _model_file(name, revision, "model.safetensors")
+        tensors = read_safetensors(path)
+        model = OnnxLlama(config, tensors, threads)
+        heads = ("lm_head.weight", "lm_head.weight.q8", "model.embed_tokens.weight", "model.embed_tokens.weight.q8")
+        vocab_rows = next(tensors[k].shape[0] for k in heads if k in tensors)
+        parameters = sum(w.size for k, w in tensors.items() if not k.endswith(".scale"))
+        size_bytes = sum(w.nbytes for w in tensors.values())
     else:
         model = TorchBackend(name, revision, device, threads)
         vocab_rows = model.vocab_rows
         parameters = model.parameters
+        size_bytes = parameters * 4
     special = {i for i, t in tokenizer.get_added_tokens_decoder().items() if t.special}
     vocab = min(tokenizer.get_vocab_size(with_added_tokens=True), vocab_rows)
     strings = ["" if i in special else tokenizer.decode([i], skip_special_tokens=False) for i in range(vocab)]
@@ -218,8 +249,9 @@ def load_model(
         np.array(word_ids, dtype=np.int64),
         np.array(word_lead, dtype=np.int64),
         parameters,
-        parameters * 4,
+        size_bytes,
         device,
+        weights,
     )
 
 

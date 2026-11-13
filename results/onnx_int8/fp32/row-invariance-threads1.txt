@@ -1,0 +1,1 @@
+fp32 threads=1: max |logprob(row in batch) - logprob(row alone)| = 4.2e-05, argmax flips 0

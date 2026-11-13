@@ -166,6 +166,55 @@ masked grouped-query attention for Llama models on CPU. The student model and th
 fine-tuning scripts also need the `torch` group. The backend is recorded in
 benchmark metadata. Both keep fp32 weights and the same search constraints.
 
+### Experimental ONNX int8 weights
+
+`--weights fp32` remains the default. `--weights int8 --device cpu` selects
+block-32 symmetric 8-bit weights with fp16 scales, including embeddings and the
+tied output head. ONNX Runtime's `MatMulNBits` uses int8 activation arithmetic
+(`accuracy_level=4`); attention and normalization remain fp32. This needs no
+additional Python packages. It is CPU-only: int8 with torch or CUDA is rejected
+instead of silently changing the weight format or device. The existing fp32
+torch/CUDA path is retained; int8 payloads are not verified for GPU decoding.
+
+**Do not use this mode for lossless adaptive storage.** The real SmolLM2 model's
+log-probabilities change by up to 0.909 nats when left padding changes, even
+though the tiny-model unit tests pass and the activation scales are row-local.
+Changing batch companions can change that padding. A successful adaptive check
+in the compression batch does not establish that its payload decodes exactly
+alone, in another batch, or on another CPU. Keep the model revision, weight mode,
+runtime, beam and context settings with experimental payloads; the payload does
+not encode them. VNNI and non-VNNI kernels need separate verification, not an
+assumption of identical results.
+
+On the 25-sentence benchmark (batch 16, one thread), the independent adaptive
+verification already fails 5/25 sentences: 98.77% words are correct, despite
+every payload reaching the 100% target during compression. For example,
+"experience driven" becomes "experientially driven" and "similar evaluation"
+becomes "similarity evaluation". These failures are not reported as search
+errors by the decoder; compare decoded text with the original, not just its
+`failures` counter.
+
+Fresh processes do not fix this. Replaying all 25 saved int8 payloads at batch 16
+in a new process gives the same 20/25, failing the same sentences (indices 11, 12,
+14, 15, 22). Each payload decoded alone in its own process, or at batch 4 with
+three different fixed-50% companions, is exact 25/25. So a payload's result
+depends on its batch neighbours. The fp32 ONNX payloads pass every one of these
+controls (25/25 alone, mixed, and batch-16 replay), and their row-invariance shift
+is 4.2e-05 nats against 0.909 for int8. Int8 used about 21% less peak RSS than fp32
+(2.44 vs 3.10 GB) on the same orb. Raw outputs and the two control scripts (`verify_fresh.py`, `row_invariance.py`, run from the repository root) are in `results/onnx_int8/`.
+
+The first int8 load still downloads the original checkpoint and quantizes it
+locally. The cached `model.int8.safetensors` is stored next to a local model's
+`model.safetensors`, or under
+`${XDG_CACHE_HOME:-~/.cache}/neural_compression/<model-id-with-slashes-replaced-by--->@<revision>/`.
+Local checkpoints are requantized when their original file is newer. The pinned
+Hub revision has its own cache entry. No quantized weights are uploaded. A
+prequantized distribution would need to supply and version this checkpoint
+alongside the pinned config/tokenizer, plus a download/selection mechanism;
+the current Hub loader does not fetch quantized files. The int8 file alone is
+384,681,808 bytes versus 723,674,912 bytes for the original safetensors; keeping
+both caches costs more disk, not less.
+
 **On Modal GPUs** (each configuration runs in its own container, in parallel;
 finished configurations are cached in `results/_parts/`, so reruns resume):
 

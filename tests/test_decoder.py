@@ -58,11 +58,11 @@ def tiny_llama(tmp_path_factory):
     return path
 
 
-@pytest.fixture(scope="module")
-def lm(tiny_llama):
+@pytest.fixture(scope="module", params=["fp32", "int8"])
+def lm(tiny_llama, request):
     from neural_compression.models import load_model
 
-    return load_model(str(tiny_llama), threads=2)
+    return load_model(str(tiny_llama), threads=2, weights=request.param)
 
 
 @pytest.mark.parametrize("context", [0, 2, "full"])
@@ -105,19 +105,41 @@ def test_batched_equals_single(lm):
     assert batched == single
 
 
+def test_int8_weights_approximate_fp32(tiny_llama):
+    from neural_compression.models import load_model
+
+    fp32, int8 = (load_model(str(tiny_llama), threads=2, weights=w) for w in ("fp32", "int8"))
+    ids = np.array([[5, 17, 31, 42, 99, 7], [0, 0, 3, 64, 250, 900]])
+    mask = np.array([[1] * 6, [0, 0, 1, 1, 1, 1]])
+    args = (None, ids, mask, np.clip(mask.cumsum(1) - 1, 0, None))
+    # Random weights amplify quantization error (about 0.15 nats here, as much as dequantized
+    # fp32 weights give); a wrong code layout or zero point gives about 2 nats.
+    diff = np.abs(fp32.backend.start(*args)[1] - int8.backend.start(*args)[1]).mean()
+    assert 0 < diff < 0.5
+
+
+@pytest.mark.parametrize("backend,device", [("torch", "cpu"), ("torch", "cuda"), ("onnx", "cuda")])
+def test_int8_does_not_silently_fall_back_to_other_weights_or_device(backend, device):
+    from neural_compression.models import load_model
+
+    with pytest.raises(ValueError, match="not supported|CPU only"):
+        load_model(weights="int8", backend=backend, device=device)
+
+
 def test_sentence_units_split_on_sentence_ends():
     c = compress(TEXTS[2], 0.5)
     units = sentence_units(c)
     assert [len(u) for u in units] == [3, 3, 4]
 
 
-def test_torch_backend_matches_onnx_and_cpu_grouped_attention(lm, tiny_llama):
+def test_torch_backend_matches_onnx_and_cpu_grouped_attention(tiny_llama):
     torch = pytest.importorskip("torch")
     pytest.importorskip("transformers")
 
     from neural_compression.models import load_model
 
     path = str(tiny_llama)
+    lm = load_model(path, threads=2)
     fast = load_model(path, threads=2, backend="torch")
     reference = load_model(path, threads=2, backend="torch")
     reference.backend.model.set_attn_implementation("sdpa")
