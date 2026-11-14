@@ -105,6 +105,21 @@ def test_batched_equals_single(lm):
     assert batched == single
 
 
+def test_adaptive_cache_does_not_change_payloads(lm):
+    from neural_compression.adaptive import compress_adaptive_many
+
+    class Uncached(Decoder):
+        def decode_many(self, payloads, cache=None):
+            return super().decode_many(payloads)
+
+    # The random model gets most words wrong, so every round and the max_rounds fallback run.
+    texts = TEXTS + [TEXTS[2] + " " + TEXTS[0]]
+    cached = compress_adaptive_many(texts, Decoder(lm, "full", beam_size=2), max_rounds=3)
+    plain = compress_adaptive_many(texts, Uncached(lm, "full", beam_size=2), max_rounds=3)
+    assert [(r.payload, r.rounds, r.decoded_text) for r in cached] == [(r.payload, r.rounds, r.decoded_text) for r in plain]
+    assert all(r.rounds > 1 for r in cached)
+
+
 def test_sentence_units_split_on_sentence_ends():
     c = compress(TEXTS[2], 0.5)
     units = sentence_units(c)

@@ -385,7 +385,8 @@ class StudentDecoder:
     def decode(self, payload: Compressed | bytes) -> DecodeResult:
         return self.decode_many([payload])[0]
 
-    def decode_many(self, payloads: list[Compressed | bytes]) -> list[DecodeResult]:
+    def decode_many(self, payloads: list[Compressed | bytes], cache: dict | None = None) -> list[DecodeResult]:
+        # ``cache`` (see Decoder.decode_many) is ignored: this decoder is cheap, so it never fills it.
         results = []
         for p in payloads:
             t0 = time.perf_counter()

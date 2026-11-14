@@ -57,12 +57,25 @@ def compress_adaptive_many(
     calls = [0.0] * len(texts)
     pending = list(range(len(texts)))
     round_no = 0
+    cache: dict = {}  # sentences unchanged since an earlier round are not decoded again
     while pending:
         round_no += 1
         payloads = [compress_with_lengths(texts[i], lengths[i], pct).to_bytes() for i in pending]
         # The decoder sees only what a real receiver would: the parsed payload.
         t0 = time.perf_counter()
-        decoded = decoder.decode_many([Compressed.from_bytes(p) for p in payloads])
+        docs = [Compressed.from_bytes(p) for p in payloads]
+        decoded = decoder.decode_many(docs, cache=cache)
+        if round_no > 1 and cache:
+            # Cached outputs came from other batches. Before accepting a text, decode its final
+            # payload in full without the cache, as the receiver will.
+            done = [
+                k for k, i in enumerate(pending)
+                if 1 - sum(g != r for g, r in zip(decoded[k].words, words[i])) / max(1, len(words[i])) >= target_accuracy
+            ]
+            fresh: dict = {}
+            for k, res in zip(done, decoder.decode_many([docs[k] for k in done], cache=fresh)):
+                decoded[k] = res
+            cache.update(fresh)
         elapsed = time.perf_counter() - t0
         still = []
         for i, payload, res in zip(pending, payloads, decoded):

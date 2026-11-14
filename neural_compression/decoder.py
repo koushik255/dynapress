@@ -136,19 +136,24 @@ class Decoder:
     def decode(self, payload: Compressed | bytes) -> DecodeResult:
         return self.decode_many([payload])[0]
 
-    def decode_many(self, payloads: list[Compressed | bytes]) -> list[DecodeResult]:
-        """Decode several documents, batching model calls across all of them."""
+    def decode_many(self, payloads: list[Compressed | bytes], cache: dict | None = None) -> list[DecodeResult]:
+        """Decode several documents, batching model calls across all of them.
+
+        ``cache`` maps a request to its earlier output. Requests found there are not run
+        again, and new outputs are added to it. A receiver never passes one: a cached
+        output came from a different batch, which can differ in rare near-ties.
+        """
         docs = [Compressed.from_bytes(p) if isinstance(p, bytes) else p for p in payloads]
         by_pct: dict[int, list[int]] = {}
         for d, doc in enumerate(docs):
             by_pct.setdefault(doc.retention_pct, []).append(d)
         results: list[DecodeResult | None] = [None] * len(docs)
         for pct, indices in by_pct.items():  # few-shot examples depend on the retention ratio
-            for d, res in zip(indices, self._decode_group([docs[d] for d in indices], pct)):
+            for d, res in zip(indices, self._decode_group([docs[d] for d in indices], pct, cache)):
                 results[d] = res
         return results
 
-    def _decode_group(self, docs: list[Compressed], pct: int) -> list[DecodeResult]:
+    def _decode_group(self, docs: list[Compressed], pct: int, cache: dict | None = None) -> list[DecodeResult]:
         t0 = time.perf_counter()
         before = InferenceStats(**vars(self.lm.stats))
         requests: list[Request] = []
@@ -169,9 +174,17 @@ class Decoder:
                         requests.append(self._request(doc, slots, window))
                         owners.append((d, window, [i]))
 
-        outputs = constrained_beam_search(
-            self.lm, requests, shared_prefix=self._fewshot_prefix(pct), beam_size=self.beam_size, batch_size=self.batch_size
-        )
+        keys = [(pct, r.prompt, tuple(r.template)) for r in requests]
+        cache = {} if cache is None else cache
+        new = list(dict.fromkeys(k for k in keys if k not in cache))
+        if new:
+            by_key = dict(zip(keys, requests))
+            found = constrained_beam_search(
+                self.lm, [by_key[k] for k in new], shared_prefix=self._fewshot_prefix(pct),
+                beam_size=self.beam_size, batch_size=self.batch_size,
+            )
+            cache.update(zip(new, found))
+        outputs = [cache[k] for k in keys]
         failures = [0] * len(docs)
         for (d, window, keep), text in zip(owners, outputs):
             if text is None:
