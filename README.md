@@ -134,7 +134,7 @@ shows the same thing: hard text needs longer prefixes.
 ## Quick start
 
 ```bash
-uv sync                                   # Python 3.14, CPU-only PyTorch
+uv sync                                   # Python 3.14, ONNX Runtime (no PyTorch)
 uv run pytest                             # decoder-guarantee tests (a few seconds)
 
 echo "The programmer discovered an unexpected problem in the application." > input.txt
@@ -150,15 +150,21 @@ uv run python -m neural_compression plot --results results     # redraw charts
 
 The first model call downloads `HuggingFaceTB/SmolLM2-360M` (~720 MB, pinned
 revision) into the Hugging Face cache. A plain `.txt` file with one sample per
-line also works as `--dataset`. Use `--device cuda` / `--batch-size 64` on a GPU.
+line also works as `--dataset`.
 
-**CPU inference:** on PyTorch >= 2.15 with the Transformers custom-attention
-registry, Llama models (including SmolLM2) automatically use native masked
-grouped-query attention, avoiding copies of repeated key/value heads. Older
-versions and other architectures keep their existing backend; CUDA is unchanged.
-The beam search also skips cache copies when beam rows have not changed.
-The selected attention backend is recorded in benchmark metadata. This keeps
-fp32 weights and the same search constraints; it is not quantization or retraining.
+**Backends.** On CPU the model runs on ONNX Runtime (`neural_compression/onnx_llama.py`):
+the Llama graph is written directly from the checkpoint's `config.json`, and the
+fp32 weights are read from its `model.safetensors`, so no export step, PyTorch, or
+extra download is needed. It supports Llama-architecture models such as SmolLM2.
+The shared prompt prefix's keys/values are broadcast to every beam row instead of
+copied, and appends to the per-row cache are in place.
+
+The PyTorch + Transformers backend is optional: `uv sync --group torch`, then
+`--backend torch` on CPU, or `--device cuda` / `--batch-size 64` on a GPU (CUDA
+always uses it, and so do the Modal scripts). On PyTorch >= 2.15 it uses native
+masked grouped-query attention for Llama models on CPU. The student model and the
+fine-tuning scripts also need the `torch` group. The backend is recorded in
+benchmark metadata. Both keep fp32 weights and the same search constraints.
 
 **On Modal GPUs** (each configuration runs in its own container, in parallel;
 finished configurations are cached in `results/_parts/`, so reruns resume):
@@ -256,7 +262,7 @@ payload is decoded again and exact reconstruction is required. Increase
 sizes; transmitting a new adapter is an additional cost. `--final-test` is an
 explicit safeguard, not a mechanism that prevents repeated test-set tuning.
 
-**Compute:** the repository's uv configuration installs CPU PyTorch. A full run
+**Compute:** the `training` group installs CPU PyTorch. A full run
 is intended for a GPU environment with CUDA-enabled PyTorch, `transformers`,
 `peft`, `accelerate` and `numpy` on Python 3.14 (zstd comes from the standard
 library's `compression.zstd`); invoke `python -m ...` there rather
